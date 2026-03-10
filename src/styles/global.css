@@ -1,0 +1,150 @@
+/**
+ * src/styles/global.css
+ * ─────────────────────────────────────────────
+ * Global CSS: design tokens (variables), resets, and base styles.
+ * All component styles reference these variables for consistency.
+ *
+ * COLOUR PALETTE:
+ *   Navy  → primary brand dark background
+ *   Blue  → primary interactive / CTA colour
+ *   Amber → accent / warning / USSD
+ *   Green → success / registered / safe
+ *   Red   → danger / stolen / alert
+ *
+ * TYPOGRAPHY:
+ *   --font-display: Syne      → headings, numbers, brand
+ *   --font-body:    DM Sans   → all body text, UI labels
+ *   --font-mono:    DM Mono   → IMEI codes, identifiers, case numbers
+ */
+
+/* ── DESIGN TOKENS ─────────────────────────────────────────── */
+:root {
+  /* Navy scale */
+  --navy:      #06112B;
+  --navy-2:    #0C1E42;
+  --navy-3:    #122459;
+
+  /* Blue scale */
+  --blue:      #1A5CDB;
+  --blue-2:    #2B6FED;
+  --blue-3:    #5B93FF;
+
+  /* Amber scale */
+  --amber:     #E8890C;
+  --amber-2:   #F5A623;
+  --amber-pale:#FFF8EC;
+
+  /* Green scale */
+  --green:     #1B7A3E;
+  --green-2:   #22A050;
+  --green-pale:#EAF7EE;
+
+  /* Red scale */
+  --red:       #C0252C;
+  --red-2:     #E8393F;
+  --red-pale:  #FEF0F0;
+
+  /* Purple scale */
+  --purple:    #5B2DA8;
+  --purple-pale:#F0EBFF;
+
+  /* Ink / text scale */
+  --ink:       #0A0E1A;
+  --ink-2:     #1C2337;
+  --ink-3:     #2E3650;
+
+  /* Muted / disabled scale */
+  --muted:     #8895B3;
+  --muted-2:   #B5BFDA;
+  --muted-3:   #DDE3F0;
+
+  /* Surfaces */
+  --surface:   #FFFFFF;
+  --bg:        #F2F5FC;
+  --bg-2:      #E8EDF8;
+
+  /* Typography */
+  --font-display: 'Syne', system-ui, sans-serif;
+  --font-body:    'DM Sans', system-ui, sans-serif;
+  --font-mono:    'DM Mono', monospace;
+
+  /* Border radius */
+  --radius:    14px;
+  --radius-2:  10px;
+  --radius-3:  8px;
+
+  /* Shadows */
+  --shadow:    0 2px 16px rgba(6,17,43,0.08);
+  --shadow-2:  0 8px 40px rgba(6,17,43,0.14);
+  --shadow-3:  0 24px 80px rgba(6,17,43,0.22);
+}
+
+/* ── RESET ─────────────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* ── BASE ──────────────────────────────────────────────────── */
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: var(--font-body);
+  background: var(--bg);
+  color: var(--ink);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Inherit fonts in form elements */
+input, select, textarea, button {
+  font-family: var(--font-body);
+}
+
+/* Selection highlight */
+::selection {
+  background: var(--blue);
+  color: #fff;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--muted-2); border-radius: 3px; }
+
+/* ── APP SHELL LAYOUT ──────────────────────────────────────── */
+/* Sidebar is fixed 240px; main content fills the rest */
+.app-shell {
+  display: flex;
+  min-height: 100vh;
+}
+
+.main-area {
+  margin-left: 240px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.page-content {
+  flex: 1;
+  padding: 28px;
+}
+
+/* ── TYPOGRAPHY UTILITIES ─────────────────────────────────── */
+.font-display { font-family: var(--font-display); }
+.font-mono    { font-family: var(--font-mono); }
+
+/* ── RESPONSIVE BREAKPOINT ────────────────────────────────── */
+/* At 900px, sidebar collapses. Handle in Sidebar.css. */
+@media (max-width: 900px) {
+  .main-area {
+    margin-left: 0;
+  }
+}

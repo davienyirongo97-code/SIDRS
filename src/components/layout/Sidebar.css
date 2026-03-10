@@ -1,0 +1,215 @@
+/**
+ * src/components/layout/Sidebar.css
+ * Styles for the fixed navigation sidebar.
+ */
+
+.sidebar {
+  position: fixed;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 240px;
+  background: var(--navy);
+  display: flex;
+  flex-direction: column;
+  z-index: 100;
+  overflow: hidden;
+}
+
+/* Decorative blue glow in top-left corner */
+.sidebar-glow {
+  position: absolute;
+  top: -80px;
+  left: -60px;
+  width: 260px;
+  height: 260px;
+  background: radial-gradient(circle, rgba(26,92,219,0.25) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+/* ── Brand ── */
+.sidebar-brand {
+  padding: 22px 20px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+  flex-shrink: 0;
+}
+
+.brand-badge {
+  width: 38px;
+  height: 38px;
+  background: linear-gradient(135deg, var(--amber), var(--amber-2));
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: -0.5px;
+  flex-shrink: 0;
+}
+
+.brand-text {
+  color: #fff;
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 800;
+  line-height: 1.1;
+}
+
+.brand-sub {
+  color: rgba(255,255,255,0.35);
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-top: 1px;
+}
+
+/* ── Navigation ── */
+.sidebar-nav {
+  flex: 1;
+  overflow-y: auto;
+  padding-bottom: 8px;
+}
+
+.sidebar-nav::-webkit-scrollbar { width: 3px; }
+.sidebar-nav::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); }
+
+.nav-section {
+  padding: 16px 12px 6px;
+  font-size: 10px;
+  font-weight: 700;
+  color: rgba(255,255,255,0.25);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+/* NavLink item — React Router adds 'active' class automatically */
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 10px 14px;
+  border-radius: var(--radius-2);
+  margin: 2px 8px;
+  cursor: pointer;
+  transition: all 0.18s;
+  color: rgba(255,255,255,0.55);
+  font-size: 13.5px;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.nav-item:hover {
+  background: rgba(255,255,255,0.07);
+  color: rgba(255,255,255,0.85);
+}
+
+.nav-item.active {
+  background: linear-gradient(135deg, rgba(26,92,219,0.4), rgba(26,92,219,0.2));
+  color: #fff;
+  font-weight: 700;
+}
+
+.nav-icon {
+  font-size: 17px;
+  width: 22px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.nav-label { flex: 1; }
+
+.nav-badge {
+  margin-left: auto;
+  color: #fff;
+  border-radius: 20px;
+  padding: 1px 7px;
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.nav-badge.badge-red    { background: var(--red-2); }
+.nav-badge.badge-amber  { background: var(--amber); }
+.nav-badge.badge-green  { background: var(--green-2); }
+
+/* ── User card ── */
+.user-card {
+  margin: 0 8px 16px;
+  padding: 14px;
+  background: rgba(255,255,255,0.06);
+  border-radius: var(--radius);
+  border: 1px solid rgba(255,255,255,0.08);
+  flex-shrink: 0;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.user-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 800;
+  color: #fff;
+  flex-shrink: 0;
+}
+
+.user-name {
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.user-role {
+  color: rgba(255,255,255,0.35);
+  font-size: 10px;
+  margin-top: 2px;
+}
+
+/* Demo user switcher dropdown */
+.user-switcher {
+  width: 100%;
+  padding: 7px 10px;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.12);
+  background: rgba(255,255,255,0.07);
+  color: rgba(255,255,255,0.8);
+  font-size: 12px;
+  font-family: var(--font-body);
+  cursor: pointer;
+  outline: none;
+}
+
+.user-switcher option {
+  background: #0C1E42;
+  color: #fff;
+}
+
+/* ── Responsive ── */
+@media (max-width: 900px) {
+  .sidebar {
+    transform: translateX(-240px);
+    transition: transform 0.2s;
+  }
+
+  /* Add a class 'open' to sidebar for mobile menu toggle */
+  .sidebar.open {
+    transform: translateX(0);
+  }
+}
