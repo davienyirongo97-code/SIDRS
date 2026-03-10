@@ -11,7 +11,9 @@ import { useAppState } from '../../context/AppContext';
 import { CHART_DATA } from '../../data/mockData';
 import StatCard from '../ui/StatCard';
 import Badge from '../ui/Badge';
+import DeviceLookup from '../ui/DeviceLookup';
 import { deviceIcon } from '../../utils/helpers';
+
 // District breakdown mock data
 const DISTRICTS = [
   { name: 'Lilongwe', total: 4, stolen: 2 },
@@ -25,7 +27,6 @@ export default function MacraAdminPage() {
   const { devices, reports, events, users } = useAppState();
 
   const citizens  = users.filter(u => u.role === 'citizen').length;
-  //const stolen    = devices.filter(d => d.status === 'stolen').length;
   const recovered = devices.filter(d => d.status === 'recovered').length;
   const active    = reports.filter(r => r.status === 'active').length;
 
@@ -58,6 +59,9 @@ export default function MacraAdminPage() {
         <StatCard icon="✅" value={recovered}        label="Recovered"       sub="Via SDIRS intelligence"  color="var(--green)" />
         <StatCard icon="⚡" value={events.length}   label="Network Events"  sub="Telecom detections"      color="var(--amber)" />
       </div>
+
+      {/* ── Device Owner Lookup ── search by IMEI / serial / MAC ── */}
+      <DeviceLookup />
 
       <div className="grid-2" style={{ marginBottom: 20 }}>
 

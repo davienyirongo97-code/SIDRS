@@ -10,6 +10,7 @@ import React, { useState } from 'react';
 import { useAppState, useToast } from '../../context/AppContext';
 import { deviceIcon, findDevice } from '../../utils/helpers';
 import Badge from '../ui/Badge';
+import DeviceLookup from '../ui/DeviceLookup';
 import VerifyReportModal from '../modals/VerifyReportModal';
 
 export default function PoliceDashboardPage() {
@@ -59,6 +60,9 @@ export default function PoliceDashboardPage() {
         </div>
         <div className="live-badge">Network Monitoring LIVE</div>
       </div>
+
+      {/* ── Device Owner Lookup ── full owner profile search by IMEI/serial/MAC ── */}
+      <DeviceLookup />
 
       <div className="grid-2">
 
