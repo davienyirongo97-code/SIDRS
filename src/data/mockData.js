@@ -337,6 +337,65 @@ export const INITIAL_TRANSFERS = [
   },
 ];
 
+// ─── CITIZEN POLICE REMINDERS ─────────────────────────────────
+// Pre-loaded demo reminders so the police dashboard shows the
+// feature immediately without needing to manually send one first.
+export const INITIAL_REMINDERS = [
+  {
+    id: 'RMD-001',
+    reportId: 'RPT-2026-00012',
+    caseNumber: 'MPS-LLW-2026-00231',
+    fromUserId: 'U001',
+    message:
+      'SDIRS Device Tracking Alert\n' +
+      '────────────────────────────\n' +
+      'Case Number: MPS-LLW-2026-00231\n' +
+      'Report ID: RPT-2026-00012\n' +
+      'Device: Samsung Galaxy A54\n' +
+      'Last Network Detection: 2026-03-10 11:03\n' +
+      'General Area: City Centre, Lilongwe\n' +
+      'Total Detections: 4\n' +
+      'Network: Airtel\n' +
+      '────────────────────────────\n' +
+      'This device is actively connecting to the Airtel network.\n' +
+      'Please escalate recovery efforts using the SDIRS intelligence data.\n' +
+      'Contact MACRA SDIRS helpline: 1234 for full intelligence report.',
+    detectionCount: 4,
+    area: 'City Centre, Lilongwe',
+    operator: 'Airtel',
+    sentAt: '2026-03-10 13:45',
+    read: false,
+    acknowledged: false,
+  },
+  {
+    id: 'RMD-002',
+    reportId: 'RPT-2026-00031',
+    caseNumber: 'MPS-ZBA-2026-00087',
+    fromUserId: 'U002',
+    message:
+      'SDIRS Device Tracking Alert\n' +
+      '────────────────────────────\n' +
+      'Case Number: MPS-ZBA-2026-00087\n' +
+      'Report ID: RPT-2026-00031\n' +
+      'Device: Tecno Spark 10\n' +
+      'Last Network Detection: 2026-03-10 08:12\n' +
+      'General Area: Chancellor College Area, Zomba\n' +
+      'Total Detections: 2\n' +
+      'Network: TNM\n' +
+      '────────────────────────────\n' +
+      'It has been 10 days since I reported this theft and I have not received any update.\n' +
+      'My device is still being detected on TNM in the Zomba area.\n' +
+      'Please act on this urgently.\n' +
+      'Contact MACRA SDIRS helpline: 1234 for full intelligence report.',
+    detectionCount: 2,
+    area: 'Chancellor College Area, Zomba',
+    operator: 'TNM',
+    sentAt: '2026-03-10 09:30',
+    read: false,
+    acknowledged: false,
+  },
+];
+
 // ─── CHART DATA ───────────────────────────────────────────────
 // Monthly activity for MACRA admin bar chart
 // r = registrations, s = stolen reports, rc = recovered

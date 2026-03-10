@@ -37,6 +37,7 @@ import {
   INITIAL_REPORTS,
   INITIAL_EVENTS,
   INITIAL_TRANSFERS,
+  INITIAL_REMINDERS,
 } from '../data/mockData';
 
 // ─── CONTEXT SETUP ────────────────────────────────────────────
@@ -49,15 +50,16 @@ const AppDispatchContext = createContext(null);
 
 // ─── INITIAL STATE ────────────────────────────────────────────
 const initialState = {
-  currentUserId: 'U001',          // Default logged-in user
+  currentUserId: 'U001',
   users:         INITIAL_USERS,
   devices:       INITIAL_DEVICES,
   reports:       INITIAL_REPORTS,
   events:        INITIAL_EVENTS,
   transfers:     INITIAL_TRANSFERS,
-  modal:         null,            // e.g. 'registerDevice', 'reportTheft'
-  modalData:     null,            // extra data for the modal
-  toast:         null,            // { message, subMessage, type }
+  reminders:     INITIAL_REMINDERS,       // citizen follow-up reminders sent to police
+  modal:         null,
+  modalData:     null,
+  toast:         null,
 };
 
 // ─── HELPER: generate simple IDs ─────────────────────────────
@@ -184,6 +186,34 @@ function appReducer(state, action) {
           : d
       );
       return { ...state, transfers: updatedTransfers, devices: updatedDevices };
+    }
+
+    // Citizen sends a follow-up reminder to police
+    case 'SEND_REMINDER': {
+      const newReminder = {
+        id:             `RMD-${Date.now()}`,
+        reportId:       action.payload.reportId,
+        caseNumber:     action.payload.caseNumber,
+        fromUserId:     state.currentUserId,
+        message:        action.payload.message,
+        detectionCount: action.payload.detectionCount,
+        area:           action.payload.area,
+        operator:       action.payload.operator,
+        sentAt:         nowString(),
+        read:           false,
+        acknowledged:   false,
+      };
+      return { ...state, reminders: [...state.reminders, newReminder] };
+    }
+
+    // Police acknowledges a reminder
+    case 'ACKNOWLEDGE_REMINDER': {
+      const updatedReminders = state.reminders.map(r =>
+        r.id === action.payload.reminderId
+          ? { ...r, read: true, acknowledged: true, acknowledgedAt: nowString() }
+          : r
+      );
+      return { ...state, reminders: updatedReminders };
     }
 
     // Show a modal: { name: 'registerDevice', data: {...} }

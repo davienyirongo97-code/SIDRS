@@ -11,11 +11,10 @@
  */
 
 import React from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useAppState, useCurrentUser } from '../../context/AppContext';
 import './Topbar.css';
 
-// Map URL paths → { title, subtitle }
 const PAGE_TITLES = {
   '/':             { title: 'Platform Overview',       subtitle: 'National Stolen Device Identification & Recovery System' },
   '/checker':      { title: 'IMEI Checker',            subtitle: 'Verify any device before purchasing' },
@@ -30,22 +29,27 @@ const PAGE_TITLES = {
 
 export default function Topbar() {
   const location  = useLocation();
+  const navigate  = useNavigate();
   const state     = useAppState();
   const user      = useCurrentUser();
 
-  const pageInfo  = PAGE_TITLES[location.pathname] || PAGE_TITLES['/'];
+  const pageInfo      = PAGE_TITLES[location.pathname] || PAGE_TITLES['/'];
   const activeAlerts  = state.reports.filter(r => r.status === 'active').length;
   const pendingAlerts = state.reports.filter(r => r.status === 'pending').length;
 
+  // Unread reminders — only relevant for police and MACRA
+  const isOfficer    = user?.role === 'police' || user?.role === 'macra';
+  const unreadCount  = isOfficer
+    ? (state.reminders || []).filter(r => !r.acknowledged).length
+    : 0;
+
   return (
     <header className="topbar">
-      {/* Page title block */}
       <div className="topbar-title">
         <h1 className="topbar-heading">{pageInfo.title}</h1>
         <p className="topbar-subtitle">{pageInfo.subtitle}</p>
       </div>
 
-      {/* Right-side controls */}
       <div className="topbar-right">
 
         {/* Active network alert indicator */}
@@ -54,6 +58,28 @@ export default function Topbar() {
             <div className="live-dot" />
             {activeAlerts} Active Alert{activeAlerts > 1 ? 's' : ''}
           </div>
+        )}
+
+        {/* ── Citizen reminder bell — police/MACRA only ── */}
+        {isOfficer && unreadCount > 0 && (
+          <button
+            className="btn btn-sm"
+            style={{
+              background: 'var(--red)',
+              color: '#fff',
+              border: 'none',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 6,
+              fontWeight: 800,
+              animation: 'ping 2s infinite',
+              cursor: 'pointer',
+            }}
+            title={`${unreadCount} unread citizen reminder${unreadCount > 1 ? 's' : ''}`}
+            onClick={() => navigate('/police')}
+          >
+            🔔 {unreadCount} Reminder{unreadCount > 1 ? 's' : ''}
+          </button>
         )}
 
         {/* Notification bell */}

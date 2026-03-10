@@ -7,14 +7,15 @@
  */
 
 import React, { useState } from 'react';
-import { useAppState, useToast } from '../../context/AppContext';
+import { useAppState, useAppDispatch, useToast } from '../../context/AppContext';
 import { deviceIcon, findDevice } from '../../utils/helpers';
 import Badge from '../ui/Badge';
 import DeviceLookup from '../ui/DeviceLookup';
 import VerifyReportModal from '../modals/VerifyReportModal';
 
 export default function PoliceDashboardPage() {
-  const { reports, devices, events } = useAppState();
+  const { reports, devices, events, reminders, users } = useAppState();
+  const dispatch  = useAppDispatch();
   const showToast = useToast();
 
   const [activeTab, setActiveTab] = useState('pending');
@@ -61,8 +62,20 @@ export default function PoliceDashboardPage() {
         <div className="live-badge">Network Monitoring LIVE</div>
       </div>
 
-      {/* ── Device Owner Lookup ── full owner profile search by IMEI/serial/MAC ── */}
+      {/* ── Device Owner Lookup ── */}
       <DeviceLookup />
+
+      {/* ── Citizen Follow-up Reminders ── */}
+      <CitizenReminders
+        reminders={reminders}
+        reports={reports}
+        devices={devices}
+        users={users}
+        onAcknowledge={(reminderId) => {
+          dispatch({ type: 'ACKNOWLEDGE_REMINDER', payload: { reminderId } });
+          showToast('Reminder acknowledged', 'Citizen will be notified.', 'success');
+        }}
+      />
 
       <div className="grid-2">
 
@@ -223,6 +236,202 @@ export default function PoliceDashboardPage() {
       {verifyId && (
         <VerifyReportModal reportId={verifyId} onClose={() => setVerifyId(null)} />
       )}
+    </div>
+  );
+}
+
+/* ══════════════════════════════════════════════════════════════
+   CITIZEN REMINDERS PANEL
+   Shows all follow-up reminders sent by citizens when police
+   are slow to act. Each reminder shows:
+     - Which citizen sent it and when
+     - The case number and device
+     - How many times the device was detected on the network
+     - The general area of last detection
+     - The full reminder message
+     - An Acknowledge button to mark it as actioned
+══════════════════════════════════════════════════════════════ */
+function CitizenReminders({ reminders, reports, devices, users, onAcknowledge }) {
+  const [expanded, setExpanded] = useState(null);
+
+  const unread = reminders.filter(r => !r.acknowledged);
+  const all    = [...reminders].reverse(); // newest first
+
+  if (reminders.length === 0) return null;
+
+  return (
+    <div style={{ marginBottom: 24 }}>
+
+      {/* ── Section header ── */}
+      <div style={{
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        marginBottom: 14,
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <div style={{ fontFamily: 'var(--font-display)', fontSize: 16, fontWeight: 800, color: 'var(--ink)' }}>
+            🔔 Citizen Follow-up Reminders
+          </div>
+          {unread.length > 0 && (
+            <div style={{
+              background: 'var(--red)', color: '#fff',
+              borderRadius: 20, padding: '2px 10px',
+              fontSize: 11, fontWeight: 800,
+              animation: 'ping 2s infinite',
+            }}>
+              {unread.length} NEW
+            </div>
+          )}
+        </div>
+        <div style={{ fontSize: 12, color: 'var(--muted)' }}>
+          {reminders.length} total · {reminders.filter(r => r.acknowledged).length} acknowledged
+        </div>
+      </div>
+
+      {/* ── Reminder cards ── */}
+      {all.map(reminder => {
+        const report  = reports.find(r => r.id === reminder.reportId);
+        const device  = devices.find(d => d.id === report?.deviceId);
+        const citizen = users.find(u => u.id === reminder.fromUserId);
+        const isOpen  = expanded === reminder.id;
+
+        return (
+          <div key={reminder.id} style={{
+            borderRadius: 'var(--radius-2)',
+            border: `2px solid ${reminder.acknowledged ? 'var(--muted-3)' : 'var(--red-2)'}`,
+            marginBottom: 12,
+            overflow: 'hidden',
+            opacity: reminder.acknowledged ? 0.7 : 1,
+            transition: 'all .2s',
+          }}>
+
+            {/* Card header — always visible */}
+            <div
+              style={{
+                padding: '14px 18px',
+                background: reminder.acknowledged
+                  ? 'var(--bg-2)'
+                  : 'linear-gradient(135deg, #2d0505, var(--navy))',
+                display: 'flex', alignItems: 'center',
+                gap: 14, flexWrap: 'wrap', cursor: 'pointer',
+              }}
+              onClick={() => setExpanded(isOpen ? null : reminder.id)}
+            >
+              {/* Unread dot */}
+              {!reminder.acknowledged && (
+                <div style={{ width: 10, height: 10, borderRadius: '50%', background: 'var(--red-2)', flexShrink: 0 }} />
+              )}
+              {reminder.acknowledged && (
+                <div style={{ fontSize: 16, flexShrink: 0 }}>✅</div>
+              )}
+
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ fontWeight: 800, fontSize: 13, color: reminder.acknowledged ? 'var(--ink)' : '#fff' }}>
+                  {citizen?.name || 'Citizen'} is following up on {device?.make} {device?.model}
+                </div>
+                <div style={{ fontSize: 11, color: reminder.acknowledged ? 'var(--muted)' : 'rgba(255,255,255,0.55)', marginTop: 3 }}>
+                  Case: <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 700, color: reminder.acknowledged ? 'var(--blue)' : 'var(--amber-2)' }}>
+                    {reminder.caseNumber || 'Pending'}
+                  </span>
+                  &nbsp;·&nbsp;
+                  📡 Detected <strong style={{ color: reminder.acknowledged ? 'var(--ink)' : '#fff' }}>{reminder.detectionCount}×</strong> on {reminder.operator}
+                  &nbsp;·&nbsp;
+                  📍 {reminder.area}
+                  &nbsp;·&nbsp;
+                  🕐 {reminder.sentAt}
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', gap: 8, flexShrink: 0 }} onClick={e => e.stopPropagation()}>
+                {!reminder.acknowledged && (
+                  <button
+                    className="btn btn-green btn-sm"
+                    onClick={() => onAcknowledge(reminder.id)}
+                  >
+                    ✅ Acknowledge
+                  </button>
+                )}
+                <button
+                  className="btn btn-surface btn-sm"
+                  style={{ fontSize: 11 }}
+                >
+                  {isOpen ? '▲ Hide' : '▼ View Message'}
+                </button>
+              </div>
+            </div>
+
+            {/* Expanded — full message + context */}
+            {isOpen && (
+              <div style={{ padding: '16px 18px', background: 'var(--surface)' }}>
+
+                {/* Context row */}
+                <div className="grid-2" style={{ gap: 12, marginBottom: 16 }}>
+                  <div style={{ background: 'var(--bg)', borderRadius: 8, padding: '10px 14px' }}>
+                    <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--muted)', textTransform: 'uppercase', marginBottom: 4 }}>From Citizen</div>
+                    <div style={{ fontWeight: 700, fontSize: 13 }}>{citizen?.name}</div>
+                    <div style={{ fontSize: 11, color: 'var(--muted)', marginTop: 2 }}>{citizen?.phone}</div>
+                  </div>
+                  <div style={{ background: 'var(--bg)', borderRadius: 8, padding: '10px 14px' }}>
+                    <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--muted)', textTransform: 'uppercase', marginBottom: 4 }}>Device</div>
+                    <div style={{ fontWeight: 700, fontSize: 13 }}>{device?.make} {device?.model}</div>
+                    <div style={{ fontSize: 11, fontFamily: 'var(--font-mono)', color: 'var(--muted)', marginTop: 2 }}>{device?.imei || device?.serial || '—'}</div>
+                  </div>
+                  <div style={{ background: 'var(--amber-pale)', border: '1px solid var(--amber)', borderRadius: 8, padding: '10px 14px' }}>
+                    <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--amber)', textTransform: 'uppercase', marginBottom: 4 }}>Network Detections</div>
+                    <div style={{ fontWeight: 900, fontSize: 22, color: 'var(--amber)', fontFamily: 'var(--font-display)' }}>{reminder.detectionCount}×</div>
+                    <div style={{ fontSize: 11, color: 'var(--muted)', marginTop: 2 }}>via {reminder.operator}</div>
+                  </div>
+                  <div style={{ background: 'var(--bg)', borderRadius: 8, padding: '10px 14px' }}>
+                    <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--muted)', textTransform: 'uppercase', marginBottom: 4 }}>Last Detected Area</div>
+                    <div style={{ fontWeight: 700, fontSize: 13 }}>📍 {reminder.area}</div>
+                    <div style={{ fontSize: 11, color: 'var(--muted)', marginTop: 2 }}>Sent: {reminder.sentAt}</div>
+                  </div>
+                </div>
+
+                {/* Full message */}
+                <div style={{ marginBottom: 14 }}>
+                  <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--muted)', textTransform: 'uppercase', marginBottom: 8 }}>
+                    Full Message from Citizen
+                  </div>
+                  <div style={{
+                    background: 'var(--bg)',
+                    borderRadius: 8, padding: '12px 14px',
+                    fontFamily: 'var(--font-mono)', fontSize: 11,
+                    color: 'var(--ink-2)', lineHeight: 1.8,
+                    whiteSpace: 'pre-wrap', wordBreak: 'break-word',
+                    borderLeft: '3px solid var(--blue)',
+                  }}>
+                    {reminder.message}
+                  </div>
+                </div>
+
+                {/* Action buttons */}
+                {!reminder.acknowledged ? (
+                  <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+                    <button className="btn btn-green" onClick={() => onAcknowledge(reminder.id)}>
+                      ✅ Acknowledge — I am working on this case
+                    </button>
+                    <button
+                      className="btn btn-surface"
+                      onClick={() => {
+                        navigator.clipboard?.writeText(reminder.message).catch(() => {});
+                      }}
+                    >
+                      📋 Copy Message
+                    </button>
+                  </div>
+                ) : (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <span style={{ fontSize: 16 }}>✅</span>
+                    <span style={{ fontSize: 12, color: 'var(--green)', fontWeight: 700 }}>
+                      Acknowledged {reminder.acknowledgedAt}
+                    </span>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        );
+      })}
     </div>
   );
 }
