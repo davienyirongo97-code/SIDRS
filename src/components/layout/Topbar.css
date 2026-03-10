@@ -16,25 +16,32 @@
   box-shadow: 0 1px 8px rgba(6,17,43,0.05);
 }
 
-.topbar-title { flex: 1; }
+.topbar-title { flex: 1; min-width: 0; }
 
 .topbar-heading {
   font-family: var(--font-display);
   font-size: 19px;
   font-weight: 800;
   color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .topbar-subtitle {
   font-size: 12px;
   color: var(--muted);
   margin-top: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .topbar-right {
   display: flex;
   align-items: center;
   gap: 12px;
+  flex-shrink: 0;
 }
 
 /* Active alert pill */
@@ -85,4 +92,31 @@
   font-family: var(--font-display);
   cursor: default;
   flex-shrink: 0;
+}
+
+/* ── Mobile topbar adjustments ── */
+@media (max-width: 900px) {
+  .topbar {
+    /* Shift right to clear the hamburger button */
+    padding: 0 14px 0 64px;
+    height: 56px;
+  }
+
+  .topbar-heading {
+    font-size: 15px;
+  }
+
+  .topbar-subtitle {
+    display: none; /* hide subtitle on small screens */
+  }
+
+  /* Hide alert pill on small screens to save space */
+  .alert-pill {
+    display: none;
+  }
+
+  /* Smaller gaps on mobile */
+  .topbar-right {
+    gap: 8px;
+  }
 }

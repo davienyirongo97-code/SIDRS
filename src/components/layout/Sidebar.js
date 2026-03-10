@@ -12,8 +12,8 @@
  * Uses React Router's <NavLink> to highlight the active page.
  */
 
-import React from 'react';
-import { NavLink } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { NavLink, useLocation } from 'react-router-dom';
 import { useAppState, useAppDispatch } from '../../context/AppContext';
 import './Sidebar.css';
 
@@ -71,16 +71,49 @@ const NAV_GROUPS = [
 export default function Sidebar() {
   const state    = useAppState();
   const dispatch = useAppDispatch();
+  const location = useLocation();
   const { users, currentUserId } = state;
 
   const currentUser = users.find(u => u.id === currentUserId);
+
+  // Mobile sidebar open/close state
+  const [mobileOpen, setMobileOpen] = useState(false);
+
+  // Close sidebar whenever the route changes (user tapped a link)
+  useEffect(() => {
+    setMobileOpen(false);
+  }, [location.pathname]);
+
+  // Prevent body scroll when sidebar is open on mobile
+  useEffect(() => {
+    document.body.style.overflow = mobileOpen ? 'hidden' : '';
+    return () => { document.body.style.overflow = ''; };
+  }, [mobileOpen]);
 
   function handleUserSwitch(e) {
     dispatch({ type: 'SET_USER', payload: e.target.value });
   }
 
   return (
-    <aside className="sidebar">
+    <>
+      {/* ── Mobile hamburger button (only visible on small screens) ── */}
+      <button
+        className="hamburger-btn"
+        onClick={() => setMobileOpen(o => !o)}
+        aria-label="Toggle navigation"
+      >
+        {mobileOpen ? '✕' : '☰'}
+      </button>
+
+      {/* ── Dark overlay behind sidebar on mobile ── */}
+      {mobileOpen && (
+        <div
+          className="sidebar-overlay"
+          onClick={() => setMobileOpen(false)}
+        />
+      )}
+
+      <aside className={`sidebar${mobileOpen ? ' open' : ''}`}>
       {/* Decorative background glow */}
       <div className="sidebar-glow" aria-hidden="true" />
 
@@ -159,5 +192,6 @@ export default function Sidebar() {
         </select>
       </div>
     </aside>
+    </>
   );
 }

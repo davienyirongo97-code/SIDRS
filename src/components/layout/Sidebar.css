@@ -204,12 +204,68 @@
 /* ── Responsive ── */
 @media (max-width: 900px) {
   .sidebar {
-    transform: translateX(-240px);
-    transition: transform 0.2s;
+    transform: translateX(-260px);
+    transition: transform 0.28s cubic-bezier(0.22,1,0.36,1);
+    z-index: 300;
+    width: 260px;
+    box-shadow: none;
   }
 
-  /* Add a class 'open' to sidebar for mobile menu toggle */
   .sidebar.open {
     transform: translateX(0);
+    box-shadow: 8px 0 40px rgba(6,17,43,0.4);
   }
+}
+
+/* ── Dark overlay behind open sidebar on mobile ── */
+.sidebar-overlay {
+  display: none;
+}
+
+@media (max-width: 900px) {
+  .sidebar-overlay {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(6,17,43,0.55);
+    z-index: 299;
+    backdrop-filter: blur(3px);
+    animation: fadeIn 0.2s ease;
+  }
+}
+
+/* ── Hamburger button (hidden on desktop) ── */
+.hamburger-btn {
+  display: none;
+}
+
+@media (max-width: 900px) {
+  .hamburger-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    top: 14px;
+    left: 14px;
+    z-index: 400;
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: var(--navy);
+    border: 1px solid rgba(255,255,255,0.15);
+    color: #fff;
+    font-size: 18px;
+    cursor: pointer;
+    box-shadow: 0 4px 16px rgba(6,17,43,0.3);
+    transition: all 0.15s;
+  }
+
+  .hamburger-btn:hover {
+    background: var(--blue);
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
 }

@@ -519,8 +519,19 @@ tr:hover td { background: var(--bg); }
 .grid-4    { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
 .grid-stat { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
 
-@media (max-width: 900px) {
-  .grid-2, .grid-3, .grid-4, .grid-stat { grid-template-columns: 1fr; }
+/* Tablet: 2 columns */
+@media (max-width: 1024px) {
+  .grid-3    { grid-template-columns: 1fr 1fr; }
+  .grid-4    { grid-template-columns: 1fr 1fr; }
+  .grid-stat { grid-template-columns: 1fr 1fr; }
+}
+
+/* Mobile: 1 column for everything */
+@media (max-width: 640px) {
+  .grid-2    { grid-template-columns: 1fr; gap: 14px; }
+  .grid-3    { grid-template-columns: 1fr; gap: 14px; }
+  .grid-4    { grid-template-columns: 1fr 1fr; gap: 12px; }
+  .grid-stat { grid-template-columns: 1fr 1fr; gap: 12px; }
 }
 
 /* ── 12. PAGE HERO BANNERS ──────────────────────────────────── */
@@ -544,4 +555,49 @@ tr:hover td { background: var(--bg); }
     radial-gradient(ellipse at 80% 50%, rgba(26,92,219,0.25) 0%, transparent 65%),
     radial-gradient(ellipse at 20% 80%, rgba(232,137,12,0.15) 0%, transparent 50%);
   pointer-events: none;
+}
+
+/* ── 13. MOBILE OVERRIDES ───────────────────────────────────── */
+@media (max-width: 640px) {
+
+  /* Cards — tighter padding */
+  .card { padding: 16px; border-radius: 12px; }
+  .card-sm { padding: 12px; }
+
+  /* Hero banners — much smaller on mobile */
+  .page-hero { padding: 24px 20px; border-radius: 16px; }
+
+  /* Modal — full screen on mobile */
+  .modal-overlay { padding: 0; align-items: flex-end; }
+  .modal-box {
+    border-radius: 20px 20px 0 0;
+    max-height: 92vh;
+    max-width: 100%;
+    width: 100%;
+  }
+  .modal-box.wide { max-width: 100%; }
+
+  /* Tables — allow horizontal scroll */
+  .table-wrap { border-radius: 8px; }
+  table { font-size: 11px; }
+  th, td { padding: 8px 10px; }
+
+  /* Stat cards — compact */
+  .stat-num { font-size: 28px; }
+
+  /* USSD box — smaller text */
+  .ussd-code { font-size: 20px; letter-spacing: 2px; }
+
+  /* Buttons — full width when stacked */
+  .btn-full-mobile { width: 100%; justify-content: center; }
+
+  /* Device rows — stack label below icon */
+  .device-row { flex-wrap: wrap; gap: 8px; }
+
+  /* Modal footer — stack buttons vertically */
+  .modal-footer { flex-direction: column-reverse; }
+  .modal-footer .btn { width: 100%; justify-content: center; }
+
+  /* Toast — full width */
+  .toast { left: 12px; right: 12px; max-width: none; top: auto; bottom: 20px; }
 }

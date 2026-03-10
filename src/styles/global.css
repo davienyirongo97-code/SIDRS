@@ -118,7 +118,6 @@ input, select, textarea, button {
 ::-webkit-scrollbar-thumb { background: var(--muted-2); border-radius: 3px; }
 
 /* ── APP SHELL LAYOUT ──────────────────────────────────────── */
-/* Sidebar is fixed 240px; main content fills the rest */
 .app-shell {
   display: flex;
   min-height: 100vh;
@@ -141,10 +140,15 @@ input, select, textarea, button {
 .font-display { font-family: var(--font-display); }
 .font-mono    { font-family: var(--font-mono); }
 
-/* ── RESPONSIVE BREAKPOINT ────────────────────────────────── */
-/* At 900px, sidebar collapses. Handle in Sidebar.css. */
+/* ── MOBILE LAYOUT ────────────────────────────────────────── */
 @media (max-width: 900px) {
   .main-area {
     margin-left: 0;
+  }
+
+  .page-content {
+    padding: 16px;
+    /* Extra top padding so hamburger button doesn't overlap content */
+    padding-top: 68px;
   }
 }
