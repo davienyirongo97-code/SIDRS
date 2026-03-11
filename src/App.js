@@ -15,6 +15,8 @@
  *   /intelligence  → IntelligenceFeedPage
  *   /admin         → MacraAdminPage
  *   /registry      → DeviceRegistryPage
+ *   /chain         → OwnershipChainPage   (Blockchain ledger)
+ *   /threats       → ThreatIntelPage      (AI/ML hotspots + anomalies)
  */
 
 import React from 'react';
@@ -35,6 +37,8 @@ import PoliceDashboardPage from './components/pages/PoliceDashboardPage';
 import IntelligenceFeedPage from './components/pages/IntelligenceFeedPage';
 import MacraAdminPage from './components/pages/MacraAdminPage';
 import DeviceRegistryPage from './components/pages/DeviceRegistryPage';
+import OwnershipChainPage from './components/pages/OwnershipChainPage';
+import ThreatIntelPage from './components/pages/ThreatIntelPage';
 
 function App() {
   return (
@@ -59,6 +63,8 @@ function App() {
             <Route path="/intelligence" element={<IntelligenceFeedPage />} />
             <Route path="/admin"        element={<MacraAdminPage />} />
             <Route path="/registry"     element={<DeviceRegistryPage />} />
+            <Route path="/chain"        element={<OwnershipChainPage />} />
+            <Route path="/threats"      element={<ThreatIntelPage />} />
             {/* Catch-all: redirect unknown URLs to home */}
             <Route path="*"             element={<HomePage />} />
           </Routes>

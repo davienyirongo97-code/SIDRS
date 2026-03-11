@@ -12,11 +12,10 @@ import Badge from '../ui/Badge';
 import TransferInitiateModal from '../modals/TransferInitiateModal';
 
 export default function TransferPage() {
-  //const user     = useCurrentUser();
- const { devices, currentUserId } = useAppState();
+  const { devices, transfers, currentUserId } = useAppState();
 
   const myDevices  = devices.filter(d => d.ownerId === currentUserId && d.status === 'registered');
-  const myTransfers = [];
+  const myTransfers = transfers.filter(t => t.sellerId === currentUserId);
 
   const [modal, setModal]   = useState(false);
   const [selected, setSelected] = useState(null);

@@ -8,14 +8,12 @@
 
 import React, { useState } from 'react';
 import Modal from '../ui/Modal';
-import { useAppDispatch, useAppState, useToast } from '../../context/AppContext';
+import { useAppDispatch } from '../../context/AppContext';
 import { primaryIdentifier } from '../../utils/helpers';
 import TransferPinModal from './TransferPinModal';
 
 export default function TransferInitiateModal({ onClose, device }) {
   const dispatch  = useAppDispatch();
-  //const showToast = useToast();
-  //const { transfers } = useAppState();
 
   const [buyerPhone, setBuyerPhone] = useState('');
   const [priceMWK,   setPriceMWK]   = useState('');

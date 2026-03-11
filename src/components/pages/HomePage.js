@@ -18,7 +18,6 @@ export default function HomePage() {
   // Derived stats
   const stolenCount    = devices.filter(d => d.status === 'stolen').length;
   const recoveredCount = devices.filter(d => d.status === 'recovered').length;
-  //const activeAlerts   = reports.filter(r => r.status === 'active').length;
 
   // Feature module cards
   const MODULES = [

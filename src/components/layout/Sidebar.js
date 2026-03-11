@@ -57,6 +57,7 @@ const NAV_GROUPS = [
         badgeClass: 'badge-amber',
       },
       { path: '/intelligence', icon: '📡', label: 'Intelligence Feed' },
+      { path: '/threats',      icon: '🤖', label: 'Threat Intel (AI)' },
     ],
   },
   {
@@ -64,6 +65,7 @@ const NAV_GROUPS = [
     items: [
       { path: '/admin',    icon: '🏛️', label: 'MACRA Admin' },
       { path: '/registry', icon: '📋', label: 'Device Registry' },
+      { path: '/chain',    icon: '⛓️', label: 'Ownership Chain' },
     ],
   },
 ];

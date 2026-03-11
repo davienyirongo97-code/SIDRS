@@ -15,7 +15,6 @@ export default function ReportTheftPage() {
   const dispatch  = useAppDispatch();
   const showToast = useToast();
   const navigate  = useNavigate();
-  //const user      = useCurrentUser();
   const { devices, currentUserId } = useAppState();
 
   const myDevices = devices.filter(d => d.ownerId === currentUserId && d.status === 'registered');

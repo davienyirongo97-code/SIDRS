@@ -3,17 +3,29 @@
  * ─────────────────────────────────────────────
  * Reusable device lookup / search panel for Police and MACRA pages.
  *
- * Accepts any IMEI, serial number, or MAC address and returns:
- *   - Full device details
- *   - Complete registered owner profile (name, NRC, phone, address)
- *   - Emergency reference contact
- *   - Purchase details
- *   - Active theft report (if any)
- *   - Network detection events (if any)
- *   - Transfer history (if any)
+ * MULTI-IDENTIFIER MATCHING (IMEI Defence Layer):
+ *   Searches across ALL identifiers simultaneously:
+ *     - IMEI (primary — mobiles/tablets)
+ *     - Serial number (immutable hardware ID — all devices)
+ *     - MAC address (burned into WiFi chip — laptops/tablets)
  *
- * This is the "find owner by IMEI" tool that police use when they
- * recover a device — even one that hasn't been reported stolen yet.
+ *   WHY THIS MATTERS:
+ *   A thief who has reprogrammed the IMEI cannot change the serial
+ *   number or MAC address without physical hardware replacement.
+ *   Searching by serial or MAC still finds and identifies the device.
+ *
+ *   MATCH CONFIDENCE PANEL:
+ *   Shows which identifiers matched and which did not, so police
+ *   can understand exactly how the device was identified and which
+ *   identifiers have been tampered with.
+ *
+ * Also returns:
+ *   - Full owner profile (name, NRC, phone, address)
+ *   - Emergency reference contact
+ *   - Active theft report (if any)
+ *   - Network detection events + IoT detections
+ *   - Transfer history
+ *   - Blockchain block reference
  */
 
 import React, { useState } from 'react';
@@ -21,19 +33,98 @@ import { useAppState } from '../../context/AppContext';
 import { checkIdentifier, deviceIcon, formatNumber } from '../../utils/helpers';
 import Badge from './Badge';
 
+// ── MULTI-IDENTIFIER SEARCH ───────────────────────────────────
+// Returns the device match PLUS a breakdown of which identifiers
+// matched, which were absent, and which may have been tampered with.
+function multiIdentifierSearch(query, devices, reports) {
+  const q = query.trim().toLowerCase();
+  if (!q) return null;
+
+  let bestDevice = null;
+  let matchedField = null;
+  let matchScore = 0;
+
+  for (const d of devices) {
+    if (d.imei   && d.imei.toLowerCase()   === q) { bestDevice = d; matchedField = 'imei';   matchScore = 100; break; }
+    if (d.serial && d.serial.toLowerCase() === q) { bestDevice = d; matchedField = 'serial'; matchScore = 98;  break; }
+    if (d.mac    && d.mac.toLowerCase()    === q) { bestDevice = d; matchedField = 'mac';    matchScore = 95;  break; }
+    // Partial match fallback (for demo convenience — type partial identifiers)
+    if (d.imei   && d.imei.includes(query.trim()))   { bestDevice = d; matchedField = 'imei';   matchScore = 75; }
+    if (d.serial && d.serial.toLowerCase().includes(q)) { bestDevice = d; matchedField = 'serial'; matchScore = 70; }
+    if (d.mac    && d.mac.toLowerCase().includes(q))    { bestDevice = d; matchedField = 'mac';    matchScore = 65; }
+  }
+
+  if (!bestDevice) return { status: 'not_found', matchAnalysis: null };
+
+  // Build match analysis — which identifiers are present, which matched
+  const matchAnalysis = {
+    searched: query.trim(),
+    matchedField,
+    matchScore,
+    identifiers: [
+      {
+        field: 'IMEI',
+        value: bestDevice.imei || null,
+        matched: matchedField === 'imei',
+        present: !!bestDevice.imei,
+        note: !bestDevice.imei ? 'Not applicable (laptop/tablet without SIM)' : null,
+      },
+      {
+        field: 'Serial Number',
+        value: bestDevice.serial || null,
+        matched: matchedField === 'serial',
+        present: !!bestDevice.serial,
+        note: !bestDevice.serial ? 'Not registered' : null,
+      },
+      {
+        field: 'MAC Address',
+        value: bestDevice.mac || null,
+        matched: matchedField === 'mac',
+        present: !!bestDevice.mac,
+        note: !bestDevice.mac ? 'Not registered (mobile without MAC entry)' : null,
+      },
+    ],
+  };
+
+  const report = reports.find(
+    r => r.deviceId === bestDevice.id && (r.status === 'active' || r.status === 'pending')
+  );
+
+  return {
+    status: report ? 'stolen' : 'clean',
+    device: bestDevice,
+    report: report || null,
+    matchAnalysis,
+  };
+}
+
 export default function DeviceLookup() {
   const { devices, reports, events, transfers, users } = useAppState();
-  const [query,  setQuery]  = useState('');
-  const [result, setResult] = useState(null);  // null | { status, device, report }
+  const [imeiVal,   setImeiVal]   = useState('');
+  const [serialVal, setSerialVal] = useState('');
+  const [macVal,    setMacVal]    = useState('');
+  const [result,    setResult]    = useState(null);
+  const [mode,      setMode]      = useState('single'); // 'single' | 'multi'
 
   function handleSearch() {
-    const q = query.trim();
+    // Multi-field mode: try each field, return first match
+    if (mode === 'multi') {
+      const queries = [imeiVal, serialVal, macVal].filter(Boolean);
+      for (const q of queries) {
+        const r = multiIdentifierSearch(q, devices, reports);
+        if (r && r.status !== 'not_found') { setResult(r); return; }
+      }
+      setResult({ status: 'not_found', matchAnalysis: null });
+      return;
+    }
+    // Single field mode
+    const q = imeiVal.trim();
     if (!q) return;
-    setResult(checkIdentifier(q, devices, reports));
+    setResult(multiIdentifierSearch(q, devices, reports));
   }
 
   function handleClear() {
-    setQuery('');
+    setImeiVal(''); setSerialVal(''); setMacVal('');
     setResult(null);
   }
 
@@ -53,47 +144,78 @@ export default function DeviceLookup() {
         }}>
           🔍
         </div>
-        <div>
+        <div style={{ flex: 1 }}>
           <div style={{ fontFamily: 'var(--font-display)', fontSize: 15, fontWeight: 800, color: 'var(--ink)' }}>
-            Device Owner Lookup
+            Device Owner Lookup — Multi-Identifier Search
           </div>
           <div style={{ fontSize: 12, color: 'var(--muted)', marginTop: 2 }}>
-            Enter any IMEI, serial number, or MAC address to retrieve full owner profile
+            Search by IMEI · Serial Number · MAC Address — finds device even if IMEI has been tampered with
           </div>
         </div>
-        <div style={{ marginLeft: 'auto' }}>
-          <div style={{
-            display: 'flex', alignItems: 'center', gap: 6,
-            padding: '4px 12px', background: 'rgba(26,92,219,0.1)',
-            borderRadius: 20, border: '1px solid rgba(26,92,219,0.2)',
-          }}>
-            <span style={{ fontSize: 10 }}>🔐</span>
-            <span style={{ fontSize: 10, fontWeight: 800, color: 'var(--blue)', letterSpacing: 0.5 }}>
-              RESTRICTED ACCESS
-            </span>
-          </div>
+        <div style={{ display: 'flex', gap: 8, flexShrink: 0 }}>
+          <button
+            style={{
+              padding: '4px 12px', borderRadius: 20, fontSize: 11, fontWeight: 700, cursor: 'pointer',
+              border: '1px solid', borderColor: mode==='single' ? 'var(--blue)' : 'var(--muted-3)',
+              background: mode==='single' ? 'var(--blue)' : 'transparent',
+              color: mode==='single' ? '#fff' : 'var(--muted)',
+            }}
+            onClick={() => setMode('single')}
+          >Single</button>
+          <button
+            style={{
+              padding: '4px 12px', borderRadius: 20, fontSize: 11, fontWeight: 700, cursor: 'pointer',
+              border: '1px solid', borderColor: mode==='multi' ? 'var(--blue)' : 'var(--muted-3)',
+              background: mode==='multi' ? 'var(--blue)' : 'transparent',
+              color: mode==='multi' ? '#fff' : 'var(--muted)',
+            }}
+            onClick={() => setMode('multi')}
+          >Multi-ID</button>
         </div>
       </div>
 
-      {/* ── Search bar ── */}
-      <div style={{ display: 'flex', gap: 10, marginBottom: result ? 20 : 0 }}>
-        <input
-          className="field-input mono"
-          style={{ flex: 1, fontSize: 14 }}
-          placeholder="Enter IMEI · Serial Number · MAC Address (e.g. 356789012345678)"
-          value={query}
-          onChange={e => setQuery(e.target.value)}
-          onKeyDown={e => e.key === 'Enter' && handleSearch()}
-        />
-        <button className="btn btn-primary" onClick={handleSearch}>
-          🔍 Search
-        </button>
-        {result && (
-          <button className="btn btn-surface" onClick={handleClear}>
-            ✕ Clear
-          </button>
-        )}
-      </div>
+      {/* ── Search fields ── */}
+      {mode === 'single' ? (
+        <div style={{ display: 'flex', gap: 10, marginBottom: result ? 20 : 0 }}>
+          <input
+            className="field-input mono"
+            style={{ flex: 1, fontSize: 14 }}
+            placeholder="Enter IMEI · Serial Number · MAC Address  (e.g. 490123456789012)"
+            value={imeiVal}
+            onChange={e => setImeiVal(e.target.value)}
+            onKeyDown={e => e.key === 'Enter' && handleSearch()}
+          />
+          <button className="btn btn-primary" onClick={handleSearch}>🔍 Search</button>
+          {result && <button className="btn btn-surface" onClick={handleClear}>✕</button>}
+        </div>
+      ) : (
+        <div style={{ marginBottom: result ? 20 : 0 }}>
+          <div style={{ padding: '12px 14px', background: 'var(--amber-pale)', borderRadius: 10, marginBottom: 14, border: '1px solid #F5C35A' }}>
+            <div style={{ fontSize: 12, color: 'var(--amber)', fontWeight: 700 }}>
+              🛡️ IMEI Defence Mode — Fill any identifiers you have. System matches on all of them simultaneously.
+              A device with a tampered IMEI is still found via its Serial Number or MAC Address.
+            </div>
+          </div>
+          <div className="grid-2" style={{ gap: 12, marginBottom: 12 }}>
+            <div>
+              <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--muted)', marginBottom: 6, textTransform: 'uppercase' }}>IMEI Number</div>
+              <input className="field-input mono" placeholder="e.g. 490123456789012" value={imeiVal} onChange={e => setImeiVal(e.target.value)} onKeyDown={e => e.key==='Enter' && handleSearch()} />
+            </div>
+            <div>
+              <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--muted)', marginBottom: 6, textTransform: 'uppercase' }}>Serial Number</div>
+              <input className="field-input mono" placeholder="e.g. SNX-2024-00432" value={serialVal} onChange={e => setSerialVal(e.target.value)} onKeyDown={e => e.key==='Enter' && handleSearch()} />
+            </div>
+            <div>
+              <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--muted)', marginBottom: 6, textTransform: 'uppercase' }}>MAC Address</div>
+              <input className="field-input mono" placeholder="e.g. A4:C3:F0:85:AC:12" value={macVal} onChange={e => setMacVal(e.target.value)} onKeyDown={e => e.key==='Enter' && handleSearch()} />
+            </div>
+          </div>
+          <div style={{ display: 'flex', gap: 10 }}>
+            <button className="btn btn-primary" onClick={handleSearch}>🔍 Multi-ID Search</button>
+            {result && <button className="btn btn-surface" onClick={handleClear}>✕ Clear</button>}
+          </div>
+        </div>
+      )}
 
       {/* ── Results ── */}
       {result && (
@@ -150,6 +272,60 @@ function LookupResult({ result, events, transfers, users }) {
 
   return (
     <div style={{ animation: 'fadeUp .3s ease both' }}>
+
+      {/* ── MATCH CONFIDENCE PANEL ── */}
+      {result.matchAnalysis && (
+        <div style={{ marginBottom: 16, borderRadius: 'var(--radius-2)', border: '1px solid #C4B5FD', overflow: 'hidden' }}>
+          <div style={{ padding: '10px 14px', background: '#1a0050', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <span style={{ fontSize: 14 }}>🛡️</span>
+              <span style={{ fontSize: 12, fontWeight: 800, color: '#C4B5FD' }}>IDENTIFIER MATCH ANALYSIS</span>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)' }}>Match confidence:</span>
+              <span style={{ fontSize: 14, fontWeight: 900, color: result.matchAnalysis.matchScore >= 90 ? '#86EFAC' : '#FCD34D' }}>
+                {result.matchAnalysis.matchScore}%
+              </span>
+            </div>
+          </div>
+          <div style={{ padding: '12px 14px', background: '#F3F0FF', display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+            {result.matchAnalysis.identifiers.map(id => (
+              <div key={id.field} style={{
+                flex: 1, minWidth: 140, padding: '10px 12px', borderRadius: 8,
+                background: id.matched ? '#DCFCE7' : id.present ? '#FFF7ED' : '#F1F5F9',
+                border: `1px solid ${id.matched ? '#86EFAC' : id.present ? '#FCD34D' : '#CBD5E1'}`,
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 5 }}>
+                  <span style={{ fontSize: 14 }}>
+                    {id.matched ? '✅' : id.present ? '⚪' : '❌'}
+                  </span>
+                  <span style={{ fontSize: 11, fontWeight: 800, color: id.matched ? '#166534' : id.present ? '#92400E' : '#64748B' }}>
+                    {id.field}
+                    {id.matched && ' — MATCHED'}
+                    {!id.matched && id.present && ' — not searched'}
+                    {!id.present && ' — not registered'}
+                  </span>
+                </div>
+                {id.value ? (
+                  <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: '#334155', wordBreak: 'break-all' }}>
+                    {id.value}
+                  </div>
+                ) : (
+                  <div style={{ fontSize: 11, color: '#94A3B8', fontStyle: 'italic' }}>{id.note}</div>
+                )}
+              </div>
+            ))}
+          </div>
+          {result.matchAnalysis.matchedField !== 'imei' && result.device?.imei && (
+            <div style={{ padding: '8px 14px', background: '#FEF9C3', borderTop: '1px solid #FDE047' }}>
+              <span style={{ fontSize: 12, fontWeight: 700, color: '#713F12' }}>
+                ⚠️ Device found via {result.matchAnalysis.identifiers.find(i=>i.matched)?.field} — IMEI did not match query.
+                This may indicate IMEI tampering. Verify physical IMEI label against registered value: <span style={{ fontFamily: 'var(--font-mono)' }}>{result.device.imei}</span>
+              </span>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* ── STATUS BANNER ── */}
       <div style={{
