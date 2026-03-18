@@ -28,6 +28,7 @@ import React, { useState } from 'react';
 import { useAppState } from '../../context/AppContext';
 import { findDevice } from '../../utils/helpers';
 import StatCard from '../ui/StatCard';
+import { FiWifi, FiBluetooth, FiBookOpen, FiShield, FiRadio, FiMap, FiAlertCircle, FiInfo, FiSmartphone, FiMapPin, FiClock } from 'react-icons/fi';
 
 // ── MOCK IoT NODE DATA ────────────────────────────────────────
 const IOT_NODES = [
@@ -93,10 +94,10 @@ const IOT_EVENTS = [
 ];
 
 const NODE_TYPE_CONFIG = {
-  'WiFi AP':     { icon: '📶', color: 'var(--blue)',  bg: '#EEF4FF' },
-  'BLE Beacon':  { icon: '🔵', color: '#0891B2',       bg: '#E0F7FA' },
-  'Campus Node': { icon: '🎓', color: 'var(--green)',  bg: 'var(--green-pale)' },
-  'Border Node': { icon: '🛂', color: 'var(--amber)',  bg: 'var(--amber-pale)' },
+  'WiFi AP':     { icon: <FiWifi size={18} />,      color: 'var(--blue)',  bg: '#EEF4FF' },
+  'BLE Beacon':  { icon: <FiBluetooth size={18} />,  color: '#0891B2',       bg: '#E0F7FA' },
+  'Campus Node': { icon: <FiBookOpen size={18} />,   color: 'var(--green)',  bg: 'var(--green-pale)' },
+  'Border Node': { icon: <FiShield size={18} />,     color: 'var(--amber)',  bg: 'var(--amber-pale)' },
 };
 
 export default function IntelligenceFeedPage() {
@@ -113,18 +114,18 @@ export default function IntelligenceFeedPage() {
 
       {/* ── Stats ── */}
       <div className="grid-stat" style={{ marginBottom:20 }}>
-        <StatCard icon="📡" value={events.length}  label="Telecom Events"     sub="Airtel + TNM tower pings"       color="var(--blue)" />
-        <StatCard icon="📶" value={iotTotal}        label="IoT Detections"     sub="WiFi + BLE node matches"        color="#0891B2" />
-        <StatCard icon="🗺️" value={nodesOnline}     label="Active IoT Nodes"   sub={`${IOT_NODES.length} total deployed`} color="var(--green)" />
-        <StatCard icon="🚨" value={reports.filter(r=>r.status==='active').length} label="Monitored Devices" sub="On EIR Grey List" color="var(--red)" />
+        <StatCard icon={<FiRadio />} value={events.length}  label="Telecom Events"     sub="Airtel + TNM tower pings"       color="var(--blue)" />
+        <StatCard icon={<FiWifi />} value={iotTotal}        label="IoT Detections"     sub="WiFi + BLE node matches"        color="#0891B2" />
+        <StatCard icon={<FiMap />} value={nodesOnline}     label="Active IoT Nodes"   sub={`${IOT_NODES.length} total deployed`} color="var(--green)" />
+        <StatCard icon={<FiAlertCircle />} value={reports.filter(r=>r.status==='active').length} label="Monitored Devices" sub="On EIR Grey List" color="var(--red)" />
       </div>
 
       {/* ── Tabs ── */}
       <div style={{ display:'flex', gap:6, marginBottom:20, flexWrap:'wrap' }}>
         {[
-          { key:'telecom', label:'📡 Telecom EIR Events', count: events.length },
-          { key:'iot',     label:'📶 IoT Node Detections', count: iotTotal },
-          { key:'nodes',   label:'🗺️ Node Status Map',    count: null },
+          { key:'telecom', label:'Telecom EIR Events',  icon: <FiRadio size={13}/>,  count: events.length },
+          { key:'iot',     label:'IoT Node Detections', icon: <FiWifi size={13}/>,   count: iotTotal },
+          { key:'nodes',   label:'Node Status Map',     icon: <FiMap size={13}/>,    count: null },
         ].map(t => (
           <button key={t.key}
             style={{
@@ -137,7 +138,7 @@ export default function IntelligenceFeedPage() {
             }}
             onClick={() => setActiveTab(t.key)}
           >
-            {t.label}
+            {t.icon} {t.label}
             {t.count > 0 && (
               <span style={{ background:'rgba(255,255,255,0.25)', borderRadius:10, padding:'1px 7px', fontSize:10 }}>
                 {t.count}
@@ -151,7 +152,7 @@ export default function IntelligenceFeedPage() {
       {activeTab === 'telecom' && (
         <div className="grid-2">
           <div className="card">
-            <div className="card-title" style={{ marginBottom:16 }}>📊 Tower Detection Timeline</div>
+            <div className="card-title" style={{ marginBottom:16, display:'flex', alignItems:'center', gap:6 }}><FiRadio size={14}/> Tower Detection Timeline</div>
             <div className="timeline">
               {events.slice().reverse().map((ev, i, arr) => {
                 const report = reports.find(r => r.id === ev.reportId);
@@ -159,7 +160,7 @@ export default function IntelligenceFeedPage() {
                 return (
                   <div className="timeline-item" key={ev.id}>
                     {i < arr.length - 1 && <div className="timeline-line" />}
-                    <div className="timeline-dot" style={{ background: ev.operator==='Airtel' ? 'var(--red)' : 'var(--blue)', fontSize:12 }}>📡</div>
+                    <div className="timeline-dot" style={{ background: ev.operator==='Airtel' ? 'var(--red)' : 'var(--blue)', display:'flex', alignItems:'center', justifyContent:'center' }}><FiRadio size={10}/></div>
                     <div className="timeline-content">
                       <div className="timeline-title">{device?.make} {device?.model} · <span style={{ color: ev.operator==='Airtel' ? 'var(--red)' : 'var(--blue)' }}>{ev.operator}</span></div>
                       <div className="timeline-sub">
@@ -176,7 +177,7 @@ export default function IntelligenceFeedPage() {
 
           <div>
             <div className="card" style={{ marginBottom:20 }}>
-              <div className="card-title" style={{ marginBottom:16 }}>📡 Telecom Integration Status</div>
+              <div className="card-title" style={{ marginBottom:16, display:'flex', alignItems:'center', gap:6 }}><FiRadio size={14}/> Telecom Integration Status</div>
               {[
                 { name:'Airtel Malawi', events: airtel.length, color:'var(--red)' },
                 { name:'TNM',           events: tnm.length,    color:'var(--blue)' },
@@ -197,7 +198,7 @@ export default function IntelligenceFeedPage() {
               ))}
             </div>
             <div className="alert alert-amber">
-              <span className="alert-icon">💡</span>
+              <span className="alert-icon"><FiInfo /></span>
               <div style={{ fontSize:12 }}>Telecom events give ±350–700m precision. Combine with IoT node detections for room-level accuracy.</div>
             </div>
           </div>
@@ -208,7 +209,7 @@ export default function IntelligenceFeedPage() {
       {activeTab === 'iot' && (
         <div>
           <div className="alert alert-blue" style={{ marginBottom:20 }}>
-            <span className="alert-icon">📶</span>
+            <span className="alert-icon"><FiInfo /></span>
             <div>
               <strong>How IoT Detection Works:</strong> SDIRS agents installed on partner WiFi routers and BLE beacons continuously scan for stolen device MAC addresses and WiFi probe signatures.
               When a match is found, an event is sent to SDIRS with precise location — down to ±5m indoors.
@@ -257,16 +258,16 @@ export default function IntelligenceFeedPage() {
 
                     {/* Device info */}
                     <div style={{ fontSize:13, fontWeight:700, color:'var(--ink-2)', marginBottom:4 }}>
-                      📱 {ev.device} detected
+                      <FiSmartphone size={12} /> {ev.device} detected
                     </div>
 
                     {/* Detection details */}
                     <div className="grid-2" style={{ gap:10, marginTop:8 }}>
                       {[
-                        ['🕐 Detected At', ev.detectedAt],
-                        ['📍 Precision',   ev.precision],
-                        ['🔬 Method',      ev.method],
-                        ['📌 Location',    ev.floor],
+                        ['Detected At', ev.detectedAt],
+                        ['Precision',   ev.precision],
+                        ['Method',      ev.method],
+                        ['Location',    ev.floor],
                       ].map(([k,v]) => (
                         <div key={k}>
                           <div style={{ fontSize:10, color:'var(--muted)', fontWeight:700 }}>{k}</div>
@@ -340,7 +341,7 @@ export default function IntelligenceFeedPage() {
           </div>
 
           <div className="alert alert-green" style={{ marginTop:20 }}>
-            <span className="alert-icon">💡</span>
+            <span className="alert-icon"><FiInfo /></span>
             <div style={{ fontSize:12 }}>
               <strong>Expand the network:</strong> Any institution can become an SDIRS IoT node by installing the SDIRS agent on their existing WiFi router. Free for schools and universities. MACRA handles the integration.
             </div>

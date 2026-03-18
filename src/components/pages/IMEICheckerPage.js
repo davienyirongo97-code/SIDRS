@@ -7,12 +7,13 @@ import React, { useState } from 'react';
 import { useAppState, useCurrentUser } from '../../context/AppContext';
 import { checkIdentifier } from '../../utils/helpers';
 import Badge from '../ui/Badge';
+import { FiSearch, FiCheckCircle, FiAlertCircle, FiHelpCircle, FiPhone } from 'react-icons/fi';
 
 const SAMPLES = [
-  { id: '356789012345678', label: '✅ Clean phone' },
-  { id: '490123456789012', label: '🚨 Stolen phone' },
-  { id: 'LNV-X1C-2024-7721', label: '✅ Clean laptop' },
-  { id: 'DEL-INS-2024-5541', label: '✅ Recovered laptop' },
+  { id: '356789012345678', label: '✓ Clean phone' },
+  { id: '490123456789012', label: '✗ Stolen phone' },
+  { id: 'LNV-X1C-2024-7721', label: '✓ Clean laptop' },
+  { id: 'DEL-INS-2024-5541', label: '✓ Recovered laptop' },
 ];
 
 export default function IMEICheckerPage() {
@@ -68,8 +69,8 @@ export default function IMEICheckerPage() {
 
           <div className="card">
 
-            <div style={{ marginBottom: 10 }}>
-              🔍 Check a Device Identifier
+            <div style={{ marginBottom: 10, display: 'flex', alignItems: 'center', gap: 6 }}>
+              <FiSearch size={14} /> Check a Device Identifier
             </div>
 
             <div style={{ display: 'flex', gap: 10 }}>
@@ -136,7 +137,7 @@ function CheckerResult({ result, isOfficer }) {
   if (result.status === 'not_found') {
     return (
       <div className="card">
-        <h3>❓ Not Found</h3>
+        <h3><FiHelpCircle /> Not Found</h3>
         <p>
           No record found in the SDIRS database.
         </p>
@@ -149,8 +150,8 @@ function CheckerResult({ result, isOfficer }) {
   if (result.status === 'clean') {
     return (
       <div className="card">
-        <h3 style={{ color: 'green' }}>
-          ✅ Clean Device
+        <h3 style={{ color: 'green', display: 'flex', alignItems: 'center', gap: 6 }}>
+          <FiCheckCircle /> Clean Device
         </h3>
 
         <InfoField
@@ -182,8 +183,8 @@ function CheckerResult({ result, isOfficer }) {
 
   return (
     <div className="card">
-      <h3 style={{ color: 'red' }}>
-        🚨 Reported Stolen
+      <h3 style={{ color: 'red', display: 'flex', alignItems: 'center', gap: 6 }}>
+        <FiAlertCircle /> Reported Stolen
       </h3>
 
       <InfoField
@@ -201,8 +202,8 @@ function CheckerResult({ result, isOfficer }) {
         value={r.location}
       />
 
-      <div style={{ marginTop: 10 }}>
-        🚔 Call Malawi Police: <b>199</b>
+      <div style={{ marginTop: 10, display: 'flex', alignItems: 'center', gap: 6 }}>
+        <FiPhone size={14} /> Call Malawi Police: <b>199</b>
       </div>
     </div>
   );

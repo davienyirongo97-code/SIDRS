@@ -10,6 +10,7 @@ import { deviceIcon, primaryIdentifier } from '../../utils/helpers';
 import Badge from '../ui/Badge';
 import StatCard from '../ui/StatCard';
 import RegisterDeviceModal from '../modals/RegisterDeviceModal';
+import { FiSmartphone, FiMonitor, FiTablet, FiTv, FiClipboard, FiSearch } from 'react-icons/fi';
 
 export default function DeviceRegistryPage() {
   const { devices, users } = useAppState();
@@ -32,17 +33,17 @@ export default function DeviceRegistryPage() {
 
       {/* ── Stats ── */}
       <div className="grid-4" style={{ marginBottom: 24 }}>
-        <StatCard icon="📱" value={devices.filter(d=>d.type==='mobile').length}  label="Mobile Phones" color="var(--blue)"   />
-        <StatCard icon="💻" value={devices.filter(d=>d.type==='laptop').length}  label="Laptops"       color="var(--purple)" />
-        <StatCard icon="📟" value={devices.filter(d=>d.type==='tablet').length}  label="Tablets"       color="var(--amber)"  />
-        <StatCard icon="🖥️" value={devices.filter(d=>d.type==='desktop').length} label="Desktops"      color="var(--green)"  />
+        <StatCard icon={<FiSmartphone />} value={devices.filter(d=>d.type==='mobile').length}  label="Mobile Phones" color="var(--blue)"   />
+        <StatCard icon={<FiMonitor />} value={devices.filter(d=>d.type==='laptop').length}  label="Laptops"       color="var(--purple)" />
+        <StatCard icon={<FiTablet />} value={devices.filter(d=>d.type==='tablet').length}  label="Tablets"       color="var(--amber)"  />
+        <StatCard icon={<FiTv />} value={devices.filter(d=>d.type==='desktop').length} label="Desktops"      color="var(--green)"  />
       </div>
 
       {/* ── Registry table ── */}
       <div className="card">
         <div className="card-header">
           <div>
-            <div className="card-title">📋 National Device Registry</div>
+              <div className="card-title" style={{display:'flex',alignItems:'center',gap:6}}><FiClipboard size={15}/> National Device Registry</div>
             <div className="card-subtitle">{filtered.length} of {devices.length} devices shown</div>
           </div>
           <button className="btn btn-primary btn-sm" onClick={() => setShowModal(true)}>
@@ -61,10 +62,10 @@ export default function DeviceRegistryPage() {
           />
           <select className="field-input field-select" style={{ width: 160 }} value={typeFilter} onChange={e => setTypeFilter(e.target.value)}>
             <option value="all">All types</option>
-            <option value="mobile">📱 Mobile</option>
-            <option value="laptop">💻 Laptop</option>
-            <option value="tablet">📟 Tablet</option>
-            <option value="desktop">🖥️ Desktop</option>
+            <option value="mobile">Mobile</option>
+            <option value="laptop">Laptop</option>
+            <option value="tablet">Tablet</option>
+            <option value="desktop">Desktop</option>
           </select>
           <select className="field-input field-select" style={{ width: 160 }} value={statusFilter} onChange={e => setStatusFilter(e.target.value)}>
             <option value="all">All statuses</option>

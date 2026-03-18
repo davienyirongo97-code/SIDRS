@@ -2,30 +2,25 @@
  * src/components/layout/Sidebar.js
  * ─────────────────────────────────────────────
  * Fixed left navigation sidebar.
- *
- * Contains:
- *   - SDIRS brand logo/badge
- *   - Navigation groups with icon + label + optional badge
- *   - User switcher (demo only — in production this would be
- *     a real auth session, not a dropdown)
- *
- * Uses React Router's <NavLink> to highlight the active page.
+ * Uses react-icons/fi (Feather) throughout for a clean, consistent look.
  */
 
 import React, { useState, useEffect } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { useAppState, useAppDispatch } from '../../context/AppContext';
+import {
+  FiHome, FiSearch, FiSmartphone, FiAlertCircle, FiRefreshCw,
+  FiUsers, FiRadio, FiCpu, FiGrid, FiList, FiLink, FiMenu, FiX
+} from 'react-icons/fi';
 import './Sidebar.css';
 
 // ── NAVIGATION CONFIG ──────────────────────────────────────────
-// Each group has a label and a list of nav items.
-// badge: function(state) → number|null  — dynamic badge counts
 const NAV_GROUPS = [
   {
     label: 'Platform',
     items: [
-      { path: '/',             icon: '🏠', label: 'Overview' },
-      { path: '/checker',      icon: '🔍', label: 'IMEI Checker' },
+      { path: '/',             icon: <FiHome />,        label: 'Overview' },
+      { path: '/checker',      icon: <FiSearch />,      label: 'IMEI Checker' },
     ],
   },
   {
@@ -33,16 +28,15 @@ const NAV_GROUPS = [
     items: [
       {
         path: '/my-devices',
-        icon: '📱',
+        icon: <FiSmartphone />,
         label: 'My Devices',
-        // Badge shows count of stolen devices belonging to current user
         badge: (state) => state.devices.filter(
           d => d.ownerId === state.currentUserId && d.status === 'stolen'
         ).length || null,
         badgeClass: 'badge-red',
       },
-      { path: '/report',    icon: '🚨', label: 'Report Theft' },
-      { path: '/transfer',  icon: '🔄', label: 'Transfer Device' },
+      { path: '/report',    icon: <FiAlertCircle />, label: 'Report Theft' },
+      { path: '/transfer',  icon: <FiRefreshCw />,   label: 'Transfer Device' },
     ],
   },
   {
@@ -50,22 +44,21 @@ const NAV_GROUPS = [
     items: [
       {
         path: '/police',
-        icon: '👮',
+        icon: <FiUsers />,
         label: 'Police Dashboard',
-        // Badge shows count of pending (unverified) reports
         badge: (state) => state.reports.filter(r => r.status === 'pending').length || null,
         badgeClass: 'badge-amber',
       },
-      { path: '/intelligence', icon: '📡', label: 'Intelligence Feed' },
-      { path: '/threats',      icon: '🤖', label: 'Threat Intel (AI)' },
+      { path: '/intelligence', icon: <FiRadio />,   label: 'Intelligence Feed' },
+      { path: '/threats',      icon: <FiCpu />,     label: 'Threat Intel (AI)' },
     ],
   },
   {
     label: 'Administration',
     items: [
-      { path: '/admin',    icon: '🏛️', label: 'MACRA Admin' },
-      { path: '/registry', icon: '📋', label: 'Device Registry' },
-      { path: '/chain',    icon: '⛓️', label: 'Ownership Chain' },
+      { path: '/admin',    icon: <FiGrid />,  label: 'MACRA Admin' },
+      { path: '/registry', icon: <FiList />,  label: 'Device Registry' },
+      { path: '/chain',    icon: <FiLink />,  label: 'Ownership Chain' },
     ],
   },
 ];
@@ -78,15 +71,12 @@ export default function Sidebar() {
 
   const currentUser = users.find(u => u.id === currentUserId);
 
-  // Mobile sidebar open/close state
   const [mobileOpen, setMobileOpen] = useState(false);
 
-  // Close sidebar whenever the route changes (user tapped a link)
   useEffect(() => {
     setMobileOpen(false);
   }, [location.pathname]);
 
-  // Prevent body scroll when sidebar is open on mobile
   useEffect(() => {
     document.body.style.overflow = mobileOpen ? 'hidden' : '';
     return () => { document.body.style.overflow = ''; };
@@ -98,16 +88,15 @@ export default function Sidebar() {
 
   return (
     <>
-      {/* ── Mobile hamburger button (only visible on small screens) ── */}
+      {/* ── Mobile hamburger button ── */}
       <button
         className="hamburger-btn"
         onClick={() => setMobileOpen(o => !o)}
         aria-label="Toggle navigation"
       >
-        {mobileOpen ? '✕' : '☰'}
+        {mobileOpen ? <FiX size={20} /> : <FiMenu size={20} />}
       </button>
 
-      {/* ── Dark overlay behind sidebar on mobile ── */}
       {mobileOpen && (
         <div
           className="sidebar-overlay"
@@ -116,7 +105,6 @@ export default function Sidebar() {
       )}
 
       <aside className={`sidebar${mobileOpen ? ' open' : ''}`}>
-      {/* Decorative background glow */}
       <div className="sidebar-glow" aria-hidden="true" />
 
       {/* ── Brand ── */}
@@ -141,7 +129,7 @@ export default function Sidebar() {
                 <NavLink
                   key={item.path}
                   to={item.path}
-                  end={item.path === '/'}   /* exact match for home only */
+                  end={item.path === '/'}
                   className={({ isActive }) =>
                     `nav-item${isActive ? ' active' : ''}`
                   }
@@ -175,11 +163,6 @@ export default function Sidebar() {
           </div>
         </div>
 
-        {/*
-          Demo-only user switcher.
-          In production: replace this with a proper logout button
-          and redirect to a login page.
-        */}
         <select
           className="user-switcher"
           value={currentUserId}

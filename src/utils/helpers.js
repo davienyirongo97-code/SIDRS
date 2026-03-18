@@ -5,18 +5,21 @@
  * Pure functions — no side effects, no imports from the app.
  */
 
+import React from 'react';
+import { FiSmartphone, FiMonitor, FiTablet, FiTv } from 'react-icons/fi';
+
 /**
- * Returns the emoji icon for a device type.
+ * Returns a React Icon component for a given device type.
  * @param {string} type - 'mobile' | 'laptop' | 'tablet' | 'desktop'
  */
 export function deviceIcon(type) {
   const icons = {
-    mobile:  '📱',
-    laptop:  '💻',
-    tablet:  '📟',
-    desktop: '🖥️',
+    mobile:  <FiSmartphone size={20} />,
+    laptop:  <FiMonitor size={20} />,
+    tablet:  <FiTablet size={20} />,
+    desktop: <FiTv size={20} />,
   };
-  return icons[type] || '📱';
+  return icons[type] || <FiSmartphone size={20} />;
 }
 
 /**

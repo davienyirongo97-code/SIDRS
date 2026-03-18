@@ -13,6 +13,7 @@ import StatCard from '../ui/StatCard';
 import Badge from '../ui/Badge';
 import DeviceLookup from '../ui/DeviceLookup';
 import { deviceIcon } from '../../utils/helpers';
+import { FiSmartphone, FiAlertCircle, FiCheckCircle, FiZap, FiBarChart2, FiMap, FiClipboard, FiGrid } from 'react-icons/fi';
 
 // District breakdown mock data
 const DISTRICTS = [
@@ -41,7 +42,7 @@ export default function MacraAdminPage() {
         borderRadius: 'var(--radius)', padding: '24px 28px', marginBottom: 24,
       }}>
         <div style={{ fontSize: 10, fontWeight: 800, color: 'rgba(255,255,255,0.35)', letterSpacing: 2, textTransform: 'uppercase', marginBottom: 8 }}>MACRA Administration</div>
-        <div style={{ fontFamily: 'var(--font-display)', fontSize: 24, fontWeight: 800, color: '#fff', marginBottom: 14 }}>🏛️ SDIRS National Command Centre</div>
+        <div style={{ fontFamily: 'var(--font-display)', fontSize: 24, fontWeight: 800, color: '#fff', marginBottom: 14, display: 'flex', alignItems: 'center', gap: 8 }}><FiGrid size={22} /> SDIRS National Command Centre</div>
         <div style={{ display: 'flex', gap: 28, flexWrap: 'wrap' }}>
           {[[devices.length,'Devices','var(--blue-3)'],[reports.length,'Reports','var(--red-2)'],[events.length,'Net Events','var(--amber-2)'],[citizens,'Citizens','#80E890']].map(([n,l,c]) => (
             <div key={l}>
@@ -54,10 +55,10 @@ export default function MacraAdminPage() {
 
       {/* ── Stats ── */}
       <div className="grid-stat">
-        <StatCard icon="📱" value={devices.length} label="Total Devices"    sub="Nationally registered"    color="var(--blue)"  />
-        <StatCard icon="🚨" value={active}          label="Active Alerts"   sub="Network monitoring on"   color="var(--red)"   />
-        <StatCard icon="✅" value={recovered}        label="Recovered"       sub="Via SDIRS intelligence"  color="var(--green)" />
-        <StatCard icon="⚡" value={events.length}   label="Network Events"  sub="Telecom detections"      color="var(--amber)" />
+        <StatCard icon={<FiSmartphone />} value={devices.length} label="Total Devices"    sub="Nationally registered"    color="var(--blue)"  />
+        <StatCard icon={<FiAlertCircle />} value={active}          label="Active Alerts"   sub="Network monitoring on"   color="var(--red)"   />
+        <StatCard icon={<FiCheckCircle />} value={recovered}        label="Recovered"       sub="Via SDIRS intelligence"  color="var(--green)" />
+        <StatCard icon={<FiZap />} value={events.length}   label="Network Events"  sub="Telecom detections"      color="var(--amber)" />
       </div>
 
       {/* ── Device Owner Lookup ── search by IMEI / serial / MAC ── */}
@@ -67,7 +68,7 @@ export default function MacraAdminPage() {
 
         {/* Bar chart */}
         <div className="card">
-          <div className="card-title" style={{ marginBottom: 16 }}>📊 Monthly Activity</div>
+          <div className="card-title" style={{ marginBottom: 16, display: 'flex', alignItems: 'center', gap: 6 }}><FiBarChart2 size={15}/> Monthly Activity</div>
           <div style={{ display: 'flex', alignItems: 'flex-end', gap: 8, height: 160, paddingTop: 10 }}>
             {CHART_DATA.map(d => (
               <div key={d.month} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, height: '100%' }}>
@@ -91,7 +92,7 @@ export default function MacraAdminPage() {
 
         {/* District breakdown */}
         <div className="card">
-          <div className="card-title" style={{ marginBottom: 16 }}>🗺️ District Breakdown</div>
+          <div className="card-title" style={{ marginBottom: 16, display: 'flex', alignItems: 'center', gap: 6 }}><FiMap size={15}/> District Breakdown</div>
           {DISTRICTS.map(row => (
             <div key={row.name} style={{ marginBottom: 14 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 5 }}>
@@ -113,7 +114,7 @@ export default function MacraAdminPage() {
 
       {/* Full registry table */}
       <div className="card">
-        <div className="card-title" style={{ marginBottom: 16 }}>📋 National Device Registry</div>
+        <div className="card-title" style={{ marginBottom: 16, display: 'flex', alignItems: 'center', gap: 6 }}><FiClipboard size={15}/> National Device Registry</div>
         <div className="table-wrap">
           <table>
             <thead>

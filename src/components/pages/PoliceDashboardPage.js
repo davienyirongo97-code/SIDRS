@@ -12,6 +12,10 @@ import { deviceIcon, findDevice } from '../../utils/helpers';
 import Badge from '../ui/Badge';
 import DeviceLookup from '../ui/DeviceLookup';
 import VerifyReportModal from '../modals/VerifyReportModal';
+import {
+  FiUsers, FiClipboard, FiRadio, FiMap, FiMapPin, FiSmartphone,
+  FiBell, FiCheckCircle, FiTruck
+} from 'react-icons/fi';
 
 export default function PoliceDashboardPage() {
   const { reports, devices, events, reminders, users } = useAppState();
@@ -44,7 +48,7 @@ export default function PoliceDashboardPage() {
       }}>
         <div>
           <div style={{ fontSize: 10, fontWeight: 800, color: 'rgba(255,255,255,0.35)', letterSpacing: 2, textTransform: 'uppercase', marginBottom: 8 }}>Malawi Police Service</div>
-          <div style={{ fontFamily: 'var(--font-display)', fontSize: 24, fontWeight: 800, color: '#fff' }}>👮 SDIRS Intelligence Dashboard</div>
+          <div style={{ fontFamily: 'var(--font-display)', fontSize: 24, fontWeight: 800, color: '#fff', display: 'flex', alignItems: 'center', gap: 8 }}><FiUsers size={22} /> SDIRS Intelligence Dashboard</div>
           <div style={{ display: 'flex', gap: 28, marginTop: 12, flexWrap: 'wrap' }}>
             {[
               [pending.length,  'Pending',       'var(--amber-2)'],
@@ -82,7 +86,7 @@ export default function PoliceDashboardPage() {
         {/* ── Case management ── */}
         <div className="card">
           <div className="card-header">
-            <div className="card-title">📋 Case Management</div>
+            <div className="card-title" style={{display:'flex',alignItems:'center',gap:6}}><FiClipboard size={15} /> Case Management</div>
             {/* Tabs */}
             <div style={{ display: 'flex', gap: 6 }}>
               {TABS.map(t => (
@@ -116,7 +120,7 @@ export default function PoliceDashboardPage() {
                       <div style={{ fontWeight: 700, fontSize: 14, color: 'var(--ink)', display: 'flex', alignItems: 'center', gap: 7 }}>
                         {deviceIcon(device?.type)} {device?.make} {device?.model}
                       </div>
-                      <div style={{ fontSize: 11, color: 'var(--muted)', marginTop: 2 }}>📅 {report.date} · 📍 {report.location.split(',')[0]}</div>
+                      <div style={{ fontSize: 11, color: 'var(--muted)', marginTop: 2 }}><FiMapPin size={10}/> {report.date} · {report.location.split(',')[0]}</div>
                       <div style={{ fontSize: 11, fontFamily: 'var(--font-mono)', color: 'var(--muted-2)' }}>{report.id}</div>
                     </div>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 5, alignItems: 'flex-end' }}>
@@ -132,7 +136,7 @@ export default function PoliceDashboardPage() {
                   {/* Network detections summary */}
                   {devEvts.length > 0 && (
                     <div style={{ padding: '8px 12px', background: 'var(--red-pale)', borderRadius: 8, fontSize: 11, color: 'var(--red)', fontWeight: 700 }}>
-                      📡 {devEvts.length} detection{devEvts.length > 1 ? 's' : ''} · Latest: {devEvts[devEvts.length - 1].tower}
+                      <FiRadio size={11}/> {devEvts.length} detection{devEvts.length > 1 ? 's' : ''} · Latest: {devEvts[devEvts.length - 1].tower}
                     </div>
                   )}
 
@@ -148,7 +152,7 @@ export default function PoliceDashboardPage() {
         {/* ── Live intelligence feed ── */}
         <div className="card">
           <div className="card-header">
-            <div className="card-title">📡 Live Intelligence Feed</div>
+            <div className="card-title" style={{display:'flex',alignItems:'center',gap:6}}><FiRadio size={15} /> Live Intelligence Feed</div>
             <div className="live-badge">● LIVE</div>
           </div>
 
@@ -175,9 +179,9 @@ export default function PoliceDashboardPage() {
                   <span style={{ fontSize: 10, fontFamily: 'var(--font-mono)', color: 'var(--muted)' }}>{ev.detectedAt}</span>
                 </div>
                 <div style={{ fontWeight: 700, fontSize: 13, color: 'var(--ink)' }}>{device?.make} {device?.model}</div>
-                <div style={{ fontSize: 12, color: 'var(--muted)', marginTop: 3 }}>📍 <strong>{ev.tower}</strong> · ±{ev.radiusMeters}m</div>
+                <div style={{ fontSize: 12, color: 'var(--muted)', marginTop: 3 }}><FiMapPin size={11}/> <strong>{ev.tower}</strong> · ±{ev.radiusMeters}m</div>
                 <div style={{ fontSize: 12, color: 'var(--muted)' }}>
-                  📱 Active SIM: <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 700, color: 'var(--blue)' }}>{ev.activeSim}</span>
+                  <FiSmartphone size={11}/> Active SIM: <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 700, color: 'var(--blue)' }}>{ev.activeSim}</span>
                 </div>
                 <div style={{ fontSize: 11, color: 'var(--muted-2)', fontFamily: 'var(--font-mono)', marginTop: 2 }}>
                   {ev.latitude.toFixed(4)}°S {ev.longitude.toFixed(4)}°E
@@ -191,7 +195,7 @@ export default function PoliceDashboardPage() {
       {/* ── Active device cards ── */}
       <div className="card" style={{ marginTop: 20 }}>
         <div className="card-header">
-          <div className="card-title">🗺️ Active Device Tracking</div>
+          <div className="card-title" style={{display:'flex',alignItems:'center',gap:6}}><FiMap size={15}/> Active Device Tracking</div>
           <div style={{ fontSize: 12, color: 'var(--muted)' }}>Based on latest network detection events</div>
         </div>
 
@@ -208,22 +212,22 @@ export default function PoliceDashboardPage() {
               return (
                 <div key={report.id} style={{ background: 'linear-gradient(135deg, rgba(192,37,44,0.08), rgba(232,57,63,0.03))', border: '1px solid rgba(192,37,44,0.25)', borderRadius: 'var(--radius)', padding: 16 }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
-                    <span className="pulse-anim" style={{ background: 'var(--red-2)', color: '#fff', padding: '2px 9px', borderRadius: 6, fontSize: 10, fontWeight: 800 }}>🔴 ACTIVE</span>
+                    <span className="pulse-anim" style={{ background: 'var(--red-2)', color: '#fff', padding: '2px 9px', borderRadius: 6, fontSize: 10, fontWeight: 800, display:'flex', alignItems:'center', gap: 4 }}><span style={{width:6,height:6,borderRadius:'50%',background:'#fff',display:'inline-block'}} /> ACTIVE</span>
                     <span style={{ fontSize: 10, color: 'var(--muted)' }}>{latest.detectedAt}</span>
                   </div>
                   <div style={{ fontWeight: 700, fontSize: 14, marginBottom: 6 }}>{device?.make} {device?.model}</div>
-                  <div style={{ fontSize: 12, color: 'var(--muted)' }}>📍 {latest.tower}</div>
-                  <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--amber)', marginTop: 3 }}>📱 SIM: {latest.activeSim}</div>
+                  <div style={{ fontSize: 12, color: 'var(--muted)' }}><FiMapPin size={11}/> {latest.tower}</div>
+                  <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--amber)', marginTop: 3 }}><FiSmartphone size={11}/> SIM: {latest.activeSim}</div>
                   <div style={{ fontSize: 11, color: 'var(--muted-2)', fontFamily: 'var(--font-mono)', marginTop: 3 }}>
                     {latest.latitude}°S, {latest.longitude}°E · ±{latest.radiusMeters}m
                   </div>
-                  <div style={{ fontSize: 11, color: 'var(--muted-2)', marginTop: 3 }}>📡 {devEvts.length} total events · via {latest.operator}</div>
+                  <div style={{ fontSize: 11, color: 'var(--muted-2)', marginTop: 3 }}><FiRadio size={10}/> {devEvts.length} total events · via {latest.operator}</div>
                   <button
                     className="btn btn-danger btn-sm"
                     style={{ marginTop: 10, fontSize: 11 }}
                     onClick={() => showToast('Dispatch request sent.', 'Officer ETA: ~12 minutes')}
                   >
-                    🚔 Dispatch Response
+                    <FiTruck size={14}/> Dispatch Response
                   </button>
                 </div>
               );
@@ -268,8 +272,8 @@ function CitizenReminders({ reminders, reports, devices, users, onAcknowledge })
         marginBottom: 14,
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <div style={{ fontFamily: 'var(--font-display)', fontSize: 16, fontWeight: 800, color: 'var(--ink)' }}>
-            🔔 Citizen Follow-up Reminders
+          <div style={{ fontFamily: 'var(--font-display)', fontSize: 16, fontWeight: 800, color: 'var(--ink)', display: 'flex', alignItems: 'center', gap: 8 }}>
+            <FiBell size={16}/> Citizen Follow-up Reminders
           </div>
           {unread.length > 0 && (
             <div style={{
@@ -321,7 +325,7 @@ function CitizenReminders({ reminders, reports, devices, users, onAcknowledge })
                 <div style={{ width: 10, height: 10, borderRadius: '50%', background: 'var(--red-2)', flexShrink: 0 }} />
               )}
               {reminder.acknowledged && (
-                <div style={{ fontSize: 16, flexShrink: 0 }}>✅</div>
+                <div style={{ fontSize: 16, flexShrink: 0, color: 'var(--green)' }}><FiCheckCircle /></div>
               )}
 
               <div style={{ flex: 1, minWidth: 0 }}>
@@ -333,11 +337,11 @@ function CitizenReminders({ reminders, reports, devices, users, onAcknowledge })
                     {reminder.caseNumber || 'Pending'}
                   </span>
                   &nbsp;·&nbsp;
-                  📡 Detected <strong style={{ color: reminder.acknowledged ? 'var(--ink)' : '#fff' }}>{reminder.detectionCount}×</strong> on {reminder.operator}
+                  <FiRadio size={11}/> Detected <strong style={{ color: reminder.acknowledged ? 'var(--ink)' : '#fff' }}>{reminder.detectionCount}×</strong> on {reminder.operator}
                   &nbsp;·&nbsp;
-                  📍 {reminder.area}
+                  <FiMapPin size={11}/> {reminder.area}
                   &nbsp;·&nbsp;
-                  🕐 {reminder.sentAt}
+                  {reminder.sentAt}
                 </div>
               </div>
 
@@ -347,7 +351,7 @@ function CitizenReminders({ reminders, reports, devices, users, onAcknowledge })
                     className="btn btn-green btn-sm"
                     onClick={() => onAcknowledge(reminder.id)}
                   >
-                    ✅ Acknowledge
+                    <FiCheckCircle size={14}/> Acknowledge
                   </button>
                 )}
                 <button
@@ -382,7 +386,7 @@ function CitizenReminders({ reminders, reports, devices, users, onAcknowledge })
                   </div>
                   <div style={{ background: 'var(--bg)', borderRadius: 8, padding: '10px 14px' }}>
                     <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--muted)', textTransform: 'uppercase', marginBottom: 4 }}>Last Detected Area</div>
-                    <div style={{ fontWeight: 700, fontSize: 13 }}>📍 {reminder.area}</div>
+                    <div style={{ fontWeight: 700, fontSize: 13 }}><FiMapPin size={12}/> {reminder.area}</div>
                     <div style={{ fontSize: 11, color: 'var(--muted)', marginTop: 2 }}>Sent: {reminder.sentAt}</div>
                   </div>
                 </div>
@@ -408,7 +412,7 @@ function CitizenReminders({ reminders, reports, devices, users, onAcknowledge })
                 {!reminder.acknowledged ? (
                   <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
                     <button className="btn btn-green" onClick={() => onAcknowledge(reminder.id)}>
-                      ✅ Acknowledge — I am working on this case
+                      <FiCheckCircle size={14}/> Acknowledge — I am working on this case
                     </button>
                     <button
                       className="btn btn-surface"
@@ -416,12 +420,12 @@ function CitizenReminders({ reminders, reports, devices, users, onAcknowledge })
                         navigator.clipboard?.writeText(reminder.message).catch(() => {});
                       }}
                     >
-                      📋 Copy Message
+                      <FiClipboard size={14}/> Copy Message
                     </button>
                   </div>
                 ) : (
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                    <span style={{ fontSize: 16 }}>✅</span>
+                    <span style={{ fontSize: 16, color: 'var(--green)' }}><FiCheckCircle /></span>
                     <span style={{ fontSize: 12, color: 'var(--green)', fontWeight: 700 }}>
                       Acknowledged {reminder.acknowledgedAt}
                     </span>

@@ -53,6 +53,25 @@
   50%       { opacity: 0; }
 }
 
+/* ── APP-SPECIFIC ANIMATIONS (SDIRS REDESIGN) ──────────────────── */
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes floatSlow {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0px); }
+}
+
+@keyframes pulseGlow {
+  0% { box-shadow: 0 0 0 0 rgba(26, 92, 219, 0.4); }
+  70% { box-shadow: 0 0 0 10px rgba(26, 92, 219, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(26, 92, 219, 0); }
+}
+
 /* ── UTILITY CLASSES ────────────────────────────────────────── */
 /* Staggered fade-up — use .fade-up, .fade-up-1, .fade-up-2 etc. */
 .fade-up   { animation: fadeUp 0.38s cubic-bezier(0.22,1,0.36,1) both; }
@@ -63,3 +82,5 @@
 
 .pulse-anim { animation: pulse 2s infinite; }
 .spin-anim  { animation: spin 1s linear infinite; }
+.float-anim { animation: floatSlow 4s ease-in-out infinite; }
+.gradient-anim { animation: gradientShift 10s ease infinite; background-size: 200% 200%; }

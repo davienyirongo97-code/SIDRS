@@ -601,3 +601,72 @@ tr:hover td { background: var(--bg); }
   /* Toast — full width */
   .toast { left: 12px; right: 12px; max-width: none; top: auto; bottom: 20px; }
 }
+
+/* ── 14. GLASSMORPHISM & NEW UI ELEMENTS ────────────────────── */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+  border-left: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 20px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.3s ease, background 0.3s ease;
+}
+
+.glass-card:hover {
+  transform: translateY(-5px) scale(1.02);
+  background: rgba(255, 255, 255, 0.06);
+  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.3), 0 0 20px rgba(255, 255, 255, 0.05) inset;
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.neon-text-blue {
+  color: #fff;
+  text-shadow: 0 0 10px rgba(26, 92, 219, 0.8), 0 0 20px rgba(26, 92, 219, 0.4);
+}
+
+.neon-text-amber {
+  color: #fff;
+  text-shadow: 0 0 10px rgba(232, 137, 12, 0.8), 0 0 20px rgba(232, 137, 12, 0.4);
+}
+
+.glowing-border {
+  position: relative;
+}
+
+.glowing-border::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: inherit;
+  background: linear-gradient(45deg, var(--blue), transparent, var(--amber), transparent);
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.glowing-border:hover::before {
+  opacity: 1;
+  animation: spin 3s linear infinite;
+}
+
+.hero-mesh-bg {
+  background-color: var(--navy);
+  background-image: 
+    radial-gradient(at 0% 0%, rgba(26, 92, 219, 0.3) 0px, transparent 50%),
+    radial-gradient(at 100% 0%, rgba(91, 45, 168, 0.3) 0px, transparent 50%),
+    radial-gradient(at 100% 100%, rgba(232, 137, 12, 0.2) 0px, transparent 50%),
+    radial-gradient(at 0% 100%, rgba(192, 37, 44, 0.2) 0px, transparent 50%);
+  background-size: cover;
+  background-position: center;
+}

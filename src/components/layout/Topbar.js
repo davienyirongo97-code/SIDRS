@@ -13,6 +13,7 @@
 import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAppState, useCurrentUser } from '../../context/AppContext';
+import { FiBell } from 'react-icons/fi';
 import './Topbar.css';
 
 const PAGE_TITLES = {
@@ -78,14 +79,14 @@ export default function Topbar() {
             title={`${unreadCount} unread citizen reminder${unreadCount > 1 ? 's' : ''}`}
             onClick={() => navigate('/police')}
           >
-            🔔 {unreadCount} Reminder{unreadCount > 1 ? 's' : ''}
+            <FiBell size={14} /> {unreadCount} Reminder{unreadCount > 1 ? 's' : ''}
           </button>
         )}
 
         {/* Notification bell */}
         <div className="notif-wrap">
           <button className="btn btn-surface btn-sm notif-btn" title="Alerts">
-            🔔 Alerts
+            <FiBell size={14} /> Alerts
           </button>
           {pendingAlerts > 0 && (
             <div className="notif-dot" title={`${pendingAlerts} pending reports`} />
