@@ -5,17 +5,17 @@
  *
  * NEW: Citizen Intelligence Map
  *   Shows a citizen ONLY:
- *     ✅ General area where device was detected (e.g. "Kawale Area, Lilongwe")
- *     ✅ Date and time of detection
- *     ✅ Which network detected it (Airtel / TNM) — no tower name
- *     ✅ How many times the device has been detected in total
- *     ✅ A "Remind Police" button that generates a follow-up message
+ *     General area where device was detected (e.g. "Kawale Area, Lilongwe")
+ *     Date and time of detection
+ *     Which network detected it (Airtel / TNM) — no tower name
+ *     How many times the device has been detected in total
+ *     A "Remind Police" button that generates a follow-up message
  *
  *   DELIBERATELY HIDDEN from citizen:
- *     ❌ Exact GPS coordinates (police eyes only)
- *     ❌ Tower name and ID (police eyes only)
- *     ❌ Active SIM number used by thief (police eyes only)
- *     ❌ Radius / precision of detection (police eyes only)
+ *     Exact GPS coordinates (police eyes only)
+ *     Tower name and ID (police eyes only)
+ *     Active SIM number used by thief (police eyes only)
+ *     Radius / precision of detection (police eyes only)
  *
  *   WHY: The citizen gets enough proof that their device is alive
  *   on the network to chase up police — but not enough to attempt
@@ -32,7 +32,7 @@ import ReportTheftModal from '../modals/ReportTheftModal';
 import TransferInitiateModal from '../modals/TransferInitiateModal';
 import {
   FiSmartphone, FiAlertCircle, FiCheckCircle, FiMapPin, FiRadio,
-  FiAlertTriangle, FiInfo, FiClipboard, FiRefreshCw, FiMessageCircle, FiClock
+  FiAlertTriangle, FiInfo, FiClipboard, FiRefreshCw, FiMessageCircle, FiClock, FiCheck
 } from 'react-icons/fi';
 
 export default function MyDevicesPage() {
@@ -111,7 +111,7 @@ export default function MyDevicesPage() {
             onRemindPolice={(reminderPayload) => {
               dispatch({ type: 'SEND_REMINDER', payload: reminderPayload });
               showToast(
-                'Reminder sent to police! 👮',
+                'Reminder sent to police!',
                 `Case ${report.caseNumber} · ${reportEvents.length} detections on file.`,
                 'success'
               );
@@ -186,31 +186,42 @@ export default function MyDevicesPage() {
               const device      = allDevices.find(d => d.id === report.deviceId);
               const reportEvts  = events.filter(e => e.reportId === report.id);
               return (
-                <div key={report.id} style={{ padding: '14px 0', borderBottom: '1px solid var(--muted-3)' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 }}>
+                <div key={report.id} style={{ padding: '20px 0', borderBottom: '1px solid var(--muted-3)' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
                     <div>
-                      <div style={{ fontWeight: 700, fontSize: 14, color: 'var(--ink)' }}>{device?.make} {device?.model}</div>
+                      <div style={{ fontWeight: 800, fontSize: 15, color: 'var(--ink)' }}>{device?.make} {device?.model}</div>
                       <div style={{ fontSize: 11, fontFamily: 'var(--font-mono)', color: 'var(--muted)', marginTop: 2 }}>{report.id}</div>
                     </div>
                     <Badge status={report.status} />
                   </div>
-                  <div style={{ fontSize: 12, color: 'var(--muted)' }}><FiMapPin size={11} /> {report.date} · {report.location.split(',')[0]}</div>
-                  {report.caseNumber && (
-                    <div style={{ fontSize: 11, fontFamily: 'var(--font-mono)', color: 'var(--blue)', marginTop: 4, fontWeight: 700 }}>{report.caseNumber}</div>
-                  )}
-                  {report.dispatched && (
-                    <div style={{ fontSize: 11, color: 'var(--green)', marginTop: 4, fontWeight: 700 }}>
-                      <FiRadio size={11} /> Network alert active on Airtel &amp; TNM
-                    </div>
-                  )}
-                  {reportEvts.length > 0 && (
-                    <div style={{ fontSize: 11, color: 'var(--amber)', marginTop: 4, fontWeight: 700 }}>
-                      <FiMapPin size={11} /> {reportEvts.length} network detection{reportEvts.length > 1 ? 's' : ''} recorded
-                    </div>
-                  )}
-                  {report.status === 'pending' && (
-                    <div style={{ fontSize: 11, color: 'var(--amber)', marginTop: 4 }}><FiClock size={11} /> Awaiting police verification</div>
-                  )}
+
+                  {/* Case Progress Tracker */}
+                  <div style={{ marginBottom: 20 }}>
+                    <CaseProgressTracker report={report} detections={reportEvts.length} />
+                  </div>
+
+                  <div className="grid-2" style={{ gap: 10 }}>
+                    <div style={{ fontSize: 12, color: 'var(--muted)' }}><FiMapPin size={11} /> {report.date} · {report.location.split(',')[0]}</div>
+                    {report.caseNumber && (
+                      <div style={{ fontSize: 11, fontFamily: 'var(--font-mono)', color: 'var(--blue)', fontWeight: 700, textAlign: 'right' }}>Case: {report.caseNumber}</div>
+                    )}
+                  </div>
+                  
+                  <div style={{ marginTop: 12, display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+                    {report.dispatched && (
+                      <div style={{ fontSize: 11, color: 'var(--green)', fontWeight: 700, display: 'flex', alignItems: 'center', gap: 4 }}>
+                        <FiRadio size={12} /> Network Alert Active
+                      </div>
+                    )}
+                    {reportEvts.length > 0 && (
+                      <div style={{ fontSize: 11, color: 'var(--amber)', fontWeight: 700, display: 'flex', alignItems: 'center', gap: 4 }}>
+                        <FiMapPin size={12} /> {reportEvts.length} Detections
+                      </div>
+                    )}
+                    {report.status === 'pending' && (
+                      <div style={{ fontSize: 11, color: 'var(--amber)', display: 'flex', alignItems: 'center', gap: 4 }}><FiClock size={12} /> Pending Verification</div>
+                    )}
+                  </div>
                 </div>
               );
             })
@@ -222,6 +233,54 @@ export default function MyDevicesPage() {
       {modal === 'register' && <RegisterDeviceModal onClose={() => setModal(null)} />}
       {modal === 'report'   && <ReportTheftModal    onClose={() => setModal(null)} preselectedDeviceId={selectedDevice?.id} />}
       {modal === 'transfer' && <TransferInitiateModal onClose={() => setModal(null)} device={selectedDevice} />}
+    </div>
+  );
+}
+
+/* ══════════════════════════════════════════════════════════════
+   CASE PROGRESS TRACKER
+   ──────────────────────────────────────────────────────────────
+   Simple horizontal progress visualization for theft reports.
+══════════════════════════════════════════════════════════════ */
+function CaseProgressTracker({ report, detections }) {
+  const steps = [
+    { label: 'Filed',    active: true, completed: true },
+    { label: 'Verified', active: report.status !== 'pending', completed: report.status !== 'pending' },
+    { label: 'Alerted',  active: report.dispatched, completed: report.dispatched },
+    { label: 'Detected', active: detections > 0, completed: detections > 0 },
+    { label: 'Recovered', active: report.status === 'recovered', completed: report.status === 'recovered' }
+  ];
+
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', width: '100%', padding: '0 5px' }}>
+      {steps.map((step, i) => (
+        <React.Fragment key={step.label}>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flexShrink: 0, position: 'relative' }}>
+            <div style={{
+              width: 18, height: 18, borderRadius: '50%',
+              background: step.completed ? 'var(--green)' : 'var(--muted-3)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              color: '#fff', fontSize: 10, zIndex: 1,
+              boxShadow: step.completed ? '0 0 8px var(--green-pale)' : 'none',
+              border: step.active && !step.completed ? '2px solid var(--amber)' : 'none'
+            }}>
+              {step.completed ? <FiCheck /> : (step.active && !step.completed ? <div className="spinner-small" /> : null)}
+            </div>
+            <div style={{ 
+              fontSize: 9, fontWeight: 700, color: step.active ? 'var(--ink-2)' : 'var(--muted)',
+              marginTop: 6, position: 'absolute', top: 18, whiteSpace: 'nowrap' 
+            }}>{step.label}</div>
+          </div>
+          {i < steps.length - 1 && (
+            <div style={{ 
+              flex: 1, height: 2, 
+              background: steps[i+1].completed ? 'var(--green)' : 'var(--muted-3)',
+              margin: '0 -5px', position: 'relative', top: -10 
+            }} />
+          )}
+        </React.Fragment>
+      ))}
+      <div style={{ marginBottom: 15 }} /> {/* Spacer for labels */}
     </div>
   );
 }

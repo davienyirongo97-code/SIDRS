@@ -10,6 +10,7 @@ import Modal from '../ui/Modal';
 import { useAppDispatch, useAppState, useToast } from '../../context/AppContext';
 import { primaryIdentifier, todayString } from '../../utils/helpers';
 import { POLICE_STATIONS } from '../../data/mockData';
+import { FiAlertCircle, FiAlertTriangle } from 'react-icons/fi';
 
 export default function ReportTheftModal({ onClose, preselectedDeviceId = null }) {
   const dispatch  = useAppDispatch();
@@ -53,10 +54,10 @@ export default function ReportTheftModal({ onClose, preselectedDeviceId = null }
 
   if (myRegisteredDevices.length === 0) {
     return (
-      <Modal title="🚨 Report Stolen Device" onClose={onClose}>
+      <Modal title={<><FiAlertCircle style={{marginRight:8, color:'var(--red)'}} /> Report Stolen Device</>} onClose={onClose}>
         <div className="modal-body">
           <div className="alert alert-amber">
-            <span className="alert-icon">⚠️</span>
+            <span className="alert-icon"><FiAlertTriangle /></span>
             <div>
               No registered devices available to report stolen.
               If your device was stolen before you registered it,
@@ -72,7 +73,7 @@ export default function ReportTheftModal({ onClose, preselectedDeviceId = null }
   }
 
   return (
-    <Modal title="🚨 Report Stolen Device" onClose={onClose}>
+    <Modal title={<><FiAlertCircle style={{marginRight:8, color:'var(--red)'}} /> Report Stolen Device</>} onClose={onClose}>
       <div className="modal-body">
 
         {/* Device selector */}
@@ -142,7 +143,7 @@ export default function ReportTheftModal({ onClose, preselectedDeviceId = null }
 
         {/* Warning */}
         <div className="alert alert-amber">
-          <span className="alert-icon">⚠️</span>
+          <span className="alert-icon"><FiAlertTriangle /></span>
           <div>
             Filing a false theft report is a criminal offence under the Communications Act.
             All reports are police-verified before any network alert is activated.
@@ -154,7 +155,7 @@ export default function ReportTheftModal({ onClose, preselectedDeviceId = null }
       <div className="modal-footer">
         <button className="btn btn-surface" onClick={onClose}>Cancel</button>
         <button className="btn btn-danger" onClick={handleSubmit}>
-          🚨 Submit Theft Report
+          <FiAlertCircle style={{marginRight:6}} /> Submit Theft Report
         </button>
       </div>
     </Modal>

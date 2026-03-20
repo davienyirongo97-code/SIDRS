@@ -74,86 +74,79 @@ export default function HomePage() {
   return (
     <div className="fade-up" style={{ paddingBottom: 60 }}>
 
-      {/* ── HERO BANNER ── */}
-      <div className="home-hero hero-mesh-bg gradient-anim" style={{
-        borderRadius: 32,
-        padding: '64px 52px',
-        position: 'relative',
-        overflow: 'hidden',
-        marginBottom: 40,
-        boxShadow: '0 24px 64px rgba(6,17,43,0.4)',
-        border: '1px solid rgba(255,255,255,0.05)',
+      {/* ── HERO BANNER (Malawi National Theme overhaul) ── */}
+      <div className="hero-banner-new" style={{ 
+        background: 'linear-gradient(135deg, #E0F2FE 0%, #FFFFFF 100%)',
+        border: '1px solid #BFDBFE',
+        boxShadow: '0 10px 40px -10px rgba(30,58,138,0.1)'
       }}>
-        {/* Floating decorative elements */}
-        <div className="float-anim" style={{
-          position: 'absolute', top: '10%', right: '15%',
-          width: 300, height: 300, background: 'radial-gradient(circle, rgba(26,92,219,0.15) 0%, transparent 70%)',
+        {/* Subtle decorative elements for National theme */}
+        <div style={{
+          position: 'absolute', top: -50, left: -50,
+          width: 300, height: 300, background: 'radial-gradient(circle, rgba(37,99,235,0.05) 0%, transparent 70%)',
           borderRadius: '50%', pointerEvents: 'none'
         }} />
-        <div className="float-anim" style={{
-          position: 'absolute', bottom: '-10%', left: '5%',
-          width: 400, height: 400, background: 'radial-gradient(circle, rgba(232,137,12,0.1) 0%, transparent 70%)',
-          borderRadius: '50%', pointerEvents: 'none', animationDelay: '-2s'
-        }} />
-
-        <div style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
-          {/* Live badge */}
-          <div className="glass-panel" style={{
-            display: 'inline-flex', alignItems: 'center', gap: 10,
-            padding: '8px 20px', borderRadius: 30, marginBottom: 28,
-          }}>
-            <div className="pulse-anim" style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--amber-2)', boxShadow: '0 0 10px var(--amber-2)' }} />
-            <span style={{ fontSize: 12, fontWeight: 800, color: '#fff', letterSpacing: 1.5, textTransform: 'uppercase' }}>
+        
+        {/* Left Side: Content */}
+        <div className="hero-content" style={{ textAlign: 'left', alignItems: 'flex-start' }}>
+          {/* National Platform Tag */}
+          <div className="hero-tag" style={{ background: '#FFFFFF', border: '1px solid #BFDBFE', boxShadow: '0 2px 8px rgba(30,58,138,0.05)' }}>
+            <div className="pulse-anim" style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--amber)', boxShadow: '0 0 10px var(--amber)' }} />
+            <span style={{ fontSize: 11, fontWeight: 800, color: 'var(--navy)', letterSpacing: 1.5, textTransform: 'uppercase' }}>
               National Device Security Platform · MACRA
             </span>
           </div>
 
           <h1 style={{
-            fontFamily: 'var(--font-display)', fontSize: 56, fontWeight: 900,
-            color: '#ffffff', lineHeight: 1.05, margin: '0 0 20px', letterSpacing: -1.5,
-            textShadow: '0 10px 30px rgba(0,0,0,0.5)',
-            maxWidth: 800,
+            fontFamily: 'var(--font-display)', fontSize: 52, fontWeight: 900,
+            color: 'var(--navy)', lineHeight: 1.05, margin: '0 0 24px', letterSpacing: -1.5,
           }}>
-            Stolen Device Intelligence &amp; <span className="neon-text-blue">Recovery System</span>
+            Stolen Device Intelligence &amp; <span style={{ color: 'var(--blue)', borderBottom: '4px solid #DBEAFE' }}>Recovery System</span>
           </h1>
 
-          <p style={{ fontSize: 18, color: 'rgba(255,255,255,0.8)', margin: '0 0 40px', maxWidth: 640, lineHeight: 1.6, fontWeight: 400 }}>
+          <p style={{ fontSize: 17, color: 'var(--ink-3)', margin: '0 0 44px', lineHeight: 1.7, fontWeight: 500, maxWidth: 540 }}>
             Protect your digital assets. Register phones &amp; laptops. Report theft instantly. 
             Track stolen devices in real-time via national network intelligence.
           </p>
 
-          <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', justifyContent: 'center' }}>
-            <button className="btn btn-lg glowing-border" style={{ 
-              background: 'linear-gradient(135deg, var(--blue) 0%, #3a7df8 100%)', 
-              color: '#fff', fontSize: 16, padding: '16px 32px', borderRadius: 16, 
-              boxShadow: '0 8px 24px rgba(26,92,219,0.4)', border: 'none', gap: 10
-            }} onClick={() => navigate('/my-devices')}>
+          <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
+            <button className="btn btn-lg btn-primary" style={{ padding: '16px 36px', borderRadius: 16 }} onClick={() => navigate('/my-devices')}>
               <FiShield size={18} /> Protect My Devices
             </button>
-            <button className="btn btn-lg glass-panel" style={{ 
-              color: '#fff', fontSize: 16, padding: '16px 32px', borderRadius: 16, gap: 10,
-              transition: 'background 0.3s',
-            }} 
-            onMouseOver={e => e.currentTarget.style.background = 'rgba(255,255,255,0.1)'}
-            onMouseOut={e => e.currentTarget.style.background = 'rgba(255,255,255,0.05)'}
-            onClick={() => navigate('/checker')}>
+            <button className="btn btn-lg btn-ghost" style={{ padding: '16px 36px', borderRadius: 16 }} onClick={() => navigate('/checker')}>
               <FiSearch size={18} /> Check an IMEI
             </button>
           </div>
         </div>
 
-        {/* USSD floating badge */}
-        <div className="glass-panel float-anim" style={{
-          position: 'absolute', bottom: 32, right: 32,
-          borderRadius: 16, padding: '16px 20px', display: 'flex', alignItems: 'center', gap: 14,
-          animationDelay: '-1s'
-        }}>
-          <div style={{ fontSize: 26, color: 'var(--amber-2)', filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.3))' }}>
-            <FiSmartphone />
-          </div>
-          <div>
-            <div style={{ fontSize: 11, fontWeight: 800, color: 'var(--amber-2)', letterSpacing: 0.5 }}>USSD OFFLINE MODE</div>
-            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 18, color: '#fff', fontWeight: 800, textShadow: '0 2px 4px rgba(0,0,0,0.5)', marginTop: 2 }}>*858*IMEI#</div>
+        {/* Right Side: Visual Assets */}
+        <div className="hero-visual-area">
+          <img 
+            src="/laptop_tracking_mockup_1773871105975.png" 
+            alt="Laptop Tracking" 
+            className="floating-device laptop" 
+            style={{ filter: 'drop-shadow(0 20px 40px rgba(30,58,138,0.15))' }}
+          />
+          <img 
+            src="/phone_security_mockup_1773870952483.png" 
+            alt="Phone Security" 
+            className="floating-device phone" 
+            style={{ filter: 'drop-shadow(0 20px 40px rgba(30,58,138,0.2))' }}
+          />
+
+          {/* USSD floating badge integrated into visual area */}
+          <div className="glass-panel" style={{
+            position: 'absolute', bottom: -20, right: 40,
+            borderRadius: 16, padding: '16px 20px', display: 'flex', alignItems: 'center', gap: 14,
+            zIndex: 10, border: '1px solid var(--amber-2)'
+          }}>
+            <div style={{ fontSize: 26, color: 'var(--amber-2)', filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.3))' }}>
+              <FiSmartphone />
+            </div>
+            <div>
+              <div style={{ fontSize: 10, fontWeight: 800, color: 'var(--amber-2)', letterSpacing: 0.5 }}>USSD OFFLINE MODE</div>
+              <div style={{ fontFamily: 'var(--font-mono)', fontSize: 18, color: '#fff', fontWeight: 800, textShadow: '0 2px 4px rgba(0,0,0,0.5)', marginTop: 2 }}>*858*IMEI#</div>
+            </div>
           </div>
         </div>
       </div>

@@ -16,6 +16,7 @@ import {
   FiUsers, FiClipboard, FiRadio, FiMap, FiMapPin, FiSmartphone,
   FiBell, FiCheckCircle, FiTruck
 } from 'react-icons/fi';
+import MalawiMap from '../ui/MalawiMap';
 
 export default function PoliceDashboardPage() {
   const { reports, devices, events, reminders, users } = useAppState();
@@ -28,6 +29,12 @@ export default function PoliceDashboardPage() {
   const pending  = reports.filter(r => r.status === 'pending');
   const active   = reports.filter(r => r.status === 'active');
   const resolved = reports.filter(r => r.status === 'resolved');
+
+  // Unified list of active events for the map
+  const activeEvents = events.filter(e => {
+    const r = reports.find(rep => rep.id === e.reportId);
+    return r && r.status === 'active';
+  });
 
   const tabReports = { pending, active, resolved }[activeTab] || [];
 
@@ -195,43 +202,54 @@ export default function PoliceDashboardPage() {
       {/* ── Active device cards ── */}
       <div className="card" style={{ marginTop: 20 }}>
         <div className="card-header">
-          <div className="card-title" style={{display:'flex',alignItems:'center',gap:6}}><FiMap size={15}/> Active Device Tracking</div>
-          <div style={{ fontSize: 12, color: 'var(--muted)' }}>Based on latest network detection events</div>
+          <div className="card-title" style={{display:'flex',alignItems:'center',gap:6}}><FiMap size={15}/> Active Device Tracking Intelligence</div>
+          <div style={{ fontSize: 12, color: 'var(--muted)' }}>Real-time geographic visualization of stolen hardware signals</div>
         </div>
 
         {active.length === 0 ? (
           <div style={{ textAlign: 'center', padding: 32, color: 'var(--muted)' }}>No active device alerts at this time</div>
         ) : (
-          <div className="grid-2">
-            {active.map(report => {
-              const device  = findDevice(report.deviceId, devices);
-              const devEvts = events.filter(e => e.reportId === report.id);
-              const latest  = devEvts[devEvts.length - 1];
-              if (!latest) return null;
+          <div style={{ display: 'grid', gridTemplateColumns: 'minmax(300px, 1fr) 340px', gap: 24 }}>
+            {/* Left: The Map */}
+            <MalawiMap points={activeEvents} type="events" />
 
-              return (
-                <div key={report.id} style={{ background: 'linear-gradient(135deg, rgba(192,37,44,0.08), rgba(232,57,63,0.03))', border: '1px solid rgba(192,37,44,0.25)', borderRadius: 'var(--radius)', padding: 16 }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
-                    <span className="pulse-anim" style={{ background: 'var(--red-2)', color: '#fff', padding: '2px 9px', borderRadius: 6, fontSize: 10, fontWeight: 800, display:'flex', alignItems:'center', gap: 4 }}><span style={{width:6,height:6,borderRadius:'50%',background:'#fff',display:'inline-block'}} /> ACTIVE</span>
-                    <span style={{ fontSize: 10, color: 'var(--muted)' }}>{latest.detectedAt}</span>
+            {/* Right: Quick List */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12, maxHeight: 600, overflowY: 'auto', paddingRight: 4 }}>
+              <div style={{ fontSize: 10, fontWeight: 800, color: 'var(--muted)', letterSpacing: 1, marginBottom: 4 }}>TARGETS IN VICINITY</div>
+              {active.map(report => {
+                const device  = findDevice(report.deviceId, devices);
+                const devEvts = events.filter(e => e.reportId === report.id);
+                const latest  = devEvts[devEvts.length - 1];
+                if (!latest) return null;
+
+                return (
+                  <div key={report.id} style={{ 
+                    background: 'var(--bg)', 
+                    border: '1px solid var(--muted-3)', 
+                    borderRadius: 12, 
+                    padding: 14 
+                  }}>
+                    <div style={{ fontWeight: 700, fontSize: 13, marginBottom: 4 }}>{device?.make} {device?.model}</div>
+                    <div style={{ fontSize: 11, color: 'var(--muted)' }}>Last: {latest.tower}</div>
+                    <div style={{ 
+                      marginTop: 8, 
+                      display: 'flex', 
+                      justifyContent: 'space-between', 
+                      alignItems: 'center' 
+                    }}>
+                      <span style={{ fontSize: 10, color: 'var(--red)', fontWeight: 800 }}>● ACTIVE SIGNAL</span>
+                      <button 
+                        className="btn btn-primary btn-sm" 
+                        style={{ fontSize: 10, padding: '4px 8px' }}
+                        onClick={() => showToast('Dispatch initiated.', 'Units notified of coordinates.')}
+                      >
+                        Dispatch
+                      </button>
+                    </div>
                   </div>
-                  <div style={{ fontWeight: 700, fontSize: 14, marginBottom: 6 }}>{device?.make} {device?.model}</div>
-                  <div style={{ fontSize: 12, color: 'var(--muted)' }}><FiMapPin size={11}/> {latest.tower}</div>
-                  <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--amber)', marginTop: 3 }}><FiSmartphone size={11}/> SIM: {latest.activeSim}</div>
-                  <div style={{ fontSize: 11, color: 'var(--muted-2)', fontFamily: 'var(--font-mono)', marginTop: 3 }}>
-                    {latest.latitude}°S, {latest.longitude}°E · ±{latest.radiusMeters}m
-                  </div>
-                  <div style={{ fontSize: 11, color: 'var(--muted-2)', marginTop: 3 }}><FiRadio size={10}/> {devEvts.length} total events · via {latest.operator}</div>
-                  <button
-                    className="btn btn-danger btn-sm"
-                    style={{ marginTop: 10, fontSize: 11 }}
-                    onClick={() => showToast('Dispatch request sent.', 'Officer ETA: ~12 minutes')}
-                  >
-                    <FiTruck size={14}/> Dispatch Response
-                  </button>
-                </div>
-              );
-            })}
+                );
+              })}
+            </div>
           </div>
         )}
       </div>

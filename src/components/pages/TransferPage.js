@@ -6,29 +6,36 @@
  */
 
 import React, { useState } from 'react';
-import { useAppState } from '../../context/AppContext';
+import { useAppState, useAppDispatch, useToast } from '../../context/AppContext';
 import { formatNumber } from '../../utils/helpers';
 import Badge from '../ui/Badge';
 import TransferInitiateModal from '../modals/TransferInitiateModal';
+import { 
+  FiLock, FiKey, FiXOctagon, FiBarChart, FiRotateCcw, 
+  FiList, FiClock, FiSmartphone, FiArrowRight, FiCheckCircle 
+} from 'react-icons/fi';
 
 export default function TransferPage() {
   const { devices, transfers, currentUserId } = useAppState();
+  const dispatch = useAppDispatch();
+  const showToast = useToast();
 
   const myDevices  = devices.filter(d => d.ownerId === currentUserId && d.status === 'registered');
   const myTransfers = transfers.filter(t => t.sellerId === currentUserId);
 
   const [modal, setModal]   = useState(false);
   const [selected, setSelected] = useState(null);
+  const [claimPin, setClaimPin] = useState('');
 
   const STEPS = ['Seller Initiates', 'PIN Generated', 'Buyer Enters PIN', 'Certificate Issued'];
   const STEP_COLORS = ['var(--blue)', 'var(--amber)', 'var(--green)', 'var(--purple)'];
 
   const PROTECTIONS = [
-    ['🔒', 'Transfer blocked if active theft report exists on device'],
-    ['🔑', 'PIN is single-use, bcrypt-hashed, expires in 48 hours'],
-    ['🚫', 'Seller permanently blocked from reporting device stolen post-transfer'],
-    ['📊', 'Devices transferred 2+ times in 30 days flagged for MACRA review'],
-    ['⏪', '72-hour cooling-off reversal available via MACRA only'],
+    { icon: <FiLock />, text: 'Transfer blocked if active theft report exists on device' },
+    { icon: <FiKey />, text: 'PIN is single-use, expires in 48 hours' },
+    { icon: <FiXOctagon />, text: 'Seller permanently loses ownership post-transfer' },
+    { icon: <FiBarChart />, text: 'High-frequency transfers flagged for MACRA review' },
+    { icon: <FiRotateCcw />, text: '72-hour cooling-off reversal via MACRA only' },
   ];
 
   function openTransfer(device) {
@@ -36,14 +43,42 @@ export default function TransferPage() {
     setModal(true);
   }
 
+  function handleClaim() {
+    const pin = claimPin.trim().toUpperCase();
+    if (!pin) return;
+
+    const transfer = transfers.find(t => t.pin === pin && t.status === 'pending');
+    
+    if (!transfer) {
+      showToast('Invalid PIN', 'This PIN does not exist or has already been used.', 'error');
+      return;
+    }
+
+    if (transfer.sellerId === currentUserId) {
+      showToast('Invalid Action', 'You cannot claim a device you already own.', 'warn');
+      return;
+    }
+
+    dispatch({
+      type: 'COMPLETE_TRANSFER',
+      payload: { transferId: transfer.id, buyerId: currentUserId }
+    });
+
+    showToast('Success!', 'Device ownership successfully transferred to you.', 'success');
+    setClaimPin('');
+  }
+
   return (
     <div className="fade-up">
       <div className="grid-2">
 
-        {/* LEFT: Form */}
+        {/* LEFT: Actions */}
         <div>
+          {/* SELLER: INITIATE */}
           <div className="card" style={{ marginBottom: 20 }}>
-            <div className="card-title" style={{ marginBottom: 6 }}>🔄 Transfer Device Ownership</div>
+            <div className="card-title" style={{ marginBottom: 6, display: 'flex', alignItems: 'center', gap: 8 }}>
+              <FiRotateCcw /> Transfer Device Ownership
+            </div>
             <div className="card-subtitle" style={{ marginBottom: 20 }}>Transfer ownership safely with a government-verified PIN</div>
 
             {/* Step flow */}
@@ -64,7 +99,7 @@ export default function TransferPage() {
 
             {myDevices.length === 0 ? (
               <div className="alert alert-amber">
-                <span className="alert-icon">⚠️</span>
+                <span className="alert-icon"><FiXOctagon /></span>
                 <div>No registered devices available to transfer. Stolen or recovered devices cannot be transferred.</div>
               </div>
             ) : (
@@ -78,20 +113,61 @@ export default function TransferPage() {
                     onMouseOver={e => e.currentTarget.style.borderColor = 'var(--blue)'}
                     onMouseOut={e =>  e.currentTarget.style.borderColor = 'var(--muted-3)'}
                   >
-                    <div>
-                      <div style={{ fontWeight: 700, fontSize: 13 }}>{device.make} {device.model}</div>
-                      <div style={{ fontSize: 11, fontFamily: 'var(--font-mono)', color: 'var(--muted)' }}>{device.imei || device.serial}</div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                      <FiSmartphone color="var(--blue)" />
+                      <div>
+                        <div style={{ fontWeight: 700, fontSize: 13 }}>{device.make} {device.model}</div>
+                        <div style={{ fontSize: 11, fontFamily: 'var(--font-mono)', color: 'var(--muted)' }}>{device.imei || device.serial}</div>
+                      </div>
                     </div>
-                    <button className="btn btn-primary btn-sm">Transfer →</button>
+                    <button className="btn btn-primary btn-sm" style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                      Transfer <FiArrowRight />
+                    </button>
                   </div>
                 ))}
               </div>
             )}
           </div>
 
-          {/* Transfer history */}
+          {/* BUYER: CLAIM */}
+          <div className="card" style={{ borderLeft: '4px solid var(--green)' }}>
+            <div className="card-title" style={{ marginBottom: 6, display: 'flex', alignItems: 'center', gap: 8 }}>
+              <FiCheckCircle color="var(--green)" /> Claim Device Ownership
+            </div>
+            <div className="card-subtitle" style={{ marginBottom: 20 }}>Have a Transfer PIN? Enter it below to claim ownership.</div>
+            
+            <div style={{ display: 'flex', gap: 10 }}>
+              <input 
+                className="field-input mono" 
+                placeholder="TRF-XXXX-XXXX" 
+                value={claimPin}
+                onChange={e => setClaimPin(e.target.value.toUpperCase())}
+                style={{ flex: 1, fontSize: 16, padding: '12px 14px' }}
+              />
+              <button className="btn btn-green" onClick={handleClaim}>Claim Device</button>
+            </div>
+            <div style={{ fontSize: 11, color: 'var(--muted)', marginTop: 12 }}>
+              The ownership change is instant and permanent. MACRA will issue a digital ownership certificate upon completion.
+            </div>
+          </div>
+        </div>
+
+        {/* RIGHT: History & Info */}
+        <div>
+          <div className="card" style={{ background: 'var(--navy)', borderColor: 'transparent', marginBottom: 20 }}>
+            <div style={{ fontSize: 10, fontWeight: 800, color: 'rgba(255,255,255,0.35)', letterSpacing: 2, textTransform: 'uppercase', marginBottom: 14 }}>Anti-Fraud Protections</div>
+            {PROTECTIONS.map((p, idx) => (
+              <div key={idx} style={{ display: 'flex', gap: 10, alignItems: 'flex-start', marginBottom: 14 }}>
+                <span style={{ fontSize: 16, flexShrink: 0, color: 'var(--blue-3)' }}>{p.icon}</span>
+                <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)', lineHeight: 1.6 }}>{p.text}</span>
+              </div>
+            ))}
+          </div>
+
           <div className="card">
-            <div className="card-title" style={{ marginBottom: 14 }}>📜 Transfer History</div>
+            <div className="card-title" style={{ marginBottom: 14, display: 'flex', alignItems: 'center', gap: 8 }}>
+              <FiList /> Recent Transfer Activity
+            </div>
             {myTransfers.length === 0 ? (
               <div style={{ textAlign: 'center', padding: 24, color: 'var(--muted)' }}>No transfers yet</div>
             ) : (
@@ -103,8 +179,9 @@ export default function TransferPage() {
                       <div style={{ fontWeight: 700, fontSize: 13 }}>{device?.make} {device?.model}</div>
                       <Badge status={t.status} />
                     </div>
-                    <div style={{ fontSize: 11, color: 'var(--muted)' }}>📅 {t.createdAt}</div>
-                    {t.priceMWK > 0 && <div style={{ fontSize: 11, color: 'var(--muted)' }}>💰 MWK {formatNumber(t.priceMWK)}</div>}
+                    <div style={{ fontSize: 11, color: 'var(--muted)', display: 'flex', alignItems: 'center', gap: 4 }}>
+                      <FiClock size={10} /> {t.createdAt}
+                    </div>
                     <div style={{ fontSize: 11, fontFamily: 'var(--font-mono)', color: 'var(--blue)', marginTop: 4 }}>{t.id}</div>
                   </div>
                 );
@@ -112,29 +189,13 @@ export default function TransferPage() {
             )}
           </div>
         </div>
-
-        {/* RIGHT: Anti-fraud */}
-        <div>
-          <div className="card" style={{ background: 'var(--navy)', borderColor: 'transparent', marginBottom: 20 }}>
-            <div style={{ fontSize: 10, fontWeight: 800, color: 'rgba(255,255,255,0.35)', letterSpacing: 2, textTransform: 'uppercase', marginBottom: 14 }}>Anti-Fraud Protections</div>
-            {PROTECTIONS.map(([icon, text]) => (
-              <div key={text} style={{ display: 'flex', gap: 10, alignItems: 'flex-start', marginBottom: 14 }}>
-                <span style={{ fontSize: 16, flexShrink: 0 }}>{icon}</span>
-                <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)', lineHeight: 1.6 }}>{text}</span>
-              </div>
-            ))}
-          </div>
-
-          <div className="ussd-box">
-            <div style={{ fontSize: 10, fontWeight: 800, color: 'rgba(255,255,255,0.4)', letterSpacing: 2, textTransform: 'uppercase', marginBottom: 6 }}>Transfer via USSD</div>
-            <span className="ussd-code">*858*3#</span>
-            <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.45)', marginTop: 6 }}>No internet needed — available on all networks</div>
-          </div>
-        </div>
       </div>
 
       {modal && selected && (
-        <TransferInitiateModal onClose={() => { setModal(false); setSelected(null); }} device={selected} />
+        <TransferInitiateModal 
+          onClose={() => { setModal(false); setSelected(null); }} 
+          device={selected} 
+        />
       )}
     </div>
   );

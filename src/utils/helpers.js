@@ -55,7 +55,7 @@ export function getStatusConfig(status) {
     pending:    { className: 'badge-amber',  label: 'Pending' },
     resolved:   { className: 'badge-green',  label: 'Resolved' },
     completed:  { className: 'badge-green',  label: 'Completed' },
-    clean:      { className: 'badge-green',  label: '✓ Clean' },
+    clean:      { className: 'badge-green',  label: 'Clean' },
     not_found:  { className: 'badge-gray',   label: 'Not Found' },
   };
   return config[status] || { className: 'badge-gray', label: status };
@@ -120,4 +120,15 @@ export function truncate(str, maxLength = 60) {
  */
 export function todayString() {
   return new Date().toISOString().slice(0, 10);
+}
+
+/**
+ * Generates a robust, unique ID with a prefix.
+ * e.g. "D-K2X3-R9L1"
+ * @param {string} prefix 
+ */
+export function makeId(prefix = 'ID') {
+  const ts = Date.now().toString(36).toUpperCase().slice(-4);
+  const r = Math.random().toString(36).substring(2, 6).toUpperCase();
+  return `${prefix}-${ts}-${r}`;
 }

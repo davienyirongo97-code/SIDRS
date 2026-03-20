@@ -19,8 +19,8 @@ const NAV_GROUPS = [
   {
     label: 'Platform',
     items: [
-      { path: '/',             icon: <FiHome />,        label: 'Overview' },
-      { path: '/checker',      icon: <FiSearch />,      label: 'IMEI Checker' },
+      { path: '/',             icon: <FiHome />,        label: 'Overview', roles: ['citizen', 'police', 'macra'] },
+      { path: '/checker',      icon: <FiSearch />,      label: 'IMEI Checker', roles: ['citizen', 'police', 'macra'] },
     ],
   },
   {
@@ -30,13 +30,14 @@ const NAV_GROUPS = [
         path: '/my-devices',
         icon: <FiSmartphone />,
         label: 'My Devices',
+        roles: ['citizen', 'police', 'macra'],
         badge: (state) => state.devices.filter(
           d => d.ownerId === state.currentUserId && d.status === 'stolen'
         ).length || null,
         badgeClass: 'badge-red',
       },
-      { path: '/report',    icon: <FiAlertCircle />, label: 'Report Theft' },
-      { path: '/transfer',  icon: <FiRefreshCw />,   label: 'Transfer Device' },
+      { path: '/report',    icon: <FiAlertCircle />, label: 'Report Theft', roles: ['citizen'] },
+      { path: '/transfer',  icon: <FiRefreshCw />,   label: 'Transfer Device', roles: ['citizen'] },
     ],
   },
   {
@@ -46,19 +47,20 @@ const NAV_GROUPS = [
         path: '/police',
         icon: <FiUsers />,
         label: 'Police Dashboard',
+        roles: ['police', 'macra'],
         badge: (state) => state.reports.filter(r => r.status === 'pending').length || null,
         badgeClass: 'badge-amber',
       },
-      { path: '/intelligence', icon: <FiRadio />,   label: 'Intelligence Feed' },
-      { path: '/threats',      icon: <FiCpu />,     label: 'Threat Intel (AI)' },
+      { path: '/intelligence', icon: <FiRadio />,   label: 'Intelligence Feed', roles: ['police', 'macra'] },
+      { path: '/threats',      icon: <FiCpu />,     label: 'Threat Intel (AI)', roles: ['police', 'macra'] },
     ],
   },
   {
     label: 'Administration',
     items: [
-      { path: '/admin',    icon: <FiGrid />,  label: 'MACRA Admin' },
-      { path: '/registry', icon: <FiList />,  label: 'Device Registry' },
-      { path: '/chain',    icon: <FiLink />,  label: 'Ownership Chain' },
+      { path: '/admin',    icon: <FiGrid />,  label: 'MACRA Admin', roles: ['macra'] },
+      { path: '/registry', icon: <FiList />,  label: 'Device Registry', roles: ['macra', 'police'] },
+      { path: '/chain',    icon: <FiLink />,  label: 'Ownership Chain', roles: ['macra', 'police'] },
     ],
   },
 ];
@@ -118,34 +120,42 @@ export default function Sidebar() {
 
       {/* ── Navigation groups ── */}
       <nav className="sidebar-nav">
-        {NAV_GROUPS.map(group => (
-          <div key={group.label}>
-            <div className="nav-section">{group.label}</div>
+        {NAV_GROUPS.map(group => {
+          const visibleItems = group.items.filter(item => 
+            item.roles.includes(currentUser?.role)
+          );
 
-            {group.items.map(item => {
-              const badgeCount = item.badge ? item.badge(state) : null;
+          if (visibleItems.length === 0) return null;
 
-              return (
-                <NavLink
-                  key={item.path}
-                  to={item.path}
-                  end={item.path === '/'}
-                  className={({ isActive }) =>
-                    `nav-item${isActive ? ' active' : ''}`
-                  }
-                >
-                  <span className="nav-icon">{item.icon}</span>
-                  <span className="nav-label">{item.label}</span>
-                  {badgeCount && (
-                    <span className={`nav-badge ${item.badgeClass || ''}`}>
-                      {badgeCount}
-                    </span>
-                  )}
-                </NavLink>
-              );
-            })}
-          </div>
-        ))}
+          return (
+            <div key={group.label}>
+              <div className="nav-section">{group.label}</div>
+
+              {visibleItems.map(item => {
+                const badgeCount = item.badge ? item.badge(state) : null;
+
+                return (
+                  <NavLink
+                    key={item.path}
+                    to={item.path}
+                    end={item.path === '/'}
+                    className={({ isActive }) =>
+                      `nav-item${isActive ? ' active' : ''}`
+                    }
+                  >
+                    <span className="nav-icon">{item.icon}</span>
+                    <span className="nav-label">{item.label}</span>
+                    {badgeCount && (
+                      <span className={`nav-badge ${item.badgeClass || ''}`}>
+                        {badgeCount}
+                      </span>
+                    )}
+                  </NavLink>
+                );
+              })}
+            </div>
+          );
+        })}
       </nav>
 
       {/* ── User card with switcher ── */}

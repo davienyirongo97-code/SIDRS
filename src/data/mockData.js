@@ -55,7 +55,7 @@ export const INITIAL_USERS = [
     email: 'tembo@mps.mw',
     location: 'Kawale Police Station',
     role: 'police',
-    avatarText: '🚔',
+    avatarText: 'PT',
     avatarColor: '#C0252C',
   },
   {
@@ -65,7 +65,7 @@ export const INITIAL_USERS = [
     email: 'admin@macra.mw',
     location: 'Lilongwe HQ',
     role: 'macra',
-    avatarText: '🏛',
+    avatarText: 'MA',
     avatarColor: '#0A1628',
   },
 ];

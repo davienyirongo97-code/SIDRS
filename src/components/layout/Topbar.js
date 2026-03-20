@@ -1,105 +1,122 @@
 /**
  * src/components/layout/Topbar.js
  * ─────────────────────────────────────────────
- * Sticky top bar shown on every page.
- *
- * Contains:
- *   - Current page title + subtitle (derived from current route)
- *   - Active alert count (red pill if stolen devices are monitored)
- *   - Notification bell with dot if pending reports exist
- *   - Current user avatar
+ * Top navigation bar featuring:
+ *   - Page dynamic titles & subtitles
+ *   - Global search (for police/admin)
+ *   - Light/Dark mode toggle
+ *   - Notification bell with unread dot
+ *   - Current user avatar & role
  */
 
-import React from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
-import { useAppState, useCurrentUser } from '../../context/AppContext';
-import { FiBell } from 'react-icons/fi';
-import './Topbar.css';
+import React, { useState } from 'react';
+import { useLocation } from 'react-router-dom';
+import { useAppState, useCurrentUser, useAppDispatch } from '../../context/AppContext';
+import { FiBell, FiMoon, FiSun, FiSearch } from 'react-icons/fi';
 
-const PAGE_TITLES = {
-  '/':             { title: 'Platform Overview',       subtitle: 'National Stolen Device Identification & Recovery System' },
-  '/checker':      { title: 'IMEI Checker',            subtitle: 'Verify any device before purchasing' },
-  '/my-devices':   { title: 'My Devices',              subtitle: 'Manage your registered devices and theft reports' },
-  '/report':       { title: 'Report Theft',            subtitle: 'Submit a verified theft report' },
-  '/transfer':     { title: 'Transfer Ownership',      subtitle: 'Safely transfer device ownership with a PIN' },
-  '/police':       { title: 'Police Dashboard',        subtitle: 'Intelligence & case management' },
-  '/intelligence': { title: 'Intelligence Feed',       subtitle: 'Network detection events from Airtel & TNM' },
-  '/admin':        { title: 'MACRA Admin',             subtitle: 'National system overview and analytics' },
-  '/registry':     { title: 'Device Registry',        subtitle: 'Full national device registry' },
+const TITLES = {
+  '/':             { main: 'Dashboard', sub: 'National device security overview' },
+  '/checker':      { main: 'IMEI Checker', sub: 'Verify device legitimacy instantly' },
+  '/my-devices':   { main: 'My Devices', sub: 'Manage your registered hardware' },
+  '/report':       { main: 'Report Theft', sub: 'File a verified incident report' },
+  '/transfer':     { main: 'Ownership Transfer', sub: 'Securely reassign device titles' },
+  '/police':       { main: 'Police Console', sub: 'Active recovery operations & field checks' },
+  '/intelligence': { main: 'Intelligence Feed', sub: 'Real-time crime signal analytics' },
+  '/admin':        { main: 'MACRA Admin', sub: 'National registry health & compliance' },
+  '/registry':     { main: 'National Registry', sub: 'Database of all compliant hardware' },
+  '/chain':        { main: 'Ownership Chain', sub: 'Immutable blockchain ledger of titles' },
+  '/threats':      { main: 'Threat Intel', sub: 'Anomaly detection & market hotspots' },
 };
 
 export default function Topbar() {
-  const location  = useLocation();
-  const navigate  = useNavigate();
-  const state     = useAppState();
-  const user      = useCurrentUser();
+  const { pathname } = useLocation();
+  const { reminders, theme } = useAppState();
+  const user = useCurrentUser();
+  const dispatch = useAppDispatch();
+  const [search, setSearch] = useState('');
+  const [showNotifs, setShowNotifs] = useState(false);
 
-  const pageInfo      = PAGE_TITLES[location.pathname] || PAGE_TITLES['/'];
-  const activeAlerts  = state.reports.filter(r => r.status === 'active').length;
-  const pendingAlerts = state.reports.filter(r => r.status === 'pending').length;
-
-  // Unread reminders — only relevant for police and MACRA
-  const isOfficer    = user?.role === 'police' || user?.role === 'macra';
-  const unreadCount  = isOfficer
-    ? (state.reminders || []).filter(r => !r.acknowledged).length
-    : 0;
+  const current = TITLES[pathname] || { main: TITLES['/'].main, sub: TITLES['/'].sub };
+  
+  const relevantReminders = reminders.filter(r => (user.role === 'police' || user.role === 'macra'));
+  const hasUnread = relevantReminders.some(r => !r.read);
 
   return (
     <header className="topbar">
-      <div className="topbar-title">
-        <h1 className="topbar-heading">{pageInfo.title}</h1>
-        <p className="topbar-subtitle">{pageInfo.subtitle}</p>
+      <div className="topbar-left">
+        <div>
+          <h1 className="topbar-title">{current.main}</h1>
+          <p className="topbar-subtitle">{current.sub}</p>
+        </div>
       </div>
 
       <div className="topbar-right">
-
-        {/* Active network alert indicator */}
-        {activeAlerts > 0 && (
-          <div className="alert-pill">
-            <div className="live-dot" />
-            {activeAlerts} Active Alert{activeAlerts > 1 ? 's' : ''}
+        {/* Global Search (Privileged) */}
+        {(user.role === 'police' || user.role === 'macra') && (
+          <div className="topbar-search">
+            <FiSearch className="search-icon" />
+            <input 
+              placeholder="Search IMEI or Case #..." 
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+            />
           </div>
         )}
 
-        {/* ── Citizen reminder bell — police/MACRA only ── */}
-        {isOfficer && unreadCount > 0 && (
-          <button
-            className="btn btn-sm"
-            style={{
-              background: 'var(--red)',
-              color: '#fff',
-              border: 'none',
-              display: 'flex',
-              alignItems: 'center',
-              gap: 6,
-              fontWeight: 800,
-              animation: 'ping 2s infinite',
-              cursor: 'pointer',
-            }}
-            title={`${unreadCount} unread citizen reminder${unreadCount > 1 ? 's' : ''}`}
-            onClick={() => navigate('/police')}
-          >
-            <FiBell size={14} /> {unreadCount} Reminder{unreadCount > 1 ? 's' : ''}
-          </button>
-        )}
+        {/* Theme Toggle */}
+        <button 
+          className="icon-btn theme-toggle" 
+          onClick={() => dispatch({ type: 'TOGGLE_THEME' })}
+          title={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
+        >
+          {theme === 'light' ? <FiMoon /> : <FiSun />}
+        </button>
 
-        {/* Notification bell */}
-        <div className="notif-wrap">
-          <button className="btn btn-surface btn-sm notif-btn" title="Alerts">
-            <FiBell size={14} /> Alerts
+        {/* Notifications */}
+        <div className="topbar-alerts" style={{ position: 'relative' }}>
+          <button className="icon-btn" onClick={() => setShowNotifs(!showNotifs)}>
+            <FiBell />
+            {hasUnread && <span className="alert-dot" />}
           </button>
-          {pendingAlerts > 0 && (
-            <div className="notif-dot" title={`${pendingAlerts} pending reports`} />
+
+          {showNotifs && (
+            <div className="notifications-dropdown glass-card fade-in" style={{
+              position: 'absolute', top: '100%', right: 0, width: '320px',
+              marginTop: '12px', zIndex: 100, padding: '16px'
+            }}>
+              <div style={{ fontWeight: 800, marginBottom: '12px', display: 'flex', justifyContent: 'space-between' }}>
+                System Alerts
+                <span className="badge-blue" style={{ fontSize: '10px' }}>{relevantReminders.length}</span>
+              </div>
+              <div style={{ maxHeight: '300px', overflowY: 'auto' }}>
+                {relevantReminders.length > 0 ? relevantReminders.map(r => (
+                  <div key={r.id} style={{ 
+                    padding: '12px 0', borderBottom: '1px solid var(--muted-3)',
+                    opacity: r.read ? 0.6 : 1
+                  }}>
+                    <div style={{ fontSize: '12px', fontWeight: 700 }}>Case Update: {r.caseNumber}</div>
+                    <div style={{ fontSize: '11px', color: 'var(--muted)', marginTop: '4px' }}>{r.message.split('\n')[0]}</div>
+                    <div style={{ fontSize: '10px', color: 'var(--blue)', marginTop: '4px' }}>{r.sentAt}</div>
+                  </div>
+                )) : (
+                  <div style={{ padding: '20px', textAlign: 'center', color: 'var(--muted)', fontSize: '13px' }}>
+                    No new notifications
+                  </div>
+                )}
+              </div>
+            </div>
           )}
         </div>
 
-        {/* User avatar */}
-        <div
-          className="topbar-avatar"
-          style={{ background: user?.avatarColor }}
-          title={user?.name}
-        >
-          {user?.avatarText}
+        {/* User Info */}
+        <div className="topbar-user">
+          <div style={{ textAlign: 'right' }}>
+            <div className="user-name">{user.name}</div>
+            <div className="user-role" style={{ color: 'var(--blue)', fontWeight: 700, fontSize: '10px' }}>{user.roleLabel || user.role.toUpperCase()}</div>
+          </div>
+          <div className="user-avatar" style={{ background: user.role === 'citizen' ? 'var(--blue)' : 'var(--navy)' }}>
+            {user.name.charAt(0)}
+          </div>
         </div>
       </div>
     </header>

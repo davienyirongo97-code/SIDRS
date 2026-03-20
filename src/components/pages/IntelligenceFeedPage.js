@@ -28,18 +28,22 @@ import React, { useState } from 'react';
 import { useAppState } from '../../context/AppContext';
 import { findDevice } from '../../utils/helpers';
 import StatCard from '../ui/StatCard';
-import { FiWifi, FiBluetooth, FiBookOpen, FiShield, FiRadio, FiMap, FiAlertCircle, FiInfo, FiSmartphone, FiMapPin, FiClock } from 'react-icons/fi';
+import { 
+  FiWifi, FiBluetooth, FiBookOpen, FiShield, FiRadio, FiMap, 
+  FiAlertCircle, FiInfo, FiSmartphone, FiMapPin, FiClock 
+} from 'react-icons/fi';
+import MalawiMap from '../ui/MalawiMap';
 
 // ── MOCK IoT NODE DATA ────────────────────────────────────────
 const IOT_NODES = [
-  { id: 'IOT-001', name: 'Shoprite City Mall WiFi',       type: 'WiFi AP',     location: 'City Mall, Lilongwe',         status: 'online',  detections: 3 },
-  { id: 'IOT-002', name: 'Kawale Market BLE Grid',        type: 'BLE Beacon',  location: 'Kawale Market, Lilongwe',     status: 'online',  detections: 7 },
-  { id: 'IOT-003', name: 'Chancellor College WiFi',       type: 'Campus Node', location: 'UNIMA, Zomba',                status: 'online',  detections: 2 },
-  { id: 'IOT-004', name: 'Lilongwe Bus Depot BLE',        type: 'BLE Beacon',  location: 'Bus Depot, Lilongwe',         status: 'online',  detections: 4 },
-  { id: 'IOT-005', name: 'Chichiri Mall WiFi',            type: 'WiFi AP',     location: 'Chichiri Mall, Blantyre',     status: 'online',  detections: 1 },
-  { id: 'IOT-006', name: 'Mchinji Border Post',           type: 'Border Node', location: 'Mchinji Border, Mchinji',     status: 'online',  detections: 0 },
-  { id: 'IOT-007', name: 'Karonga Border Post',           type: 'Border Node', location: 'Karonga Border, Karonga',     status: 'offline', detections: 0 },
-  { id: 'IOT-008', name: 'Polytechnic WiFi',              type: 'Campus Node', location: 'Malawi Poly, Blantyre',       status: 'online',  detections: 1 },
+  { id: 'IOT-001', name: 'Shoprite City Mall WiFi',       type: 'WiFi AP',     location: 'City Mall, Lilongwe',         status: 'online',  detections: 3, latitude: -13.96, longitude: 33.77 },
+  { id: 'IOT-002', name: 'Kawale Market BLE Grid',        type: 'BLE Beacon',  location: 'Kawale Market, Lilongwe',     status: 'online',  detections: 7, latitude: -13.92, longitude: 33.76 },
+  { id: 'IOT-003', name: 'Chancellor College WiFi',       type: 'Campus Node', location: 'UNIMA, Zomba',                status: 'online',  detections: 2, latitude: -15.38, longitude: 35.33 },
+  { id: 'IOT-004', name: 'Lilongwe Bus Depot BLE',        type: 'BLE Beacon',  location: 'Bus Depot, Lilongwe',         status: 'online',  detections: 4, latitude: -13.97, longitude: 33.78 },
+  { id: 'IOT-005', name: 'Chichiri Mall WiFi',            type: 'WiFi AP',     location: 'Chichiri Mall, Blantyre',     status: 'online',  detections: 1, latitude: -15.80, longitude: 35.02 },
+  { id: 'IOT-006', name: 'Mchinji Border Post',           type: 'Border Node', location: 'Mchinji Border, Mchinji',     status: 'online',  detections: 0, latitude: -13.80, longitude: 32.89 },
+  { id: 'IOT-007', name: 'Karonga Border Post',           type: 'Border Node', location: 'Karonga Border, Karonga',     status: 'offline', detections: 0, latitude: -9.93,  longitude: 33.93 },
+  { id: 'IOT-008', name: 'Polytechnic WiFi',              type: 'Campus Node', location: 'Malawi Poly, Blantyre',       status: 'online',  detections: 1, latitude: -15.79, longitude: 35.01 },
 ];
 
 const IOT_EVENTS = [
@@ -103,6 +107,7 @@ const NODE_TYPE_CONFIG = {
 export default function IntelligenceFeedPage() {
   const { events, reports, devices } = useAppState();
   const [activeTab, setActiveTab] = useState('telecom');
+  const [hoveredId, setHoveredId] = useState(null);
 
   const airtel = events.filter(e => e.operator === 'Airtel');
   const tnm    = events.filter(e => e.operator === 'TNM');
@@ -150,23 +155,39 @@ export default function IntelligenceFeedPage() {
 
       {/* ════════════════ TELECOM TAB ════════════════ */}
       {activeTab === 'telecom' && (
-        <div className="grid-2">
-          <div className="card">
-            <div className="card-title" style={{ marginBottom:16, display:'flex', alignItems:'center', gap:6 }}><FiRadio size={14}/> Tower Detection Timeline</div>
+        <div style={{ display: 'grid', gridTemplateColumns: '380px 1fr', gap: 24 }}>
+          <div className="card" style={{ height: 620, overflowY: 'auto' }}>
+            <div className="card-title" style={{ marginBottom:16, display:'flex', alignItems:'center', gap:6 }}>
+              <FiRadio size={14}/> Tower Detection Timeline
+            </div>
             <div className="timeline">
               {events.slice().reverse().map((ev, i, arr) => {
                 const report = reports.find(r => r.id === ev.reportId);
-                const device = report ? findDevice(report.deviceId, devices) : null;
+                const device = devices.find(d => d.id === report?.deviceId);
                 return (
-                  <div className="timeline-item" key={ev.id}>
+                  <div 
+                    className="timeline-item" 
+                    key={ev.id}
+                    onMouseEnter={() => setHoveredId(ev.id)}
+                    onMouseLeave={() => setHoveredId(null)}
+                    style={{ 
+                      cursor: 'pointer',
+                      padding: '10px',
+                      borderRadius: 8,
+                      background: hoveredId === ev.id ? 'var(--bg)' : 'transparent',
+                      transition: 'background 0.2s'
+                    }}
+                  >
                     {i < arr.length - 1 && <div className="timeline-line" />}
                     <div className="timeline-dot" style={{ background: ev.operator==='Airtel' ? 'var(--red)' : 'var(--blue)', display:'flex', alignItems:'center', justifyContent:'center' }}><FiRadio size={10}/></div>
                     <div className="timeline-content">
-                      <div className="timeline-title">{device?.make} {device?.model} · <span style={{ color: ev.operator==='Airtel' ? 'var(--red)' : 'var(--blue)' }}>{ev.operator}</span></div>
+                      <div className="timeline-title">
+                        {device ? `${device.make} ${device.model}` : 'Unknown Device'} · <span style={{ color: ev.operator==='Airtel' ? 'var(--red)' : 'var(--blue)' }}>{ev.operator}</span>
+                      </div>
                       <div className="timeline-sub">
                         {ev.detectedAt} · {ev.tower}<br />
                         SIM: <span style={{ fontFamily:'var(--font-mono)' }}>{ev.activeSim}</span><br />
-                        {ev.latitude.toFixed(4)}°S, {ev.longitude.toFixed(4)}°E · ±{ev.radiusMeters}m
+                        {ev.latitude.toFixed(4)}°S, {ev.longitude.toFixed(4)}°E
                       </div>
                     </div>
                   </div>
@@ -175,33 +196,7 @@ export default function IntelligenceFeedPage() {
             </div>
           </div>
 
-          <div>
-            <div className="card" style={{ marginBottom:20 }}>
-              <div className="card-title" style={{ marginBottom:16, display:'flex', alignItems:'center', gap:6 }}><FiRadio size={14}/> Telecom Integration Status</div>
-              {[
-                { name:'Airtel Malawi', events: airtel.length, color:'var(--red)' },
-                { name:'TNM',           events: tnm.length,    color:'var(--blue)' },
-              ].map(op => (
-                <div key={op.name} style={{ padding:14, background:'var(--bg)', borderRadius:'var(--radius-2)', marginBottom:10 }}>
-                  <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:8 }}>
-                    <div style={{ fontWeight:800, fontSize:14 }}>{op.name}</div>
-                    <div className="live-badge" style={{ fontSize:10 }}>● Online</div>
-                  </div>
-                  <div style={{ display:'flex', justifyContent:'space-between', fontSize:12 }}>
-                    <span style={{ color:'var(--muted)' }}>Grey List events</span>
-                    <span style={{ fontWeight:700, color:op.color }}>{op.events} detections</span>
-                  </div>
-                  <div style={{ marginTop:8, height:4, borderRadius:2, background:'var(--muted-3)', overflow:'hidden' }}>
-                    <div style={{ height:'100%', width:`${(op.events/events.length)*100}%`, background:op.color, borderRadius:2 }} />
-                  </div>
-                </div>
-              ))}
-            </div>
-            <div className="alert alert-amber">
-              <span className="alert-icon"><FiInfo /></span>
-              <div style={{ fontSize:12 }}>Telecom events give ±350–700m precision. Combine with IoT node detections for room-level accuracy.</div>
-            </div>
-          </div>
+          <MalawiMap points={events} type="movement" />
         </div>
       )}
 
@@ -300,44 +295,49 @@ export default function IntelligenceFeedPage() {
             <button className="btn btn-primary btn-sm">+ Add Node</button>
           </div>
 
-          <div className="grid-2">
-            {IOT_NODES.map(node => {
-              const cfg = NODE_TYPE_CONFIG[node.type] || NODE_TYPE_CONFIG['WiFi AP'];
-              return (
-                <div key={node.id} style={{
-                  padding:'14px 16px', borderRadius:'var(--radius-2)',
-                  border:`1px solid ${node.status==='online' ? cfg.color+'40' : 'var(--muted-3)'}`,
-                  background:'var(--surface)',
-                  opacity: node.status==='offline' ? 0.6 : 1,
-                }}>
-                  <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:10 }}>
-                    <div style={{
-                      width:36, height:36, borderRadius:10,
-                      background: node.status==='online' ? cfg.bg : 'var(--bg-2)',
-                      display:'flex', alignItems:'center', justifyContent:'center', fontSize:16,
-                    }}>
-                      {cfg.icon}
-                    </div>
-                    <div style={{ flex:1, minWidth:0 }}>
-                      <div style={{ fontWeight:700, fontSize:13, color:'var(--ink)' }}>{node.name}</div>
-                      <div style={{ fontSize:11, color:'var(--muted)', marginTop:2 }}>{node.location}</div>
-                    </div>
-                    <div style={{
-                      fontSize:10, fontWeight:800, padding:'2px 8px', borderRadius:20,
-                      background: node.status==='online' ? 'var(--green-pale)' : 'var(--red-pale)',
-                      color:      node.status==='online' ? 'var(--green)'      : 'var(--red)',
-                    }}>
-                      {node.status==='online' ? '● Online' : '● Offline'}
-                    </div>
-                  </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'minmax(300px, 1fr) 380px', gap: 24 }}>
+            {/* National Overview Map */}
+            <MalawiMap points={IOT_NODES} type="nodes" />
 
-                  <div style={{ display:'flex', justifyContent:'space-between', fontSize:12 }}>
-                    <span style={{ color:'var(--muted)' }}>Type: <strong style={{ color:cfg.color }}>{node.type}</strong></span>
-                    <span style={{ color:'var(--muted)' }}>Hits: <strong style={{ color:'var(--ink)' }}>{node.detections}</strong></span>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12, maxHeight: 600, overflowY: 'auto' }}>
+              {IOT_NODES.map(node => {
+                const cfg = NODE_TYPE_CONFIG[node.type] || NODE_TYPE_CONFIG['WiFi AP'];
+                return (
+                  <div key={node.id} style={{
+                    padding:'14px 16px', borderRadius:'var(--radius-2)',
+                    border:`1px solid ${node.status==='online' ? cfg.color+'40' : 'var(--muted-3)'}`,
+                    background:'var(--surface)',
+                    opacity: node.status==='offline' ? 0.6 : 1,
+                  }}>
+                    <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:10 }}>
+                      <div style={{
+                        width:36, height:36, borderRadius:10,
+                        background: node.status==='online' ? cfg.bg : 'var(--bg-2)',
+                        display:'flex', alignItems:'center', justifyContent:'center', fontSize:16,
+                      }}>
+                        {cfg.icon}
+                      </div>
+                      <div style={{ flex:1, minWidth:0 }}>
+                        <div style={{ fontWeight:700, fontSize:13, color:'var(--ink)' }}>{node.name}</div>
+                        <div style={{ fontSize:11, color:'var(--muted)', marginTop:2 }}>{node.location}</div>
+                      </div>
+                      <div style={{
+                        fontSize:10, fontWeight:800, padding:'2px 8px', borderRadius:20,
+                        background: node.status==='online' ? 'var(--green-pale)' : 'var(--red-pale)',
+                        color:      node.status==='online' ? 'var(--green)'      : 'var(--red)',
+                      }}>
+                        {node.status==='online' ? '● Online' : '● Offline'}
+                      </div>
+                    </div>
+
+                    <div style={{ display:'flex', justifyContent:'space-between', fontSize:12 }}>
+                      <span style={{ color:'var(--muted)' }}>Type: <strong style={{ color:cfg.color }}>{node.type}</strong></span>
+                      <span style={{ color:'var(--muted)' }}>Hits: <strong style={{ color:'var(--ink)' }}>{node.detections}</strong></span>
+                    </div>
                   </div>
-                </div>
-              );
-            })}
+                );
+              })}
+            </div>
           </div>
 
           <div className="alert alert-green" style={{ marginTop:20 }}>

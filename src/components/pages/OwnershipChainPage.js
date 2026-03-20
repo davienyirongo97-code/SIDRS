@@ -1,37 +1,12 @@
-/**
- * src/components/pages/OwnershipChainPage.js
- * ─────────────────────────────────────────────
- * BLOCKCHAIN OWNERSHIP CHAIN
- *
- * Every device registration, ownership transfer, theft report,
- * recovery, and IMEI anomaly is written as an immutable block
- * into a tamper-proof chain. Each block contains:
- *
- *   - Block number + cryptographic hash (SHA-256 style)
- *   - Previous block hash (the "chain" link)
- *   - Timestamp
- *   - Event type + payload
- *   - Digital signature of the actor
- *
- * WHY BLOCKCHAIN FOR SDIRS:
- *   In court, police need undeniable proof of:
- *   1. Who owned the device at time of theft
- *   2. Every ownership transfer (to catch fraudulent re-registrations)
- *   3. That the theft report was filed before any tampering
- *   4. IMEI change events (proves criminal intent)
- *
- *   A blockchain ledger provides this — no MACRA administrator,
- *   police officer, or developer can delete or alter a past record.
- *   The hash chain makes any tampering instantly detectable.
- */
-
 import React, { useState, useMemo } from 'react';
 import { useAppState } from '../../context/AppContext';
-import { deviceIcon, primaryIdentifier } from '../../utils/helpers';
+import { deviceIcon } from '../../utils/helpers';
+import { 
+  FiLink, FiSmartphone, FiRefreshCw, FiAlertCircle, FiUsers, 
+  FiCheckCircle, FiAlertTriangle, FiRadio, FiLock, FiClock, FiUser, FiSearch 
+} from 'react-icons/fi';
 
 // ── SIMULATED BLOCKCHAIN HASH ─────────────────────────────────
-// In production this would be real SHA-256. Here we simulate it
-// deterministically from the block content so it's always consistent.
 function simulateHash(input) {
   let hash = 0x811c9dc5;
   const str = JSON.stringify(input);
@@ -45,18 +20,16 @@ function simulateHash(input) {
     (hash * 0x1000193 >>> 0).toString(16).padStart(8, '0').toUpperCase();
 }
 
-const GENESIS_HASH = '0000000000000000SDIRS_GENESIS_BLOCK_MALAWI_2025';
-
 // Event type config
 const EVENT_TYPES = {
-  GENESIS:          { icon: '⛓️',  label: 'Genesis Block',        color: '#6B46C1', bg: '#F3F0FF' },
-  DEVICE_REGISTERED:{ icon: '📱',  label: 'Device Registered',    color: 'var(--green)', bg: 'var(--green-pale)' },
-  OWNERSHIP_TRANSFER:{ icon: '🔄', label: 'Ownership Transferred', color: 'var(--blue)',  bg: '#EEF4FF' },
-  THEFT_REPORTED:   { icon: '🚨',  label: 'Theft Reported',        color: 'var(--amber)', bg: 'var(--amber-pale)' },
-  THEFT_VERIFIED:   { icon: '👮',  label: 'Report Verified',       color: 'var(--red)',   bg: 'var(--red-pale)' },
-  DEVICE_RECOVERED: { icon: '✅',  label: 'Device Recovered',      color: 'var(--green)', bg: 'var(--green-pale)' },
-  IMEI_ANOMALY:     { icon: '⚠️',  label: 'IMEI Anomaly Detected', color: 'var(--red)',   bg: 'var(--red-pale)' },
-  IOT_DETECTION:    { icon: '📡',  label: 'IoT Node Detection',    color: '#0891B2',       bg: '#E0F7FA' },
+  GENESIS:          { icon: <FiLink />,           label: 'Genesis Block',        color: '#6B46C1', bg: '#F3F0FF' },
+  DEVICE_REGISTERED:{ icon: <FiSmartphone />,     label: 'Device Registered',    color: 'var(--green)', bg: 'var(--green-pale)' },
+  OWNERSHIP_TRANSFER:{ icon: <FiRefreshCw />,     label: 'Ownership Transferred', color: 'var(--blue)',  bg: '#EEF4FF' },
+  THEFT_REPORTED:   { icon: <FiAlertCircle />,    label: 'Theft Reported',        color: 'var(--amber)', bg: 'var(--amber-pale)' },
+  THEFT_VERIFIED:   { icon: <FiUsers />,          label: 'Report Verified',       color: 'var(--red)',   bg: 'var(--red-pale)' },
+  DEVICE_RECOVERED: { icon: <FiCheckCircle />,    label: 'Device Recovered',      color: 'var(--green)', bg: 'var(--green-pale)' },
+  IMEI_ANOMALY:     { icon: <FiAlertTriangle />,  label: 'IMEI Anomaly Detected', color: 'var(--red)',   bg: 'var(--red-pale)' },
+  IOT_DETECTION:    { icon: <FiRadio />,          label: 'IoT Node Detection',    color: '#0891B2',       bg: '#E0F7FA' },
 };
 
 // ── BUILD BLOCKCHAIN FROM APP STATE ──────────────────────────
@@ -245,8 +218,8 @@ export default function OwnershipChainPage() {
           <div style={{ fontSize:10, fontWeight:800, color:'rgba(255,255,255,0.35)', letterSpacing:2, textTransform:'uppercase', marginBottom:8 }}>
             Immutable Ledger · Tamper-Proof · Court-Admissible
           </div>
-          <div style={{ fontFamily:'var(--font-display)', fontSize:26, fontWeight:800, color:'#fff', marginBottom:10 }}>
-            ⛓️ Blockchain Ownership Chain
+          <div style={{ fontFamily:'var(--font-display)', fontSize:26, fontWeight:800, color:'#fff', marginBottom:10, display: 'flex', alignItems: 'center', gap: 10 }}>
+            <FiLink /> Ownership Ledger
           </div>
           <div style={{ display:'flex', gap:28, flexWrap:'wrap' }}>
             {[
@@ -267,7 +240,7 @@ export default function OwnershipChainPage() {
       {/* ── Chain integrity indicator ── */}
       <div className="card" style={{ marginBottom:20, borderColor:'#C4B5FD', borderWidth:2 }}>
         <div style={{ display:'flex', alignItems:'center', gap:14, flexWrap:'wrap' }}>
-          <div style={{ fontSize:28 }}>🔐</div>
+          <div style={{ fontSize:28, color: 'var(--purple)' }}><FiLock /></div>
           <div style={{ flex:1 }}>
             <div style={{ fontWeight:800, fontSize:14, color:'var(--green)' }}>Chain Integrity: VERIFIED ✓</div>
             <div style={{ fontSize:12, color:'var(--muted)', marginTop:2 }}>
@@ -356,8 +329,8 @@ export default function OwnershipChainPage() {
                         </span>
                       )}
                     </div>
-                    <div style={{ fontSize:11, color:'var(--muted)', marginTop:4 }}>
-                      🕐 {block.timestamp} &nbsp;·&nbsp; 👤 {block.actor}
+                    <div style={{ fontSize:11, color:'var(--muted)', marginTop:4, display: 'flex', alignItems: 'center', gap: 4 }}>
+                      <FiClock size={12} /> {block.timestamp} &nbsp;·&nbsp; <FiUser size={12} /> {block.actor}
                     </div>
                   </div>
                   <div style={{ textAlign:'right', flexShrink:0 }}>
@@ -394,7 +367,7 @@ export default function OwnershipChainPage() {
 
                     {isAnomaly && (
                       <div className="alert alert-red" style={{ marginTop:12 }}>
-                        <span className="alert-icon">⚠️</span>
+                        <span className="alert-icon"><FiAlertTriangle /></span>
                         <div>
                           <strong>IMEI Tampering Evidence — Court Admissible Record</strong><br />
                           This block provides cryptographic proof that IMEI modification occurred on this device.
@@ -413,7 +386,7 @@ export default function OwnershipChainPage() {
 
       {filtered.length === 0 && (
         <div style={{ textAlign:'center', padding:'60px 20px', color:'var(--muted)' }}>
-          <div style={{ fontSize:48, marginBottom:12 }}>🔍</div>
+          <div style={{ fontSize:48, marginBottom:12, color: 'var(--muted-2)' }}><FiSearch size={48} /></div>
           <div style={{ fontWeight:700 }}>No blocks match your search</div>
         </div>
       )}

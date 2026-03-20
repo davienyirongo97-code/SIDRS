@@ -30,7 +30,7 @@
  *   HIDE_TOAST       — hide the toast
  */
 
-import React, { createContext, useContext, useReducer, useCallback } from 'react';
+import React, { createContext, useContext, useReducer, useCallback, useEffect, useRef } from 'react';
 import {
   INITIAL_USERS,
   INITIAL_DEVICES,
@@ -49,6 +49,8 @@ const AppStateContext    = createContext(null);
 const AppDispatchContext = createContext(null);
 
 // ─── INITIAL STATE ────────────────────────────────────────────
+const STORAGE_KEY = 'sidrs_state_v1';
+
 const initialState = {
   currentUserId: 'U001',
   users:         INITIAL_USERS,
@@ -60,11 +62,14 @@ const initialState = {
   modal:         null,
   modalData:     null,
   toast:         null,
+  theme:         'light',
 };
 
-// ─── HELPER: generate simple IDs ─────────────────────────────
-function makeId(prefix, collection) {
-  return `${prefix}${String(collection.length + 1).padStart(3, '0')}`;
+// ─── HELPER: generate unique IDs ─────────────────────────────
+function makeId(prefix) {
+  const ts = Date.now().toString(36).toUpperCase();
+  const r = Math.random().toString(36).substring(2, 5).toUpperCase();
+  return `${prefix}-${ts}-${r}`;
 }
 
 function makeReportId(reports) {
@@ -87,6 +92,8 @@ function nowString() {
 // ─── REDUCER ─────────────────────────────────────────────────
 function appReducer(state, action) {
   switch (action.type) {
+    case 'HYDRATE_STATE':
+      return { ...state, ...action.payload, toast: null, modal: null };
 
     // Switch the currently logged-in user (demo only)
     case 'SET_USER':
@@ -96,7 +103,7 @@ function appReducer(state, action) {
     case 'REGISTER_DEVICE': {
       const newDevice = {
         ...action.payload,
-        id: makeId('D', state.devices),
+        id: makeId('D'),
         ownerId: state.currentUserId,
         registeredDate: new Date().toISOString().slice(0, 10),
         status: 'registered',
@@ -217,6 +224,9 @@ function appReducer(state, action) {
     }
 
     // Show a modal: { name: 'registerDevice', data: {...} }
+    case 'TOGGLE_THEME':
+      return { ...state, theme: state.theme === 'light' ? 'dark' : 'light' };
+
     case 'OPEN_MODAL':
       return {
         ...state,
@@ -244,6 +254,29 @@ function appReducer(state, action) {
 // ─── PROVIDER ────────────────────────────────────────────────
 export function AppProvider({ children }) {
   const [state, dispatch] = useReducer(appReducer, initialState);
+  const isHydrated = useRef(false);
+
+  // Load from localStorage on mount
+  useEffect(() => {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        dispatch({ type: 'HYDRATE_STATE', payload: parsed });
+      } catch (e) {
+        console.error('Failed to parse saved state', e);
+      }
+    }
+    isHydrated.current = true;
+  }, []);
+
+  // Save to localStorage on state change
+  useEffect(() => {
+    if (isHydrated.current) {
+      const { toast, modal, modalData, ...rest } = state;
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(rest));
+    }
+  }, [state]);
 
   return (
     <AppStateContext.Provider value={state}>
@@ -298,19 +331,37 @@ export function useMyReports() {
   return reports.filter(r => r.reportedBy === currentUserId);
 }
 
-/**
- * Convenience hook — show a toast notification from any component.
- * Usage: const showToast = useToast();
- *        showToast('Device registered!', 'Protected in registry.', 'success');
- */
+/** Improved Toast hook with auto-clear to prevent overlapping timers */
 export function useToast() {
   const dispatch = useAppDispatch();
+  const timerRef = useRef(null);
+
   return useCallback(
     (message, subMessage = '', type = 'success') => {
+      // Clear any existing timer
+      if (timerRef.current) clearTimeout(timerRef.current);
+      
       dispatch({ type: 'SHOW_TOAST', payload: { message, subMessage, type } });
-      // Auto-hide after 4.5 seconds
-      setTimeout(() => dispatch({ type: 'HIDE_TOAST' }), 4500);
+      
+      // Auto-hide after 4.5 seconds and store ref
+      timerRef.current = setTimeout(() => {
+        dispatch({ type: 'HIDE_TOAST' });
+        timerRef.current = null;
+      }, 4500);
     },
     [dispatch]
   );
+}
+
+/**
+ * RBAC Hook: Checks if the current user has the required role.
+ * @param {string|string[]} technicalRoles - 'citizen', 'police', 'macra'
+ * @returns {boolean}
+ */
+export function useHasAccess(technicalRoles) {
+  const user = useCurrentUser();
+  if (!user) return false;
+  
+  const allowed = Array.isArray(technicalRoles) ? technicalRoles : [technicalRoles];
+  return allowed.includes(user.role);
 }

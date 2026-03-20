@@ -19,64 +19,75 @@
 
 /* ── DESIGN TOKENS ─────────────────────────────────────────── */
 :root {
-  /* Navy scale */
-  --navy:      #06112B;
-  --navy-2:    #0C1E42;
-  --navy-3:    #122459;
+  /* Malawi National Palette */
+  --navy:      #1E3A8A; /* Deep National Blue */
+  --navy-2:    #172554;
+  --navy-3:    #1E40AF;
+  
+  --blue:      #2563EB; /* Primary Action Blue */
+  --blue-2:    #3B82F6;
+  --blue-3:    #93C5FD;
 
-  /* Blue scale */
-  --blue:      #1A5CDB;
-  --blue-2:    #2B6FED;
-  --blue-3:    #5B93FF;
+  /* Accent Colors - Formal Professional */
+  --amber:     #B45309;
+  --amber-2:   #F59E0B;
+  --amber-pale:#FFFBEB;
 
-  /* Amber scale */
-  --amber:     #E8890C;
-  --amber-2:   #F5A623;
-  --amber-pale:#FFF8EC;
+  --green:     #15803D;
+  --green-2:   #22C55E;
+  --green-pale:#F0FDF4;
 
-  /* Green scale */
-  --green:     #1B7A3E;
-  --green-2:   #22A050;
-  --green-pale:#EAF7EE;
+  --red:       #B91C1C;
+  --red-2:     #EF4444;
+  --red-pale:  #FEF2F2;
 
-  /* Red scale */
-  --red:       #C0252C;
-  --red-2:     #E8393F;
-  --red-pale:  #FEF0F0;
+  /* Surfaces - Original Dark Theme */
+  --surface:   #1E293B;
+  --bg:        #0F172A;
+  --bg-2:      #1E293B;
 
-  /* Purple scale */
-  --purple:    #5B2DA8;
-  --purple-pale:#F0EBFF;
+  /* Text - High Contrast */
+  --ink:       #F8FAFC;
+  --ink-2:     #CBD5E1;
+  --ink-3:     #94A3B8;
 
-  /* Ink / text scale */
-  --ink:       #0A0E1A;
-  --ink-2:     #1C2337;
-  --ink-3:     #2E3650;
-
-  /* Muted / disabled scale */
-  --muted:     #8895B3;
-  --muted-2:   #B5BFDA;
-  --muted-3:   #DDE3F0;
-
-  /* Surfaces */
-  --surface:   #FFFFFF;
-  --bg:        #F2F5FC;
-  --bg-2:      #E8EDF8;
+  --muted:     #64748B;
+  --muted-2:   #475569;
+  --muted-3:   #334155;
 
   /* Typography */
   --font-display: 'Syne', system-ui, sans-serif;
   --font-body:    'DM Sans', system-ui, sans-serif;
   --font-mono:    'DM Mono', monospace;
 
-  /* Border radius */
-  --radius:    14px;
-  --radius-2:  10px;
+  /* Layout */
+  --radius:    16px;
+  --radius-2:  12px;
   --radius-3:  8px;
 
-  /* Shadows */
-  --shadow:    0 2px 16px rgba(6,17,43,0.08);
-  --shadow-2:  0 8px 40px rgba(6,17,43,0.14);
-  --shadow-3:  0 24px 80px rgba(6,17,43,0.22);
+  /* Shadows - Dark Theme */
+  --shadow:    0 4px 24px rgba(0,0,0,0.4);
+  --shadow-2:  0 12px 48px rgba(0,0,0,0.6);
+  --shadow-3:  0 32px 96px rgba(0,0,0,0.8);
+}
+
+/* ── LIGHT MODE  ─────────────────────────────── */
+[data-theme='light'] {
+  --surface:   #FFFFFF;
+  --bg:        #F0F7FF; 
+  --bg-2:      #ECF4FF;
+
+  --ink:       #0F172A;
+  --ink-2:     #1E3A8A;
+  --ink-3:     #334155;
+
+  --muted:     #64748B;
+  --muted-2:   #94A3B8;
+  --muted-3:   #DBEAFE; 
+
+  --shadow:    0 1px 3px rgba(30,58,138,0.05);
+  --shadow-2:  0 10px 15px -3px rgba(30,58,138,0.07), 0 4px 6px -2px rgba(30,58,138,0.03);
+  --shadow-3:  0 25px 50px -12px rgba(30,58,138,0.12);
 }
 
 /* ── RESET ─────────────────────────────────────────────────── */

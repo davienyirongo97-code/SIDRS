@@ -10,6 +10,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppState, useToast } from '../../context/AppContext';
 import { primaryIdentifier, todayString } from '../../utils/helpers';
 import { POLICE_STATIONS } from '../../data/mockData';
+import { FiAlertCircle, FiAlertTriangle } from 'react-icons/fi';
 
 export default function ReportTheftPage() {
   const dispatch  = useAppDispatch();
@@ -39,7 +40,7 @@ export default function ReportTheftPage() {
   return (
     <div className="fade-up" style={{ maxWidth: 600 }}>
       <div className="alert alert-red" style={{ marginBottom: 24 }}>
-        <span className="alert-icon">🚨</span>
+        <span className="alert-icon"><FiAlertCircle /></span>
         <div>
           Upon police verification, the stolen IMEI is <strong>silently</strong> flagged on Airtel &amp; TNM.
           Every network connection gives police live location data. Do NOT publicly announce your report.
@@ -47,11 +48,13 @@ export default function ReportTheftPage() {
       </div>
 
       <div className="card">
-        <div className="card-title" style={{ marginBottom: 20 }}>🚨 Report a Stolen Device</div>
+        <div className="card-title" style={{ marginBottom: 20, display: 'flex', alignItems: 'center', gap: 8 }}>
+          <FiAlertCircle /> Report a Stolen Device
+        </div>
 
         {myDevices.length === 0 ? (
           <div className="alert alert-amber">
-            <span className="alert-icon">⚠️</span>
+            <span className="alert-icon"><FiAlertTriangle /></span>
             <div>No registered devices available. Contact your nearest police station directly, or register your device first.</div>
           </div>
         ) : (
@@ -87,11 +90,11 @@ export default function ReportTheftPage() {
               <textarea className="field-input" placeholder="Describe how the theft occurred..." value={form.description} onChange={e => update('description', e.target.value)} />
             </div>
             <div className="alert alert-amber" style={{ marginBottom: 20 }}>
-              <span className="alert-icon">⚠️</span>
+              <span className="alert-icon"><FiAlertTriangle /></span>
               <div>Filing a false theft report is a criminal offence under the Communications Act.</div>
             </div>
-            <button type="submit" className="btn btn-danger" style={{ width: '100%' }}>
-              🚨 Submit Theft Report
+            <button type="submit" className="btn btn-danger" style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+              <FiAlertCircle /> Submit Theft Report
             </button>
           </form>
         )}
