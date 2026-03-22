@@ -8,7 +8,8 @@ import React, { useState, useRef, useEffect } from 'react';
 import Map, { Marker, Source, Layer, NavigationControl } from 'react-map-gl';
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
-import { FiWifi, FiBluetooth, FiRadio, FiAlertCircle } from 'react-icons/fi';
+import { FiWifi, FiBluetooth, FiRadio, FiAlertCircle, FiNavigation } from 'react-icons/fi';
+import { useAppState } from '../../context/AppContext';
 
 export default function MalawiMap({ points = [], type = 'events', selectedId = null }) {
   const mapRef = useRef();
@@ -31,6 +32,21 @@ export default function MalawiMap({ points = [], type = 'events', selectedId = n
     acc[key].push(p);
     return acc;
   }, {});
+
+  const appState = useAppState();
+  const devices = appState?.devices || [];
+  const reports = appState?.reports || [];
+
+  const pointSequences = React.useMemo(() => {
+    const seq = {};
+    Object.entries(groupedPoints).forEach(([reportId, pts]) => {
+      const sortedPts = [...pts].sort((a, b) => new Date(a.detectedAt || 0) - new Date(b.detectedAt || 0));
+      sortedPts.forEach((pt, i) => {
+        seq[pt.id || pt.detectedAt] = i + 1;
+      });
+    });
+    return seq;
+  }, [groupedPoints]);
 
   const activeReport = hovered || (activeId ? points.find(p => (p.reportId === activeId || p.id === activeId)) : points[points.length - 1]);
 
@@ -84,6 +100,76 @@ export default function MalawiMap({ points = [], type = 'events', selectedId = n
     if (networkType?.includes('BLE')) return <FiBluetooth size={14} />;
     return <FiRadio size={14} />;
   };
+
+  // 1. Playback Tracker Animation
+  const [progress, setProgress] = useState(0);
+
+  useEffect(() => {
+    if (type !== 'events' && type !== 'movement') return;
+    let startTime;
+    const duration = 12000; // 12 seconds loop
+    let animId;
+    const animateTracker = (timestamp) => {
+      if (!startTime) startTime = timestamp;
+      const elapsed = timestamp - startTime;
+      setProgress((elapsed % duration) / duration);
+      animId = requestAnimationFrame(animateTracker);
+    };
+    animId = requestAnimationFrame(animateTracker);
+    return () => cancelAnimationFrame(animId);
+  }, [type]);
+
+  const trackers = React.useMemo(() => {
+    if (type !== 'events' && type !== 'movement') return [];
+    return Object.entries(groupedPoints).map(([reportId, pts]) => {
+      if (pts.length < 2) return null;
+      const sortedPts = [...pts].sort((a, b) => new Date(a.detectedAt || 0) - new Date(b.detectedAt || 0));
+      const totalSegments = sortedPts.length - 1;
+      const scaledProgress = progress * totalSegments;
+      const currentSegmentIndex = Math.min(Math.floor(scaledProgress), totalSegments - 1);
+      const segmentProgress = scaledProgress - currentSegmentIndex;
+      
+      const startPt = sortedPts[currentSegmentIndex];
+      const endPt = sortedPts[currentSegmentIndex + 1];
+      
+      const lat = startPt.latitude + (endPt.latitude - startPt.latitude) * segmentProgress;
+      const lng = startPt.longitude + (endPt.longitude - startPt.longitude) * segmentProgress;
+      
+      const report = reports.find(r => r.id === reportId);
+      const device = devices.find(d => d.id === report?.deviceId);
+      
+      const latestSim = startPt.activeSim || endPt.activeSim || 'Unknown SIM';
+      const deviceName = device ? `${device.make} ${device.model}` : 'Target Device';
+
+      const isActive = activeId === reportId || hovered?.reportId === reportId;
+      const isDimmed = activeId && activeId !== reportId && !hovered?.reportId;
+
+      return {
+        id: reportId, lat, lng, deviceName, activeSim: latestSim, isActive, isDimmed
+      };
+    }).filter(Boolean);
+  }, [groupedPoints, progress, reports, devices, activeId, hovered, type]);
+
+  const targetList = React.useMemo(() => {
+    if (type !== 'events' && type !== 'movement') return [];
+    return Object.entries(groupedPoints).map(([reportId, pts]) => {
+      const sortedPts = [...pts].sort((a, b) => new Date(a.detectedAt || 0) - new Date(b.detectedAt || 0));
+      const latest = sortedPts[sortedPts.length - 1];
+      const report = reports.find(r => r.id === reportId);
+      const device = devices.find(d => d.id === report?.deviceId);
+      
+      return {
+        id: reportId,
+        deviceName: device ? `${device.make} ${device.model}` : 'Target Device',
+        activeSim: latest.activeSim || 'Unknown SIM',
+        latestLocation: latest.tower || latest.nodeName || 'Unknown Location',
+        detectedAt: latest.detectedAt,
+        confidence: 85 + Math.min(pts.length * 2, 14), // cap confidence to max 99
+        lat: latest.latitude,
+        lng: latest.longitude,
+      };
+    }).sort((a,b) => b.confidence - a.confidence);
+  }, [groupedPoints, type, reports, devices]);
 
   // GeoJSON for Heatmap
   const heatmapData = {
@@ -203,11 +289,25 @@ export default function MalawiMap({ points = [], type = 'events', selectedId = n
                     position: 'relative'
                   }}>
                     {isLatest && !isAnomaly && <div className="live-dot" style={{ position: 'absolute', top: -2, right: -2 }} />}
-                    {isSelected && <div style={{
+                     {isSelected && <div style={{
                       position: 'absolute', inset: -4, borderRadius: '50%',
                       animation: 'pulseGlow 2s infinite', pointerEvents: 'none'
                     }} />}
                     {getIcon(p.networkType || p.operator || p.type, isAnomaly ? 'anomaly' : null)}
+                    
+                    {/* Sequence Number */}
+                    {(type === 'events' || type === 'movement') && pointSequences[p.id || p.detectedAt] && (
+                      <div style={{
+                        position: 'absolute', top: -8, right: -8,
+                        background: 'var(--navy)', color: '#fff', fontSize: 9, fontWeight: 900,
+                        width: 18, height: 18, borderRadius: '50%',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        border: '1px solid var(--muted-3)', zIndex: 10,
+                        boxShadow: '0 2px 4px rgba(0,0,0,0.5)'
+                      }}>
+                        {pointSequences[p.id || p.detectedAt]}
+                      </div>
+                    )}
                   </div>
 
                   {/* Visual Label for latest or hovered */}
@@ -226,6 +326,40 @@ export default function MalawiMap({ points = [], type = 'events', selectedId = n
               </Marker>
             );
           })}
+
+          {/* Animated Tracker Markers */}
+          {trackers.map(t => (
+            <Marker key={`tracker-${t.id}`} longitude={t.lng} latitude={t.lat} anchor="center">
+              <div style={{
+                pointerEvents: 'none', opacity: t.isDimmed ? 0.35 : 1, zIndex: t.isActive ? 50 : 30,
+                position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center',
+                transition: 'opacity 0.3s'
+              }}>
+                {/* Information Label */}
+                <div className="fade-in" style={{
+                  background: 'var(--navy)', border: `1px solid ${t.isActive ? 'var(--blue)' : 'var(--muted)'}`,
+                  padding: '5px 10px', borderRadius: 8, color: '#fff', whiteSpace: 'nowrap',
+                  boxShadow: '0 4px 16px rgba(0,0,0,0.8)', marginBottom: 8, display: 'flex', flexDirection: 'column', alignItems: 'center'
+                }}>
+                  <div style={{ color: 'var(--amber)', fontSize: 11, fontWeight: 900 }}>{t.deviceName}</div>
+                  <div style={{ fontSize: 10, fontFamily: 'var(--font-mono)', color: 'var(--muted)', marginTop: 2 }}>SIM: <span style={{color: 'var(--blue)'}}>{t.activeSim}</span></div>
+                </div>
+
+                {/* Blip */}
+                <div style={{
+                  background: 'var(--surface)', border: `2px solid ${t.isActive ? '#2563EB' : '#93C5FD'}`, borderRadius: '50%',
+                  width: 28, height: 28, display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  color: t.isActive ? '#2563EB' : '#93C5FD', boxShadow: '0 0 15px rgba(37,99,235,0.7)', position: 'relative'
+                }}>
+                  <div style={{
+                    position: 'absolute', inset: 0, borderRadius: '50%', border: `2px solid ${t.isActive ? '#2563EB' : '#93C5FD'}`,
+                    animation: 'ping 1.2s cubic-bezier(0, 0, 0.2, 1) infinite', pointerEvents: 'none'
+                  }} />
+                  <FiNavigation size={14} style={{ transform: 'rotate(45deg)' }} />
+                </div>
+              </div>
+            </Marker>
+          ))}
         </Map>
 
         {/* Floating Legend */}
@@ -245,59 +379,124 @@ export default function MalawiMap({ points = [], type = 'events', selectedId = n
       </div>
 
       {/* ── Right: Intelligence Side Panel ── */}
-      <div className="map-intel-panel">
-        <div className="panel-header">
-          <FiRadio /> SIGNAL STRENGTH
+      <div className="map-intel-panel" style={{ overflowY: 'auto' }}>
+        <div className="panel-header" style={{ position: 'sticky', top: 0, zIndex: 10, background: 'var(--surface)', borderBottom: '1px solid var(--muted-3)', paddingBottom: 16 }}>
+          <FiRadio /> {type === 'hotspots' ? 'HOTSPOT INTELLIGENCE' : 'SIGNAL STRENGTH & TARGETS'}
         </div>
         
-        {activeReport ? (
-          <div className="fade-in">
-            <div className="intel-stat-main">
-              <div className="label">ACTIVE TARGET</div>
-              <div className="value">{activeReport.device || activeReport.name}</div>
-            </div>
+        {type !== 'hotspots' ? (
+          <div style={{ paddingBottom: 20 }}>
+            {/* 1. Original Active Target Detail Panel */}
+            {activeReport ? (
+              <div className="fade-in" style={{ padding: '20px', borderBottom: '1px solid var(--muted-3)', marginBottom: '10px' }}>
+                <div className="intel-stat-main" style={{ marginBottom: '15px' }}>
+                  <div className="label" style={{ fontSize: '10px', color: 'var(--muted)', letterSpacing: '1px', marginBottom: '4px' }}>ACTIVE TARGET</div>
+                  <div className="value" style={{ fontSize: '16px', fontWeight: '800', color: 'var(--ink)' }}>{activeReport.deviceName || activeReport.device || activeReport.name || 'Target Device'}</div>
+                </div>
 
-            <div className="intel-grid">
-              <div className="intel-item">
-                <div className="label">PRIMARY SIGNAL</div>
-                <div className="value-row">
-                  {activeReport.operator ? <FiRadio color="var(--red)" /> : <FiWifi color="var(--green)" />}
-                  {activeReport.operator || activeReport.type}
+                <div className="intel-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px', marginBottom: '20px' }}>
+                  <div className="intel-item">
+                    <div className="label" style={{ fontSize: '10px', color: 'var(--muted)', marginBottom: '4px' }}>PRIMARY SIGNAL</div>
+                    <div className="value-row" style={{ fontSize: '13px', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      {activeReport.operator ? <FiRadio color="var(--red)" /> : <FiWifi color="var(--green)" />}
+                      {activeReport.operator || activeReport.type || activeReport.networkType || 'TNM'}
+                    </div>
+                  </div>
+                  <div className="intel-item">
+                    <div className="label" style={{ fontSize: '10px', color: 'var(--muted)', marginBottom: '4px' }}>LATEST LOCATION</div>
+                    <div className="value" style={{ fontSize: '13px', fontWeight: '700' }}>{activeReport.tower || activeReport.nodeName || activeReport.location || 'Unknown location'}</div>
+                  </div>
+                  <div className="intel-item">
+                    <div className="label" style={{ fontSize: '10px', color: 'var(--muted)', marginBottom: '4px' }}>COORDINATES</div>
+                    <div className="value-mono" style={{ fontFamily: 'var(--font-mono)', fontSize: '12px', color: 'var(--muted-2)' }}>
+                      {parseFloat(activeReport.lat || activeReport.latitude || 0).toFixed(4)}°S, 
+                      {parseFloat(activeReport.lng || activeReport.longitude || 0).toFixed(4)}°E
+                    </div>
+                  </div>
+                  <div className="intel-item">
+                    <div className="label" style={{ fontSize: '10px', color: 'var(--muted)', marginBottom: '4px' }}>PRECISION</div>
+                    <div className="value" style={{ color: 'var(--amber)', fontSize: '13px', fontWeight: '700' }}>±{activeReport.radiusMeters || activeReport.precision || 700}m</div>
+                  </div>
+                </div>
+
+                <div className="intel-footer" style={{ borderTop: '1px solid var(--muted-3)', paddingTop: '15px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
+                    <span style={{ fontSize: '10px', color: 'var(--muted)' }}>SIGNAL CONFIDENCE</span>
+                    <span style={{ fontSize: '12px', color: 'var(--blue)', fontWeight: '800' }}>{activeReport.confidence || 85}%</span>
+                  </div>
+                  <div className="confidence-track" style={{ height: '6px', background: 'var(--bg-2)', borderRadius: '3px', overflow: 'hidden' }}>
+                    <div className="confidence-bar" style={{ width: `${activeReport.confidence || 85}%`, height: '100%', background: 'linear-gradient(90deg, var(--blue), var(--amber))' }} />
+                  </div>
+                  <div style={{ marginTop: '15px', fontSize: '10px', color: 'var(--muted)', lineHeight: '1.4' }}>
+                    Unit dispatch recommended for current coordinates. Tower proximity indicates high probability of retrieval.
+                  </div>
                 </div>
               </div>
-              <div className="intel-item">
-                <div className="label">LATEST LOCATION</div>
-                <div className="value">{activeReport.tower || activeReport.location}</div>
-              </div>
-              <div className="intel-item">
-                <div className="label">COORDINATES</div>
-                <div className="value-mono">
-                  {parseFloat(activeReport.lat || activeReport.latitude || 0).toFixed(4)}°S, 
-                  {parseFloat(activeReport.lng || activeReport.longitude || 0).toFixed(4)}°E
-                </div>
-              </div>
-              <div className="intel-item">
-                <div className="label">PRECISION</div>
-                <div className="value" style={{ color: 'var(--amber)' }}>±{activeReport.radiusMeters || activeReport.precision || 500}m</div>
-              </div>
-            </div>
+            ) : null}
 
-            <div className="intel-footer">
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 10 }}>
-                <span style={{ fontSize: 10, color: 'var(--muted)' }}>SIGNAL CONFIDENCE</span>
-                <span style={{ fontSize: 10, color: 'var(--blue)', fontWeight: 800 }}>{activeReport.confidence || 85}%</span>
+            {/* 2. Device List with Locate Buttons */}
+            {targetList.length > 0 ? (
+              <div style={{ padding: '0 16px 16px 16px', display: 'flex', flexDirection: 'column', gap: 12 }}>
+                <div style={{ fontSize: '11px', fontWeight: '800', color: 'var(--muted)', letterSpacing: '1px', marginTop: '8px', paddingLeft: '4px' }}>
+                  DETECTED NETWORK DEVICES ({targetList.length})
+                </div>
+                {targetList.map((t) => (
+                  <div key={t.id} style={{
+                    background: activeId === t.id ? 'var(--bg)' : 'var(--surface)',
+                    border: `1px solid ${activeId === t.id ? 'var(--blue)' : 'var(--muted-3)'}`,
+                    borderRadius: 12, padding: 14, cursor: 'pointer', transition: 'all .2s'
+                  }} onClick={() => setInternalSelectedId(t.id)}>
+                    
+                    {/* Header */}
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 }}>
+                      <div>
+                        <div style={{ fontWeight: 800, fontSize: 13, color: 'var(--ink)' }}>{t.deviceName}</div>
+                        <div style={{ fontSize: 11, fontFamily: 'var(--font-mono)', color: 'var(--blue)', marginTop: 2 }}>SIM: {t.activeSim}</div>
+                      </div>
+                      <div style={{
+                        background: t.confidence >= 90 ? 'var(--green-pale)' : 'var(--amber-pale)',
+                        color: t.confidence >= 90 ? 'var(--green)' : 'var(--amber)',
+                        padding: '2px 6px', borderRadius: 6, fontSize: 10, fontWeight: 900
+                      }}>
+                        {t.confidence}% CONF
+                      </div>
+                    </div>
+
+                    {/* Location */}
+                    <div style={{ fontSize: 11, color: 'var(--muted)', marginBottom: 10, display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <FiAlertCircle size={12} style={{ color: 'var(--amber)' }} /> 
+                      <div>
+                        <div style={{ fontWeight: 700, color: 'var(--ink)' }}>{t.latestLocation}</div>
+                        <div style={{ fontSize: 10 }}>{t.detectedAt}</div>
+                      </div>
+                    </div>
+
+                    {/* Locate Button */}
+                    <button
+                      className="btn btn-blue btn-sm"
+                      style={{ width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 6, fontSize: 11, padding: '6px 0' }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setInternalSelectedId(t.id);
+                        if (mapRef.current) {
+                          mapRef.current.flyTo({ center: [t.lng, t.lat], zoom: 13, duration: 1500, essential: true });
+                        }
+                      }}
+                    >
+                      <FiNavigation /> Locate Target
+                    </button>
+                  </div>
+                ))}
               </div>
-              <div className="confidence-track">
-                <div className="confidence-bar" style={{ width: `${activeReport.confidence || 85}%` }} />
+            ) : (
+              <div style={{ padding: 40, textAlign: 'center', color: 'var(--muted)', fontSize: 12 }}>
+                No active targets detected in this view.
               </div>
-              <div style={{ marginTop: 15, fontSize: 10, color: 'rgba(255,255,255,0.4)', lineHeight: 1.4 }}>
-                Unit dispatch recommended for current coordinates. Tower proximity indicates high probability of retrieval.
-              </div>
-            </div>
+            )}
           </div>
         ) : (
           <div style={{ padding: 40, textAlign: 'center', color: 'var(--muted)', fontSize: 12 }}>
-            Select a signal on the map for deep intelligence analysis
+            Select a hotspot for predictive analysis
           </div>
         )}
       </div>
