@@ -4,15 +4,18 @@
  * Interactive Mapbox GL JS map of Malawi for SDIRS Intelligence.
  */
 
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import Map, { Marker, Source, Layer, NavigationControl } from 'react-map-gl';
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { FiWifi, FiBluetooth, FiRadio, FiAlertCircle } from 'react-icons/fi';
 
-export default function MalawiMap({ points = [], type = 'events' }) {
+export default function MalawiMap({ points = [], type = 'events', selectedId = null }) {
+  const mapRef = useRef();
   const [hovered, setHovered] = useState(null);
-  const [selectedReportId, setSelectedReportId] = useState(null);
+  const [internalSelectedId, setInternalSelectedId] = useState(null);
+
+  const activeId = selectedId || internalSelectedId;
 
   const initialViewState = {
     longitude: 34.3015,
@@ -29,7 +32,24 @@ export default function MalawiMap({ points = [], type = 'events' }) {
     return acc;
   }, {});
 
-  const activeReport = hovered || (selectedReportId ? points.find(p => p.reportId === selectedReportId) : points[points.length - 1]);
+  const activeReport = hovered || (activeId ? points.find(p => (p.reportId === activeId || p.id === activeId)) : points[points.length - 1]);
+
+  // Handle auto-centering when selection changes
+  useEffect(() => {
+    if (activeReport && mapRef.current) {
+      const lat = activeReport.lat || activeReport.latitude;
+      const lng = activeReport.lng || activeReport.longitude;
+      
+      if (lat && lng) {
+        mapRef.current.flyTo({
+          center: [lng, lat],
+          zoom: type === 'hotspots' ? 10 : 12,
+          duration: 2000,
+          essential: true
+        });
+      }
+    }
+  }, [activeId, type, activeReport]);
 
   // Generate GeoJSON lines
   const lineSources = Object.entries(groupedPoints).map(([reportId, pts]) => {
@@ -37,8 +57,8 @@ export default function MalawiMap({ points = [], type = 'events' }) {
     const sortedPts = [...pts].sort((a, b) => new Date(a.detectedAt || 0) - new Date(b.detectedAt || 0));
     const coordinates = sortedPts.map(p => [p.longitude, p.latitude]);
     
-    const isActive = hovered?.reportId === reportId || selectedReportId === reportId;
-    const isDimmed = selectedReportId && selectedReportId !== reportId && !hovered?.reportId;
+    const isActive = hovered?.reportId === reportId || activeId === reportId;
+    const isDimmed = activeId && activeId !== reportId && !hovered?.reportId;
 
     return {
       id: reportId,
@@ -86,6 +106,7 @@ export default function MalawiMap({ points = [], type = 'events' }) {
         </div>
 
         <Map
+          ref={mapRef}
           mapLib={maplibregl}
           initialViewState={initialViewState}
           mapStyle="https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json"
@@ -143,8 +164,8 @@ export default function MalawiMap({ points = [], type = 'events' }) {
             const isTelecom = !!p.operator;
             const isLatest = idx === points.length - 1 || p.isLatest;
             const isAnomaly = type === 'anomalies' || !!p.severity;
-            const isSelected = selectedReportId === p.reportId || hovered?.reportId === p.reportId || hovered?.id === p.id;
-            const isDimmed = selectedReportId && selectedReportId !== p.reportId && !hovered;
+            const isSelected = activeId === p.reportId || activeId === p.id || hovered?.reportId === p.reportId || hovered?.id === p.id;
+            const isDimmed = activeId && activeId !== p.reportId && activeId !== p.id && !hovered;
             
             let color = isTelecom ? 'var(--red)' : 'var(--blue)';
             if (isAnomaly) color = p.severity === 'critical' ? 'var(--red)' : 'var(--amber)';
@@ -161,7 +182,7 @@ export default function MalawiMap({ points = [], type = 'events' }) {
                   className="map-marker-group"
                   onMouseEnter={() => setHovered(p)}
                   onMouseLeave={() => setHovered(null)}
-                  onClick={() => setSelectedReportId(p.reportId)}
+                  onClick={() => setInternalSelectedId(p.reportId || p.id)}
                   style={{
                     cursor: 'pointer',
                     transition: 'all 0.3s',
@@ -250,7 +271,10 @@ export default function MalawiMap({ points = [], type = 'events' }) {
               </div>
               <div className="intel-item">
                 <div className="label">COORDINATES</div>
-                <div className="value-mono">{parseFloat(activeReport.latitude).toFixed(4)}°S, {parseFloat(activeReport.longitude).toFixed(4)}°E</div>
+                <div className="value-mono">
+                  {parseFloat(activeReport.lat || activeReport.latitude || 0).toFixed(4)}°S, 
+                  {parseFloat(activeReport.lng || activeReport.longitude || 0).toFixed(4)}°E
+                </div>
               </div>
               <div className="intel-item">
                 <div className="label">PRECISION</div>

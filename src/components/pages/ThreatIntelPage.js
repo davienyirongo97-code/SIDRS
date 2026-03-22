@@ -340,8 +340,23 @@ export default function ThreatIntelPage() {
                     {isOpen && (
                       <div style={{ padding:'12px 16px', borderTop:`1px solid ${sev.color}20`, background:'rgba(0,0,0,0.05)' }}>
                         <div style={{ fontSize:11, color:'var(--ink-2)', lineHeight:1.5, marginBottom:10 }}>{anomaly.detail}</div>
-                        <div style={{ padding:8, background: sev.bg, borderRadius:6, borderLeft:`3px solid ${sev.color}`, fontSize:11, color:sev.color, fontWeight:700 }}>
-                          {anomaly.action}
+                        <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>
+                          <div style={{ padding:8, background: sev.bg, borderRadius:6, borderLeft:`3px solid ${sev.color}`, fontSize:11, color:sev.color, fontWeight:700, flex: 1 }}>
+                            {anomaly.action}
+                          </div>
+                          <button 
+                            className="btn btn-blue" 
+                            style={{ 
+                              padding: '0 12px', height: 32, fontSize: 11, fontWeight: 700,
+                              display: 'flex', alignItems: 'center', gap: 6, borderRadius: 6
+                            }}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setExpandedAnomaly(anomaly.id);
+                            }}
+                          >
+                            <FiMapPin /> Locate Target
+                          </button>
                         </div>
                       </div>
                     )}
@@ -350,7 +365,7 @@ export default function ThreatIntelPage() {
               })}
             </div>
 
-            <MalawiMap points={ANOMALIES} type="anomalies" />
+            <MalawiMap points={ANOMALIES} type="anomalies" selectedId={expandedAnomaly} />
           </div>
         </div>
       )}
