@@ -449,14 +449,20 @@ export default function HomePage() {
         className="section-title fade-up-2"
         style={{
           marginBottom: 32,
-          fontSize: 24,
+          fontSize: 28,
           fontFamily: 'var(--font-display)',
-          textAlign: 'center',
+          textAlign: 'left',
           fontWeight: 900,
           color: '#fff',
+          textTransform: 'uppercase',
+          letterSpacing: 2,
+          display: 'flex',
+          alignItems: 'center',
+          gap: 20,
         }}
       >
-        How SIDRS Protects You
+        <span>How SIDRS Protects You</span>
+        <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.1)' }} />
       </div>
 
       <div className="grid-3 fade-up-2" style={{ marginBottom: 60, gap: 24 }}>
@@ -474,14 +480,10 @@ export default function HomePage() {
           >
             <div
               style={{
-                height: 180, // Reverted to original height
+                height: 200,
                 overflow: 'hidden',
                 position: 'relative',
-                background: '#0a0f1e',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                padding: '16px', // Increased padding for a contained look at 180px
+                background: '#000',
               }}
             >
               <img
@@ -490,8 +492,8 @@ export default function HomePage() {
                 style={{
                   width: '100%',
                   height: '100%',
-                  objectFit: 'contain', // Change to contain for full visibility
-                  opacity: 0.9,
+                  objectFit: 'cover',
+                  opacity: 0.8,
                 }}
               />
               <div
@@ -515,18 +517,19 @@ export default function HomePage() {
               <div
                 style={{
                   fontFamily: 'var(--font-display)',
-                  fontSize: 20,
-                  fontWeight: 800,
+                  fontSize: 22,
+                  fontWeight: 900,
                   color: '#fff',
-                  marginBottom: 12,
+                  marginBottom: 16,
+                  letterSpacing: -0.5,
                 }}
               >
                 {s.title}
               </div>
               <p
                 style={{
-                  fontSize: 14,
-                  color: 'rgba(255,255,255,0.6)',
+                  fontSize: 13,
+                  color: 'rgba(255,255,255,0.5)',
                   lineHeight: 1.6,
                   margin: 0,
                   fontWeight: 500,
