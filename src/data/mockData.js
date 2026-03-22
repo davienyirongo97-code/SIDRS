@@ -80,7 +80,7 @@ export const INITIAL_DEVICES = [
     make: 'Samsung',
     model: 'Galaxy A54',
     color: 'Phantom Black',
-    imei: '356789012345678',   // Primary identifier for phones
+    imei: '356789012345678', // Primary identifier for phones
     serial: 'SNX-2024-00891',
     mac: null,
     ownerId: 'U001',
@@ -98,7 +98,7 @@ export const INITIAL_DEVICES = [
     mac: null,
     ownerId: 'U001',
     registeredDate: '2025-12-01',
-    status: 'stolen',         // Active theft alert on this device
+    status: 'stolen', // Active theft alert on this device
   },
   {
     id: 'D003',
@@ -106,7 +106,7 @@ export const INITIAL_DEVICES = [
     make: 'Lenovo',
     model: 'ThinkPad X1 Carbon',
     color: 'Black',
-    imei: null,               // Laptops use serial + MAC
+    imei: null, // Laptops use serial + MAC
     serial: 'LNV-X1C-2024-7721',
     mac: 'A4:C3:F0:85:AC:12',
     ownerId: 'U002',
@@ -137,7 +137,7 @@ export const INITIAL_DEVICES = [
     mac: 'B8:27:EB:F1:3A:44',
     ownerId: 'U003',
     registeredDate: '2025-09-20',
-    status: 'recovered',      // Successfully recovered via SDIRS
+    status: 'recovered', // Successfully recovered via SDIRS
   },
   {
     id: 'D006',
@@ -223,7 +223,7 @@ export const INITIAL_REPORTS = [
     description:
       'Laptop bag taken from shopping trolley while I was distracted choosing items from a shelf.',
     policeStation: 'Area 3 Police Station, Lilongwe',
-    status: 'pending',         // Not yet police-verified
+    status: 'pending', // Not yet police-verified
     verifiedAt: null,
     dispatched: false,
     caseNumber: null,
@@ -254,7 +254,7 @@ export const INITIAL_EVENTS = [
     imei: '490123456789012',
     detectedAt: '2026-03-08 09:14',
     operator: 'Airtel',
-    activeSim: '+265 991 887 766',  // New SIM inserted by thief
+    activeSim: '+265 991 887 766', // New SIM inserted by thief
     tower: 'Kawale Tower B',
     latitude: -13.9226,
     longitude: 33.7641,
@@ -278,7 +278,7 @@ export const INITIAL_EVENTS = [
     imei: '490123456789012',
     detectedAt: '2026-03-09 07:55',
     operator: 'TNM',
-    activeSim: '+265 881 223 344',  // Thief swapped SIM again
+    activeSim: '+265 881 223 344', // Thief swapped SIM again
     tower: 'Old Town Tower',
     latitude: -13.9726,
     longitude: 33.7841,

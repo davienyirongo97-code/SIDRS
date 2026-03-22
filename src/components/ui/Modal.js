@@ -17,7 +17,6 @@
 import React, { useEffect } from 'react';
 
 export default function Modal({ title, onClose, children, wide = false }) {
-
   // Close on Escape key
   useEffect(() => {
     function handleKey(e) {
@@ -41,12 +40,10 @@ export default function Modal({ title, onClose, children, wide = false }) {
       <div className={`modal-box${wide ? ' wide' : ''}`}>
         {/* Sticky header with title and close button */}
         <div className="modal-header">
-          <h2 className="modal-title" id="modal-title">{title}</h2>
-          <button
-            className="modal-close"
-            onClick={onClose}
-            aria-label="Close modal"
-          >
+          <h2 className="modal-title" id="modal-title">
+            {title}
+          </h2>
+          <button className="modal-close" onClick={onClose} aria-label="Close modal">
             ×
           </button>
         </div>

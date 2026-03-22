@@ -20,78 +20,80 @@
 /* ── DESIGN TOKENS ─────────────────────────────────────────── */
 :root {
   /* Malawi National Palette */
-  --navy:      #1E3A8A; /* Deep National Blue */
-  --navy-2:    #172554;
-  --navy-3:    #1E40AF;
-  
-  --blue:      #2563EB; /* Primary Action Blue */
-  --blue-2:    #3B82F6;
-  --blue-3:    #93C5FD;
+  --navy: #1e3a8a; /* Deep National Blue */
+  --navy-2: #172554;
+  --navy-3: #1e40af;
+
+  --blue: #2563eb; /* Primary Action Blue */
+  --blue-2: #3b82f6;
+  --blue-3: #93c5fd;
 
   /* Accent Colors - Formal Professional */
-  --amber:     #B45309;
-  --amber-2:   #F59E0B;
-  --amber-pale:#FFFBEB;
+  --amber: #b45309;
+  --amber-2: #f59e0b;
+  --amber-pale: #fffbeb;
 
-  --green:     #15803D;
-  --green-2:   #22C55E;
-  --green-pale:#F0FDF4;
+  --green: #15803d;
+  --green-2: #22c55e;
+  --green-pale: #f0fdf4;
 
-  --red:       #B91C1C;
-  --red-2:     #EF4444;
-  --red-pale:  #FEF2F2;
+  --red: #b91c1c;
+  --red-2: #ef4444;
+  --red-pale: #fef2f2;
 
   /* Surfaces - Original Dark Theme */
-  --surface:   #1E293B;
-  --bg:        #0F172A;
-  --bg-2:      #1E293B;
+  --surface: #1e293b;
+  --bg: #0f172a;
+  --bg-2: #1e293b;
 
   /* Text - High Contrast */
-  --ink:       #F8FAFC;
-  --ink-2:     #CBD5E1;
-  --ink-3:     #94A3B8;
+  --ink: #f8fafc;
+  --ink-2: #cbd5e1;
+  --ink-3: #94a3b8;
 
-  --muted:     #64748B;
-  --muted-2:   #475569;
-  --muted-3:   #334155;
+  --muted: #64748b;
+  --muted-2: #475569;
+  --muted-3: #334155;
 
   /* Typography */
   --font-display: 'Syne', system-ui, sans-serif;
-  --font-body:    'DM Sans', system-ui, sans-serif;
-  --font-mono:    'DM Mono', monospace;
+  --font-body: 'DM Sans', system-ui, sans-serif;
+  --font-mono: 'DM Mono', monospace;
 
   /* Layout */
-  --radius:    16px;
-  --radius-2:  12px;
-  --radius-3:  8px;
+  --radius: 16px;
+  --radius-2: 12px;
+  --radius-3: 8px;
 
   /* Shadows - Dark Theme */
-  --shadow:    0 4px 24px rgba(0,0,0,0.4);
-  --shadow-2:  0 12px 48px rgba(0,0,0,0.6);
-  --shadow-3:  0 32px 96px rgba(0,0,0,0.8);
+  --shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+  --shadow-2: 0 12px 48px rgba(0, 0, 0, 0.6);
+  --shadow-3: 0 32px 96px rgba(0, 0, 0, 0.8);
 }
 
 /* ── LIGHT MODE  ─────────────────────────────── */
 [data-theme='light'] {
-  --surface:   #FFFFFF;
-  --bg:        #F0F7FF; 
-  --bg-2:      #ECF4FF;
+  --surface: #ffffff;
+  --bg: #f0f7ff;
+  --bg-2: #ecf4ff;
 
-  --ink:       #0F172A;
-  --ink-2:     #1E3A8A;
-  --ink-3:     #334155;
+  --ink: #0f172a;
+  --ink-2: #1e3a8a;
+  --ink-3: #334155;
 
-  --muted:     #64748B;
-  --muted-2:   #94A3B8;
-  --muted-3:   #DBEAFE; 
+  --muted: #64748b;
+  --muted-2: #94a3b8;
+  --muted-3: #dbeafe;
 
-  --shadow:    0 1px 3px rgba(30,58,138,0.05);
-  --shadow-2:  0 10px 15px -3px rgba(30,58,138,0.07), 0 4px 6px -2px rgba(30,58,138,0.03);
-  --shadow-3:  0 25px 50px -12px rgba(30,58,138,0.12);
+  --shadow: 0 1px 3px rgba(30, 58, 138, 0.05);
+  --shadow-2: 0 10px 15px -3px rgba(30, 58, 138, 0.07), 0 4px 6px -2px rgba(30, 58, 138, 0.03);
+  --shadow-3: 0 25px 50px -12px rgba(30, 58, 138, 0.12);
 }
 
 /* ── RESET ─────────────────────────────────────────────────── */
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
@@ -113,7 +115,10 @@ body {
 }
 
 /* Inherit fonts in form elements */
-input, select, textarea, button {
+input,
+select,
+textarea,
+button {
   font-family: var(--font-body);
 }
 
@@ -124,9 +129,17 @@ input, select, textarea, button {
 }
 
 /* Custom scrollbar */
-::-webkit-scrollbar { width: 5px; height: 5px; }
-::-webkit-scrollbar-track { background: var(--bg); }
-::-webkit-scrollbar-thumb { background: var(--muted-2); border-radius: 3px; }
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--muted-2);
+  border-radius: 3px;
+}
 
 /* ── APP SHELL LAYOUT ──────────────────────────────────────── */
 .app-shell {
@@ -148,8 +161,12 @@ input, select, textarea, button {
 }
 
 /* ── TYPOGRAPHY UTILITIES ─────────────────────────────────── */
-.font-display { font-family: var(--font-display); }
-.font-mono    { font-family: var(--font-mono); }
+.font-display {
+  font-family: var(--font-display);
+}
+.font-mono {
+  font-family: var(--font-mono);
+}
 
 /* ── MOBILE LAYOUT ────────────────────────────────────────── */
 @media (max-width: 900px) {

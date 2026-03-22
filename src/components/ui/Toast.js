@@ -5,18 +5,18 @@
  */
 
 import React from 'react';
-import { useAppState } from '../../context/AppContext';
+import { useAppStore } from '../../store/useAppStore';
 import { FiCheckCircle, FiXCircle, FiAlertTriangle, FiInfo, FiMessageCircle } from 'react-icons/fi';
 
 const ICONS = {
   success: <FiCheckCircle />,
-  error:   <FiXCircle />,
-  warn:    <FiAlertTriangle />,
-  info:    <FiInfo />,
+  error: <FiXCircle />,
+  warn: <FiAlertTriangle />,
+  info: <FiInfo />,
 };
 
 export default function Toast() {
-  const { toast } = useAppState();
+  const toast = useAppStore((state) => state.toast);
 
   if (!toast) return null;
 
@@ -25,9 +25,7 @@ export default function Toast() {
       <div className="toast-icon">{ICONS[toast.type] || <FiMessageCircle />}</div>
       <div>
         <div className="toast-msg">{toast.message}</div>
-        {toast.subMessage && (
-          <div className="toast-sub">{toast.subMessage}</div>
-        )}
+        {toast.subMessage && <div className="toast-sub">{toast.subMessage}</div>}
       </div>
     </div>
   );

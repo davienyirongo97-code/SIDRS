@@ -20,7 +20,9 @@ export default function StatCard({ icon, value, label, sub, color = 'var(--blue)
   return (
     <div className="stat-card">
       {/* Faint large icon in background for visual interest */}
-      <div className="stat-bg-icon" aria-hidden="true">{icon}</div>
+      <div className="stat-bg-icon" aria-hidden="true">
+        {icon}
+      </div>
 
       <div style={{ fontSize: '22px' }}>{icon}</div>
 

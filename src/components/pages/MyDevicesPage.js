@@ -23,7 +23,14 @@
  */
 
 import React, { useState } from 'react';
-import { useCurrentUser, useMyDevices, useMyReports, useAppState, useAppDispatch, useToast } from '../../context/AppContext';
+import {
+  useAppStore,
+  useCurrentUser,
+  useMyDevices,
+  useMyReports,
+  useAppDispatch,
+  useToast,
+} from '../../store/useAppStore';
 import { deviceIcon, primaryIdentifier } from '../../utils/helpers';
 import Badge from '../ui/Badge';
 import StatCard from '../ui/StatCard';
@@ -31,72 +38,150 @@ import RegisterDeviceModal from '../modals/RegisterDeviceModal';
 import ReportTheftModal from '../modals/ReportTheftModal';
 import TransferInitiateModal from '../modals/TransferInitiateModal';
 import {
-  FiSmartphone, FiAlertCircle, FiCheckCircle, FiMapPin, FiRadio,
-  FiAlertTriangle, FiInfo, FiClipboard, FiRefreshCw, FiMessageCircle, FiClock, FiCheck
+  FiSmartphone,
+  FiAlertCircle,
+  FiCheckCircle,
+  FiMapPin,
+  FiRadio,
+  FiAlertTriangle,
+  FiInfo,
+  FiClipboard,
+  FiRefreshCw,
+  FiMessageCircle,
+  FiClock,
+  FiCheck,
 } from 'react-icons/fi';
 
 export default function MyDevicesPage() {
-  const user      = useCurrentUser();
-  const devices   = useMyDevices();
-  const reports   = useMyReports();
+  const user = useCurrentUser();
+  const devices = useMyDevices();
+  const reports = useMyReports();
   const showToast = useToast();
-  const dispatch  = useAppDispatch();
-  const { devices: allDevices, events, reports: allReports } = useAppState();
+  const dispatch = useAppDispatch();
+  const allDevices = useAppStore((state) => state.devices);
+  const events = useAppStore((state) => state.events);
+  const allReports = useAppStore((state) => state.reports);
 
-  const [modal, setModal]             = useState(null);
+  const [modal, setModal] = useState(null);
   const [selectedDevice, setSelectedDevice] = useState(null);
 
   // Which report is expanded in the intelligence map
   const [expandedReport, setExpandedReport] = useState(null);
 
-  function openReport(device) { setSelectedDevice(device); setModal('report'); }
-  function openTransfer(device) { setSelectedDevice(device); setModal('transfer'); }
+  function openReport(device) {
+    setSelectedDevice(device);
+    setModal('report');
+  }
+  function openTransfer(device) {
+    setSelectedDevice(device);
+    setModal('transfer');
+  }
 
   // Only show intelligence for active reports belonging to this citizen
-  const activeReports = reports.filter(r => r.status === 'active');
+  const activeReports = reports.filter((r) => r.status === 'active');
 
   return (
     <div className="fade-up">
-
       {/* ── User banner ── */}
-      <div style={{
-        background: 'linear-gradient(135deg, var(--navy), var(--navy-3))',
-        borderRadius: 'var(--radius)', padding: '24px 28px', marginBottom: 24,
-        display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-        flexWrap: 'wrap', gap: 16,
-      }}>
+      <div
+        style={{
+          background: 'linear-gradient(135deg, var(--navy), var(--navy-3))',
+          borderRadius: 'var(--radius)',
+          padding: '24px 28px',
+          marginBottom: 24,
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          flexWrap: 'wrap',
+          gap: 16,
+        }}
+      >
         <div>
-          <div style={{ fontSize: 10, fontWeight: 800, color: 'rgba(255,255,255,0.35)', letterSpacing: 2, textTransform: 'uppercase', marginBottom: 8 }}>Citizen Account</div>
-          <div style={{ fontFamily: 'var(--font-display)', fontSize: 26, fontWeight: 800, color: '#fff' }}>{user?.name}</div>
-          <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.5)', marginTop: 6 }}><FiMapPin size={12} /> {user?.location} · {user?.phone}</div>
+          <div
+            style={{
+              fontSize: 10,
+              fontWeight: 800,
+              color: 'rgba(255,255,255,0.35)',
+              letterSpacing: 2,
+              textTransform: 'uppercase',
+              marginBottom: 8,
+            }}
+          >
+            Citizen Account
+          </div>
+          <div
+            style={{
+              fontFamily: 'var(--font-display)',
+              fontSize: 26,
+              fontWeight: 800,
+              color: '#fff',
+            }}
+          >
+            {user?.name}
+          </div>
+          <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.5)', marginTop: 6 }}>
+            <FiMapPin size={12} /> {user?.location} · {user?.phone}
+          </div>
         </div>
         <div style={{ textAlign: 'right' }}>
-          <div style={{ width: 58, height: 58, borderRadius: '50%', background: user?.avatarColor, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22, fontWeight: 900, color: '#fff', fontFamily: 'var(--font-display)' }}>
+          <div
+            style={{
+              width: 58,
+              height: 58,
+              borderRadius: '50%',
+              background: user?.avatarColor,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: 22,
+              fontWeight: 900,
+              color: '#fff',
+              fontFamily: 'var(--font-display)',
+            }}
+          >
             {user?.avatarText}
           </div>
-          <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', marginTop: 8 }}>{user?.email}</div>
+          <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', marginTop: 8 }}>
+            {user?.email}
+          </div>
         </div>
       </div>
 
       {/* ── Stats ── */}
+      {/* 
       <div className="grid-3" style={{ marginBottom: 24 }}>
-        <StatCard icon={<FiSmartphone />} value={devices.length} label="My Devices"    sub={`${devices.filter(d=>d.status==='stolen').length} currently stolen`} color="var(--blue)" />
-        <StatCard icon={<FiAlertCircle />} value={reports.length} label="Reports Filed" sub={`${reports.filter(r=>r.status==='active').length} active`}           color="var(--amber)" />
-        <StatCard icon={<FiCheckCircle />} value={devices.filter(d=>d.status==='registered').length} label="Protected" sub="Clean &amp; monitored" color="var(--green)" />
+        <StatCard
+          icon={<FiSmartphone />}
+          value={devices.length}
+          label="My Devices"
+          sub={`${devices.filter((d) => d.status === 'stolen').length} currently stolen`}
+          color="var(--blue)"
+        />
+        <StatCard
+          icon={<FiAlertCircle />}
+          value={reports.length}
+          label="Reports Filed"
+          sub={`${reports.filter((r) => r.status === 'active').length} active`}
+          color="var(--amber)"
+        />
+        <StatCard
+          icon={<FiCheckCircle />}
+          value={devices.filter((d) => d.status === 'registered').length}
+          label="Protected"
+          sub="Clean &amp; monitored"
+          color="var(--green)"
+        />
       </div>
+      */}
 
-      {/* ══════════════════════════════════════════════════════════
-          CITIZEN INTELLIGENCE MAP
-          Only shown when the user has at least one active report
-          with network detection events.
-      ══════════════════════════════════════════════════════════ */}
-      {activeReports.map(report => {
-        // Get all network events for this report
-        const reportEvents = events.filter(e => e.reportId === report.id);
+      {/* ── Citizen Intelligence Map ── */}
+      {/*
+      {activeReports.map((report) => {
+        const reportEvents = events.filter((e) => e.reportId === report.id);
         if (reportEvents.length === 0) return null;
 
-        const device     = allDevices.find(d => d.id === report.deviceId);
-        const latestEvt  = reportEvents[reportEvents.length - 1];
+        const device = allDevices.find((d) => d.id === report.deviceId);
+        const latestEvt = reportEvents[reportEvents.length - 1];
         const isExpanded = expandedReport === report.id;
 
         return (
@@ -119,120 +204,27 @@ export default function MyDevicesPage() {
           />
         );
       })}
+      */}
 
       {/* ── Main grid: devices + reports ── */}
+      {/*
       <div className="grid-2">
-
-        {/* Devices list */}
-        <div className="card">
-          <div className="card-header">
-            <div>
-              <div className="card-title"><FiSmartphone style={{marginRight:6}} />Registered Devices</div>
-              <div className="card-subtitle">Your device ownership portfolio</div>
-            </div>
-            <button className="btn btn-primary btn-sm" onClick={() => setModal('register')}>
-              + Register
-            </button>
-          </div>
-
-          {devices.length === 0 ? (
-            <div style={{ textAlign: 'center', padding: '40px 20px' }}>
-              <div style={{ fontSize: 52, marginBottom: 12, color: 'var(--muted-2)' }}><FiSmartphone size={52} /></div>
-              <div style={{ fontWeight: 700, color: 'var(--ink-2)', marginBottom: 8 }}>No devices registered yet</div>
-              <div style={{ fontSize: 13, color: 'var(--muted)', marginBottom: 20 }}>Register your phone or laptop to get protected</div>
-              <button className="btn btn-primary" onClick={() => setModal('register')}>Register First Device</button>
-            </div>
-          ) : (
-            devices.map(device => (
-              <div className="device-row" key={device.id}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 14, flex: 1 }}>
-                  <div className="device-icon-box">{deviceIcon(device.type)}</div>
-                  <div>
-                    <div style={{ fontWeight: 700, fontSize: 14, color: 'var(--ink)' }}>{device.make} {device.model}</div>
-                    <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--muted)', marginTop: 2 }}>{primaryIdentifier(device)}</div>
-                    <div style={{ fontSize: 11, color: 'var(--muted-2)', marginTop: 2 }}>Registered {device.registeredDate}</div>
-                  </div>
-                </div>
-                <div style={{ display: 'flex', gap: 6, alignItems: 'center', flexWrap: 'wrap', justifyContent: 'flex-end' }}>
-                  <Badge status={device.status} />
-                  {device.status === 'registered' && (
-                    <>
-                      <button className="btn btn-ghost-red btn-sm" title="Report Stolen" onClick={() => openReport(device)}><FiAlertCircle size={14} /></button>
-                      <button className="btn btn-ghost btn-sm" title="Transfer" onClick={() => openTransfer(device)}><FiRefreshCw size={14} /></button>
-                    </>
-                  )}
-                </div>
-              </div>
-            ))
-          )}
-        </div>
-
-        {/* Reports list */}
-        <div className="card">
-          <div className="card-header">
-            <div>
-              <div className="card-title"><FiClipboard style={{marginRight:6}} />My Theft Reports</div>
-              <div className="card-subtitle">Track your report statuses</div>
-            </div>
-          </div>
-
-          {reports.length === 0 ? (
-            <div style={{ textAlign: 'center', padding: '40px 20px', color: 'var(--muted)' }}>
-              <div style={{ fontSize: 40, marginBottom: 10, color: 'var(--muted-2)' }}><FiClipboard size={40} /></div>
-              No reports submitted yet
-            </div>
-          ) : (
-            reports.map(report => {
-              const device      = allDevices.find(d => d.id === report.deviceId);
-              const reportEvts  = events.filter(e => e.reportId === report.id);
-              return (
-                <div key={report.id} style={{ padding: '20px 0', borderBottom: '1px solid var(--muted-3)' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
-                    <div>
-                      <div style={{ fontWeight: 800, fontSize: 15, color: 'var(--ink)' }}>{device?.make} {device?.model}</div>
-                      <div style={{ fontSize: 11, fontFamily: 'var(--font-mono)', color: 'var(--muted)', marginTop: 2 }}>{report.id}</div>
-                    </div>
-                    <Badge status={report.status} />
-                  </div>
-
-                  {/* Case Progress Tracker */}
-                  <div style={{ marginBottom: 20 }}>
-                    <CaseProgressTracker report={report} detections={reportEvts.length} />
-                  </div>
-
-                  <div className="grid-2" style={{ gap: 10 }}>
-                    <div style={{ fontSize: 12, color: 'var(--muted)' }}><FiMapPin size={11} /> {report.date} · {report.location.split(',')[0]}</div>
-                    {report.caseNumber && (
-                      <div style={{ fontSize: 11, fontFamily: 'var(--font-mono)', color: 'var(--blue)', fontWeight: 700, textAlign: 'right' }}>Case: {report.caseNumber}</div>
-                    )}
-                  </div>
-                  
-                  <div style={{ marginTop: 12, display: 'flex', gap: 10, flexWrap: 'wrap' }}>
-                    {report.dispatched && (
-                      <div style={{ fontSize: 11, color: 'var(--green)', fontWeight: 700, display: 'flex', alignItems: 'center', gap: 4 }}>
-                        <FiRadio size={12} /> Network Alert Active
-                      </div>
-                    )}
-                    {reportEvts.length > 0 && (
-                      <div style={{ fontSize: 11, color: 'var(--amber)', fontWeight: 700, display: 'flex', alignItems: 'center', gap: 4 }}>
-                        <FiMapPin size={12} /> {reportEvts.length} Detections
-                      </div>
-                    )}
-                    {report.status === 'pending' && (
-                      <div style={{ fontSize: 11, color: 'var(--amber)', display: 'flex', alignItems: 'center', gap: 4 }}><FiClock size={12} /> Pending Verification</div>
-                    )}
-                  </div>
-                </div>
-              );
-            })
-          )}
-        </div>
+        <div className="card">...</div>
+        <div className="card">...</div>
+      </div>
+      */}
+      <div style={{ padding: 40, textAlign: 'center', color: 'var(--muted)' }}>
+        [DEBUG] Components temporarily disabled to isolate re-render loop.
       </div>
 
       {/* Modals */}
       {modal === 'register' && <RegisterDeviceModal onClose={() => setModal(null)} />}
-      {modal === 'report'   && <ReportTheftModal    onClose={() => setModal(null)} preselectedDeviceId={selectedDevice?.id} />}
-      {modal === 'transfer' && <TransferInitiateModal onClose={() => setModal(null)} device={selectedDevice} />}
+      {modal === 'report' && (
+        <ReportTheftModal onClose={() => setModal(null)} preselectedDeviceId={selectedDevice?.id} />
+      )}
+      {modal === 'transfer' && (
+        <TransferInitiateModal onClose={() => setModal(null)} device={selectedDevice} />
+      )}
     </div>
   );
 }
@@ -244,39 +236,81 @@ export default function MyDevicesPage() {
 ══════════════════════════════════════════════════════════════ */
 function CaseProgressTracker({ report, detections }) {
   const steps = [
-    { label: 'Filed',    active: true, completed: true },
-    { label: 'Verified', active: report.status !== 'pending', completed: report.status !== 'pending' },
-    { label: 'Alerted',  active: report.dispatched, completed: report.dispatched },
+    { label: 'Filed', active: true, completed: true },
+    {
+      label: 'Verified',
+      active: report.status !== 'pending',
+      completed: report.status !== 'pending',
+    },
+    { label: 'Alerted', active: report.dispatched, completed: report.dispatched },
     { label: 'Detected', active: detections > 0, completed: detections > 0 },
-    { label: 'Recovered', active: report.status === 'recovered', completed: report.status === 'recovered' }
+    {
+      label: 'Recovered',
+      active: report.status === 'recovered',
+      completed: report.status === 'recovered',
+    },
   ];
 
   return (
     <div style={{ display: 'flex', alignItems: 'center', width: '100%', padding: '0 5px' }}>
       {steps.map((step, i) => (
         <React.Fragment key={step.label}>
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flexShrink: 0, position: 'relative' }}>
-            <div style={{
-              width: 18, height: 18, borderRadius: '50%',
-              background: step.completed ? 'var(--green)' : 'var(--muted-3)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              color: '#fff', fontSize: 10, zIndex: 1,
-              boxShadow: step.completed ? '0 0 8px var(--green-pale)' : 'none',
-              border: step.active && !step.completed ? '2px solid var(--amber)' : 'none'
-            }}>
-              {step.completed ? <FiCheck /> : (step.active && !step.completed ? <div className="spinner-small" /> : null)}
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              flexShrink: 0,
+              position: 'relative',
+            }}
+          >
+            <div
+              style={{
+                width: 18,
+                height: 18,
+                borderRadius: '50%',
+                background: step.completed ? 'var(--green)' : 'var(--muted-3)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: '#fff',
+                fontSize: 10,
+                zIndex: 1,
+                boxShadow: step.completed ? '0 0 8px var(--green-pale)' : 'none',
+                border: step.active && !step.completed ? '2px solid var(--amber)' : 'none',
+              }}
+            >
+              {step.completed ? (
+                <FiCheck />
+              ) : step.active && !step.completed ? (
+                <div className="spinner-small" />
+              ) : null}
             </div>
-            <div style={{ 
-              fontSize: 9, fontWeight: 700, color: step.active ? 'var(--ink-2)' : 'var(--muted)',
-              marginTop: 6, position: 'absolute', top: 18, whiteSpace: 'nowrap' 
-            }}>{step.label}</div>
+            <div
+              style={{
+                fontSize: 9,
+                fontWeight: 700,
+                color: step.active ? 'var(--ink-2)' : 'var(--muted)',
+                marginTop: 6,
+                position: 'absolute',
+                top: 18,
+                whiteSpace: 'nowrap',
+              }}
+            >
+              {step.label}
+            </div>
           </div>
           {i < steps.length - 1 && (
-            <div style={{ 
-              flex: 1, height: 2, 
-              background: steps[i+1].completed ? 'var(--green)' : 'var(--muted-3)',
-              margin: '0 -5px', position: 'relative', top: -10 
-            }} />
+            <div
+              style={{
+                flex: 1,
+                height: 2,
+                background: steps[i + 1].completed ? 'var(--green)' : 'var(--muted-3)',
+                margin: '0 -5px',
+                position: 'relative',
+                top: -10,
+              }}
+            />
           )}
         </React.Fragment>
       ))}
@@ -292,8 +326,15 @@ function CaseProgressTracker({ report, detections }) {
    on the mobile network — general area + time only.
    Everything sensitive (tower, SIM, exact coords) is hidden.
 ══════════════════════════════════════════════════════════════ */
-function CitizenIntelMap({ report, device, events, latestEvt, isExpanded, onToggle, onRemindPolice }) {
-
+function CitizenIntelMap({
+  report,
+  device,
+  events,
+  latestEvt,
+  isExpanded,
+  onToggle,
+  onRemindPolice,
+}) {
   // Convert raw tower name into a vague "general area" description
   // so the citizen knows the approximate zone but not the exact tower
   function getGeneralArea(tower, lat, lng) {
@@ -308,12 +349,14 @@ function CitizenIntelMap({ report, device, events, latestEvt, isExpanded, onTogg
       .trim();
   }
 
-  const area        = getGeneralArea(latestEvt.tower);
-  const city        = area.includes('Zomba') ? 'Zomba'
-                    : area.includes('Blantyre') ? 'Blantyre'
-                    : 'Lilongwe';
-  const lastSeen    = latestEvt.detectedAt;
-  const totalPings  = events.length;
+  const area = getGeneralArea(latestEvt.tower);
+  const city = area.includes('Zomba')
+    ? 'Zomba'
+    : area.includes('Blantyre')
+      ? 'Blantyre'
+      : 'Lilongwe';
+  const lastSeen = latestEvt.detectedAt;
+  const totalPings = events.length;
 
   // Build the police reminder message the citizen can copy/send
   const reminderMsg =
@@ -334,46 +377,71 @@ function CitizenIntelMap({ report, device, events, latestEvt, isExpanded, onTogg
   function copyReminder() {
     navigator.clipboard?.writeText(reminderMsg).catch(() => {});
     onRemindPolice({
-      reportId:       report.id,
-      caseNumber:     report.caseNumber,
-      message:        reminderMsg,
+      reportId: report.id,
+      caseNumber: report.caseNumber,
+      message: reminderMsg,
       detectionCount: totalPings,
-      area:           `${area}, ${city}`,
-      operator:       latestEvt.operator,
+      area: `${area}, ${city}`,
+      operator: latestEvt.operator,
     });
   }
 
   return (
-    <div style={{
-      marginBottom: 24,
-      borderRadius: 'var(--radius)',
-      border: '2px solid rgba(232,137,12,0.5)',
-      overflow: 'hidden',
-      boxShadow: '0 4px 24px rgba(232,137,12,0.12)',
-    }}>
-
-      {/* ── Header banner ── */}
-      <div style={{
-        background: 'linear-gradient(135deg, #1a0a00, #2d1500, var(--navy))',
-        padding: '18px 22px',
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        flexWrap: 'wrap',
-        gap: 12,
-        cursor: 'pointer',
+    <div
+      style={{
+        marginBottom: 24,
+        borderRadius: 'var(--radius)',
+        border: '2px solid rgba(232,137,12,0.5)',
+        overflow: 'hidden',
+        boxShadow: '0 4px 24px rgba(232,137,12,0.12)',
       }}
+    >
+      {/* ── Header banner ── */}
+      <div
+        style={{
+          background: 'linear-gradient(135deg, #1a0a00, #2d1500, var(--navy))',
+          padding: '18px 22px',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          flexWrap: 'wrap',
+          gap: 12,
+          cursor: 'pointer',
+        }}
         onClick={onToggle}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           {/* Pulsing live dot */}
           <div style={{ position: 'relative', width: 14, height: 14, flexShrink: 0 }}>
-            <div style={{ width: 14, height: 14, borderRadius: '50%', background: 'var(--amber-2)', animation: 'ping 1.4s infinite' }} />
-            <div style={{ position: 'absolute', inset: 3, borderRadius: '50%', background: 'var(--amber-2)' }} />
+            <div
+              style={{
+                width: 14,
+                height: 14,
+                borderRadius: '50%',
+                background: 'var(--amber-2)',
+                animation: 'ping 1.4s infinite',
+              }}
+            />
+            <div
+              style={{
+                position: 'absolute',
+                inset: 3,
+                borderRadius: '50%',
+                background: 'var(--amber-2)',
+              }}
+            />
           </div>
           <div>
-            <div style={{ fontFamily: 'var(--font-display)', fontSize: 15, fontWeight: 800, color: 'var(--amber-2)' }}>
-              <FiRadio size={14} style={{ marginRight: 6 }} /> Your {device?.make} {device?.model} is being detected on the network
+            <div
+              style={{
+                fontFamily: 'var(--font-display)',
+                fontSize: 15,
+                fontWeight: 800,
+                color: 'var(--amber-2)',
+              }}
+            >
+              <FiRadio size={14} style={{ marginRight: 6 }} /> Your {device?.make} {device?.model}{' '}
+              is being detected on the network
             </div>
             <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)', marginTop: 3 }}>
               Last seen: <strong style={{ color: 'rgba(255,255,255,0.8)' }}>{lastSeen}</strong>
@@ -386,7 +454,7 @@ function CitizenIntelMap({ report, device, events, latestEvt, isExpanded, onTogg
         </div>
 
         {/* Quick action buttons — always visible */}
-        <div style={{ display: 'flex', gap: 8 }} onClick={e => e.stopPropagation()}>
+        <div style={{ display: 'flex', gap: 8 }} onClick={(e) => e.stopPropagation()}>
           <button
             className="btn btn-amber btn-sm"
             onClick={copyReminder}
@@ -400,34 +468,70 @@ function CitizenIntelMap({ report, device, events, latestEvt, isExpanded, onTogg
       {/* ── Expanded details ── */}
       {isExpanded && (
         <div style={{ background: 'var(--surface)', padding: '20px 22px' }}>
-
           {/* Safety warning */}
           <div className="alert alert-red" style={{ marginBottom: 20 }}>
-            <span className="alert-icon"><FiAlertTriangle /></span>
+            <span className="alert-icon">
+              <FiAlertTriangle />
+            </span>
             <div>
-              <strong>Do NOT attempt to recover the device yourself.</strong> Contact police with the case number and show them this detection record. Self-recovery attempts are dangerous and can compromise the police investigation.
+              <strong>Do NOT attempt to recover the device yourself.</strong> Contact police with
+              the case number and show them this detection record. Self-recovery attempts are
+              dangerous and can compromise the police investigation.
             </div>
           </div>
 
           {/* Latest detection card */}
-          <div style={{
-            background: 'linear-gradient(135deg, var(--amber-pale), #fff)',
-            border: '1px solid var(--amber)',
-            borderRadius: 'var(--radius-2)',
-            padding: 18,
-            marginBottom: 20,
-          }}>
-            <div style={{ fontSize: 11, fontWeight: 800, color: 'var(--amber)', letterSpacing: 1.5, textTransform: 'uppercase', marginBottom: 12 }}>
-              <FiMapPin size={12} style={{marginRight:4}} /> Latest Detection
+          <div
+            style={{
+              background: 'linear-gradient(135deg, var(--amber-pale), #fff)',
+              border: '1px solid var(--amber)',
+              borderRadius: 'var(--radius-2)',
+              padding: 18,
+              marginBottom: 20,
+            }}
+          >
+            <div
+              style={{
+                fontSize: 11,
+                fontWeight: 800,
+                color: 'var(--amber)',
+                letterSpacing: 1.5,
+                textTransform: 'uppercase',
+                marginBottom: 12,
+              }}
+            >
+              <FiMapPin size={12} style={{ marginRight: 4 }} /> Latest Detection
             </div>
             <div className="grid-2" style={{ gap: 14 }}>
               <div>
-                <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--muted)', textTransform: 'uppercase', marginBottom: 3 }}>General Area</div>
+                <div
+                  style={{
+                    fontSize: 10,
+                    fontWeight: 700,
+                    color: 'var(--muted)',
+                    textTransform: 'uppercase',
+                    marginBottom: 3,
+                  }}
+                >
+                  General Area
+                </div>
                 <div style={{ fontSize: 18, fontWeight: 800, color: 'var(--ink)' }}>{area}</div>
-                <div style={{ fontSize: 13, color: 'var(--muted)', marginTop: 2 }}>{city}, Malawi</div>
+                <div style={{ fontSize: 13, color: 'var(--muted)', marginTop: 2 }}>
+                  {city}, Malawi
+                </div>
               </div>
               <div>
-                <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--muted)', textTransform: 'uppercase', marginBottom: 3 }}>Date &amp; Time</div>
+                <div
+                  style={{
+                    fontSize: 10,
+                    fontWeight: 700,
+                    color: 'var(--muted)',
+                    textTransform: 'uppercase',
+                    marginBottom: 3,
+                  }}
+                >
+                  Date &amp; Time
+                </div>
                 <div style={{ fontSize: 16, fontWeight: 800, color: 'var(--ink)' }}>
                   {lastSeen.split(' ')[1]}
                 </div>
@@ -436,19 +540,53 @@ function CitizenIntelMap({ report, device, events, latestEvt, isExpanded, onTogg
                 </div>
               </div>
               <div>
-                <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--muted)', textTransform: 'uppercase', marginBottom: 3 }}>Network Operator</div>
-                <div style={{
-                  display: 'inline-block',
-                  padding: '3px 10px', borderRadius: 6, fontSize: 13, fontWeight: 800,
-                  background: latestEvt.operator === 'Airtel' ? 'var(--red-pale)' : '#EBF3FF',
-                  color:      latestEvt.operator === 'Airtel' ? 'var(--red)'      : 'var(--blue)',
-                }}>
+                <div
+                  style={{
+                    fontSize: 10,
+                    fontWeight: 700,
+                    color: 'var(--muted)',
+                    textTransform: 'uppercase',
+                    marginBottom: 3,
+                  }}
+                >
+                  Network Operator
+                </div>
+                <div
+                  style={{
+                    display: 'inline-block',
+                    padding: '3px 10px',
+                    borderRadius: 6,
+                    fontSize: 13,
+                    fontWeight: 800,
+                    background: latestEvt.operator === 'Airtel' ? 'var(--red-pale)' : '#EBF3FF',
+                    color: latestEvt.operator === 'Airtel' ? 'var(--red)' : 'var(--blue)',
+                  }}
+                >
                   {latestEvt.operator}
                 </div>
               </div>
               <div>
-                <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--muted)', textTransform: 'uppercase', marginBottom: 3 }}>Total Detections</div>
-                <div style={{ fontSize: 22, fontWeight: 900, color: 'var(--amber)', fontFamily: 'var(--font-display)' }}>{totalPings}</div>
+                <div
+                  style={{
+                    fontSize: 10,
+                    fontWeight: 700,
+                    color: 'var(--muted)',
+                    textTransform: 'uppercase',
+                    marginBottom: 3,
+                  }}
+                >
+                  Total Detections
+                </div>
+                <div
+                  style={{
+                    fontSize: 22,
+                    fontWeight: 900,
+                    color: 'var(--amber)',
+                    fontFamily: 'var(--font-display)',
+                  }}
+                >
+                  {totalPings}
+                </div>
                 <div style={{ fontSize: 11, color: 'var(--muted)' }}>times on network</div>
               </div>
             </div>
@@ -456,101 +594,154 @@ function CitizenIntelMap({ report, device, events, latestEvt, isExpanded, onTogg
 
           {/* Detection history timeline — area + time only */}
           <div style={{ marginBottom: 20 }}>
-            <div style={{ fontSize: 11, fontWeight: 800, color: 'var(--muted)', letterSpacing: 1.5, textTransform: 'uppercase', marginBottom: 14 }}>
+            <div
+              style={{
+                fontSize: 11,
+                fontWeight: 800,
+                color: 'var(--muted)',
+                letterSpacing: 1.5,
+                textTransform: 'uppercase',
+                marginBottom: 14,
+              }}
+            >
               Detection History
             </div>
             <div className="timeline">
-              {events.slice().reverse().map((ev, i, arr) => {
-                const evArea = getGeneralArea(ev.tower);
-                return (
-                  <div className="timeline-item" key={ev.id}>
-                    {i < arr.length - 1 && <div className="timeline-line" />}
-                    <div className="timeline-dot" style={{
-                      background: ev.operator === 'Airtel' ? 'var(--red-pale)' : '#EBF3FF',
-                      color: ev.operator === 'Airtel' ? 'var(--red)' : 'var(--blue)',
-                      fontSize: 10, fontWeight: 800,
-                    }}>
-                      {ev.operator === 'Airtel' ? 'A' : 'T'}
-                    </div>
-                    <div className="timeline-content">
-                      <div className="timeline-title">
-                        <FiMapPin size={11} /> {evArea} &nbsp;
-                        <span style={{
-                          fontSize: 10, fontWeight: 700, padding: '1px 7px', borderRadius: 6,
+              {events
+                .slice()
+                .reverse()
+                .map((ev, i, arr) => {
+                  const evArea = getGeneralArea(ev.tower);
+                  return (
+                    <div className="timeline-item" key={ev.id}>
+                      {i < arr.length - 1 && <div className="timeline-line" />}
+                      <div
+                        className="timeline-dot"
+                        style={{
                           background: ev.operator === 'Airtel' ? 'var(--red-pale)' : '#EBF3FF',
                           color: ev.operator === 'Airtel' ? 'var(--red)' : 'var(--blue)',
-                        }}>
-                          {ev.operator}
-                        </span>
+                          fontSize: 10,
+                          fontWeight: 800,
+                        }}
+                      >
+                        {ev.operator === 'Airtel' ? 'A' : 'T'}
                       </div>
-                      <div className="timeline-sub">
-                        {ev.detectedAt}
+                      <div className="timeline-content">
+                        <div className="timeline-title">
+                          <FiMapPin size={11} /> {evArea} &nbsp;
+                          <span
+                            style={{
+                              fontSize: 10,
+                              fontWeight: 700,
+                              padding: '1px 7px',
+                              borderRadius: 6,
+                              background: ev.operator === 'Airtel' ? 'var(--red-pale)' : '#EBF3FF',
+                              color: ev.operator === 'Airtel' ? 'var(--red)' : 'var(--blue)',
+                            }}
+                          >
+                            {ev.operator}
+                          </span>
+                        </div>
+                        <div className="timeline-sub">{ev.detectedAt}</div>
                       </div>
                     </div>
-                  </div>
-                );
-              })}
+                  );
+                })}
             </div>
           </div>
 
           {/* Police reminder section */}
-          <div style={{
-            background: 'var(--navy)',
-            borderRadius: 'var(--radius-2)',
-            padding: 18,
-          }}>
-            <div style={{ fontSize: 11, fontWeight: 800, color: 'rgba(255,255,255,0.4)', letterSpacing: 1.5, textTransform: 'uppercase', marginBottom: 10 }}>
-              <FiClipboard size={11} style={{marginRight:4}} /> Police Follow-up Message
+          <div
+            style={{
+              background: 'var(--navy)',
+              borderRadius: 'var(--radius-2)',
+              padding: 18,
+            }}
+          >
+            <div
+              style={{
+                fontSize: 11,
+                fontWeight: 800,
+                color: 'rgba(255,255,255,0.4)',
+                letterSpacing: 1.5,
+                textTransform: 'uppercase',
+                marginBottom: 10,
+              }}
+            >
+              <FiClipboard size={11} style={{ marginRight: 4 }} /> Police Follow-up Message
             </div>
-            <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)', lineHeight: 1.7, marginBottom: 14 }}>
-              Use this message to follow up with the police if they are slow to act.
-              Copy it and send via WhatsApp, SMS, or present it at the police station.
+            <div
+              style={{
+                fontSize: 12,
+                color: 'rgba(255,255,255,0.6)',
+                lineHeight: 1.7,
+                marginBottom: 14,
+              }}
+            >
+              Use this message to follow up with the police if they are slow to act. Copy it and
+              send via WhatsApp, SMS, or present it at the police station.
             </div>
-            <div style={{
-              background: 'rgba(255,255,255,0.07)',
-              borderRadius: 8, padding: 14,
-              fontFamily: 'var(--font-mono)',
-              fontSize: 11, color: 'rgba(255,255,255,0.75)',
-              lineHeight: 1.8, marginBottom: 14,
-              whiteSpace: 'pre-wrap',
-              wordBreak: 'break-word',
-            }}>
+            <div
+              style={{
+                background: 'rgba(255,255,255,0.07)',
+                borderRadius: 8,
+                padding: 14,
+                fontFamily: 'var(--font-mono)',
+                fontSize: 11,
+                color: 'rgba(255,255,255,0.75)',
+                lineHeight: 1.8,
+                marginBottom: 14,
+                whiteSpace: 'pre-wrap',
+                wordBreak: 'break-word',
+              }}
+            >
               {reminderMsg}
             </div>
             <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
               <button className="btn btn-amber" onClick={copyReminder}>
-                <FiClipboard size={14} style={{marginRight:6}} /> Copy Message
+                <FiClipboard size={14} style={{ marginRight: 6 }} /> Copy Message
               </button>
               <button
                 className="btn"
-                style={{ background: 'rgba(255,255,255,0.1)', color: '#fff', border: '1px solid rgba(255,255,255,0.15)' }}
+                style={{
+                  background: 'rgba(255,255,255,0.1)',
+                  color: '#fff',
+                  border: '1px solid rgba(255,255,255,0.15)',
+                }}
                 onClick={() => {
                   const sms = `sms:199?body=${encodeURIComponent(reminderMsg.slice(0, 160))}`;
                   window.open(sms);
                 }}
               >
-                <FiSmartphone size={14} style={{marginRight:6}} /> Send as SMS
+                <FiSmartphone size={14} style={{ marginRight: 6 }} /> Send as SMS
               </button>
               <button
                 className="btn"
-                style={{ background: 'rgba(37,211,102,0.15)', color: '#25D366', border: '1px solid rgba(37,211,102,0.3)' }}
+                style={{
+                  background: 'rgba(37,211,102,0.15)',
+                  color: '#25D366',
+                  border: '1px solid rgba(37,211,102,0.3)',
+                }}
                 onClick={() => {
                   window.open(`https://wa.me/?text=${encodeURIComponent(reminderMsg)}`);
                 }}
               >
-                <FiMessageCircle size={14} style={{marginRight:6}} /> Share on WhatsApp
+                <FiMessageCircle size={14} style={{ marginRight: 6 }} /> Share on WhatsApp
               </button>
             </div>
           </div>
 
           {/* What is hidden disclaimer */}
           <div className="alert alert-blue" style={{ marginTop: 14 }}>
-            <span className="alert-icon"><FiInfo /></span>
+            <span className="alert-icon">
+              <FiInfo />
+            </span>
             <div style={{ fontSize: 12 }}>
-              For your safety and the integrity of the investigation, exact GPS coordinates, tower names, and network details are only available to police officers through the SDIRS Police Dashboard.
+              For your safety and the integrity of the investigation, exact GPS coordinates, tower
+              names, and network details are only available to police officers through the SDIRS
+              Police Dashboard.
             </div>
           </div>
-
         </div>
       )}
     </div>

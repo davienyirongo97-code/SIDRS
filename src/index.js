@@ -9,7 +9,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
-import { AppProvider } from './context/AppContext';
+import { AppProvider } from './store/useAppStore';
 import App from './App';
 import './styles/global.css';
 import './styles/components.css';

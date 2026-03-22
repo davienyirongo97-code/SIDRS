@@ -7,25 +7,22 @@
 
 import React from 'react';
 import Modal from '../ui/Modal';
-import { useToast } from '../../context/AppContext';
+import { useToast } from '../../store/useAppStore';
 import './TransferPinModal.css';
 
 export default function TransferPinModal({ onClose, pin, device }) {
   const showToast = useToast();
 
+  if (!pin || !device) return null;
+
   function handleDone() {
-    showToast(
-      'Transfer PIN issued.',
-      'Waiting for buyer to claim ownership.',
-      'info'
-    );
+    showToast('Transfer PIN issued.', 'Waiting for buyer to claim ownership.', 'info');
     onClose();
   }
 
   return (
     <Modal title="🔑 Transfer PIN Generated" onClose={onClose}>
       <div className="modal-body">
-
         {/* Certificate display */}
         <div className="transfer-cert">
           <div className="cert-seal">🏛️</div>
@@ -41,7 +38,11 @@ export default function TransferPinModal({ onClose, pin, device }) {
           {/* Device info */}
           {device && (
             <div className="cert-device">
-              Device: <strong>{device.make} {device.model}</strong><br />
+              Device:{' '}
+              <strong>
+                {device.make} {device.model}
+              </strong>
+              <br />
               Issued: {new Date().toLocaleDateString('en-MW')} at{' '}
               {new Date().toLocaleTimeString('en-MW', { hour: '2-digit', minute: '2-digit' })}
             </div>
@@ -52,8 +53,8 @@ export default function TransferPinModal({ onClose, pin, device }) {
         <div className="alert alert-green" style={{ marginTop: 16 }}>
           <span className="alert-icon">✓</span>
           <div>
-            Share this PIN with the buyer. They open SDIRS → Transfer → Claim Device
-            and enter this PIN to complete the ownership transfer.
+            Share this PIN with the buyer. They open SDIRS → Transfer → Claim Device and enter this
+            PIN to complete the ownership transfer.
           </div>
         </div>
 
@@ -68,11 +69,17 @@ export default function TransferPinModal({ onClose, pin, device }) {
           <div style={{ fontSize: 12, color: 'var(--muted)', marginBottom: 4 }}>
             Buyer can also claim via USSD:
           </div>
-          <div style={{ fontFamily: 'var(--font-mono)', fontWeight: 700, fontSize: 15, color: 'var(--navy)' }}>
+          <div
+            style={{
+              fontFamily: 'var(--font-mono)',
+              fontWeight: 700,
+              fontSize: 15,
+              color: 'var(--navy)',
+            }}
+          >
             *858*3*{pin}#
           </div>
         </div>
-
       </div>
 
       <div className="modal-footer">

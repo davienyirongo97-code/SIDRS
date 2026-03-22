@@ -8,16 +8,18 @@
 
 import React, { useState } from 'react';
 import Modal from '../ui/Modal';
-import { useAppDispatch } from '../../context/AppContext';
+import { useAppDispatch } from '../../store/useAppStore';
 import { primaryIdentifier } from '../../utils/helpers';
 import TransferPinModal from './TransferPinModal';
 
 export default function TransferInitiateModal({ onClose, device }) {
-  const dispatch  = useAppDispatch();
+  const dispatch = useAppDispatch();
 
   const [buyerPhone, setBuyerPhone] = useState('');
-  const [priceMWK,   setPriceMWK]   = useState('');
-  const [pin,        setPin]         = useState(null);   // set after dispatch
+  const [priceMWK, setPriceMWK] = useState('');
+  const [pin, setPin] = useState(null); // set after dispatch
+
+  if (!device) return null;
 
   function handleGenerate() {
     dispatch({
@@ -34,29 +36,37 @@ export default function TransferInitiateModal({ onClose, device }) {
     //  since state updates asynchronously we store a local pin)
     // In production: backend returns the PIN in the API response.
     const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-    const block = () => Array(4).fill(0).map(() => chars[Math.floor(Math.random() * chars.length)]).join('');
+    const block = () =>
+      Array(4)
+        .fill(0)
+        .map(() => chars[Math.floor(Math.random() * chars.length)])
+        .join('');
     setPin(`TRF-${block()}-${block()}`);
   }
 
   // After PIN is generated, show the certificate modal
   if (pin) {
-    return (
-      <TransferPinModal
-        onClose={onClose}
-        pin={pin}
-        device={device}
-      />
-    );
+    return <TransferPinModal onClose={onClose} pin={pin} device={device} />;
   }
 
   return (
     <Modal title="🔄 Transfer Ownership" onClose={onClose}>
       <div className="modal-body">
-
         {/* Device summary */}
-        <div style={{ padding: '12px 14px', background: 'var(--bg)', borderRadius: 'var(--radius-2)', marginBottom: 18 }}>
-          <div style={{ fontWeight: 700, marginBottom: 4 }}>Transferring: {device?.make} {device?.model}</div>
-          <div style={{ fontSize: 11, fontFamily: 'var(--font-mono)', color: 'var(--muted)' }}>{primaryIdentifier(device)}</div>
+        <div
+          style={{
+            padding: '12px 14px',
+            background: 'var(--bg)',
+            borderRadius: 'var(--radius-2)',
+            marginBottom: 18,
+          }}
+        >
+          <div style={{ fontWeight: 700, marginBottom: 4 }}>
+            Transferring: {device?.make} {device?.model}
+          </div>
+          <div style={{ fontSize: 11, fontFamily: 'var(--font-mono)', color: 'var(--muted)' }}>
+            {primaryIdentifier(device)}
+          </div>
         </div>
 
         <div className="field">
@@ -65,7 +75,7 @@ export default function TransferInitiateModal({ onClose, device }) {
             className="field-input"
             placeholder="+265 9XX XXX XXX"
             value={buyerPhone}
-            onChange={e => setBuyerPhone(e.target.value)}
+            onChange={(e) => setBuyerPhone(e.target.value)}
           />
         </div>
 
@@ -76,22 +86,23 @@ export default function TransferInitiateModal({ onClose, device }) {
             className="field-input"
             placeholder="e.g. 150000"
             value={priceMWK}
-            onChange={e => setPriceMWK(e.target.value)}
+            onChange={(e) => setPriceMWK(e.target.value)}
           />
         </div>
 
         <div className="alert alert-amber">
           <span className="alert-icon">⚠️</span>
           <div>
-            After transfer you permanently lose the ability to report this device stolen.
-            This action is logged permanently in the national registry.
+            After transfer you permanently lose the ability to report this device stolen. This
+            action is logged permanently in the national registry.
           </div>
         </div>
-
       </div>
 
       <div className="modal-footer">
-        <button className="btn btn-surface" onClick={onClose}>Cancel</button>
+        <button className="btn btn-surface" onClick={onClose}>
+          Cancel
+        </button>
         <button className="btn btn-primary" onClick={handleGenerate}>
           Generate Transfer PIN →
         </button>

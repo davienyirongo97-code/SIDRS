@@ -5,7 +5,7 @@
 
 .transfer-cert {
   background: linear-gradient(135deg, #fdfcf8, #f8f5ec);
-  border: 2px solid #D4B896;
+  border: 2px solid #d4b896;
   border-radius: 16px;
   padding: 28px;
   text-align: center;
@@ -24,7 +24,7 @@
   font-family: var(--font-display);
   font-size: 100px;
   font-weight: 900;
-  color: rgba(0,0,0,0.025);
+  color: rgba(0, 0, 0, 0.025);
   letter-spacing: 10px;
   pointer-events: none;
 }
@@ -59,9 +59,9 @@
   letter-spacing: 6px;
   margin: 16px 0;
   padding: 12px;
-  background: rgba(255,255,255,0.7);
+  background: rgba(255, 255, 255, 0.7);
   border-radius: 8px;
-  border: 1px dashed #D4B896;
+  border: 1px dashed #d4b896;
 }
 
 .cert-validity {
@@ -72,7 +72,7 @@
 .cert-device {
   margin-top: 16px;
   padding: 10px 14px;
-  background: rgba(0,0,0,0.04);
+  background: rgba(0, 0, 0, 0.04);
   border-radius: 8px;
   font-size: 12px;
   color: var(--ink-2);

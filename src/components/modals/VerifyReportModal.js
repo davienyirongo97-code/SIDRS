@@ -8,25 +8,26 @@
 
 import React from 'react';
 import Modal from '../ui/Modal';
-import { useAppDispatch, useAppState, useToast } from '../../context/AppContext';
+import { useAppStore, useAppDispatch, useToast } from '../../store/useAppStore';
 import { findDevice } from '../../utils/helpers';
 
 export default function VerifyReportModal({ onClose, reportId }) {
-  const dispatch  = useAppDispatch();
+  const dispatch = useAppDispatch();
   const showToast = useToast();
-  const { reports, devices } = useAppState();
+  const reports = useAppStore((state) => state.reports);
+  const devices = useAppStore((state) => state.devices);
 
-  const report = reports.find(r => r.id === reportId);
+  const report = reports.find((r) => r.id === reportId);
   const device = report ? findDevice(report.deviceId, devices) : null;
 
   if (!report) return null;
 
   const fields = [
-    ['Report ID',       report.id,            true],
-    ['Date of Theft',   report.date,           false],
-    ['Location',        report.location,       false],
-    ['Police Station',  report.policeStation,  false],
-    ['Description',     report.description,    false],
+    ['Report ID', report.id, true],
+    ['Date of Theft', report.date, false],
+    ['Location', report.location, false],
+    ['Police Station', report.policeStation, false],
+    ['Description', report.description, false],
   ];
 
   function handleVerify() {
@@ -47,7 +48,6 @@ export default function VerifyReportModal({ onClose, reportId }) {
   return (
     <Modal title="✅ Verify Theft Report" onClose={onClose}>
       <div className="modal-body">
-
         {/* Report detail fields */}
         {fields.map(([label, value, mono]) => (
           <div
@@ -59,7 +59,9 @@ export default function VerifyReportModal({ onClose, reportId }) {
               borderRadius: 'var(--radius-2)',
             }}
           >
-            <div className="field-label" style={{ marginBottom: 4 }}>{label}</div>
+            <div className="field-label" style={{ marginBottom: 4 }}>
+              {label}
+            </div>
             <div
               style={{
                 fontWeight: 600,
@@ -83,7 +85,9 @@ export default function VerifyReportModal({ onClose, reportId }) {
               borderRadius: 'var(--radius-2)',
             }}
           >
-            <div className="field-label" style={{ marginBottom: 4 }}>Device</div>
+            <div className="field-label" style={{ marginBottom: 4 }}>
+              Device
+            </div>
             <div style={{ fontWeight: 600, fontSize: 13 }}>
               {device.make} {device.model} — {device.imei || device.serial}
             </div>
@@ -94,16 +98,17 @@ export default function VerifyReportModal({ onClose, reportId }) {
         <div className="alert alert-amber">
           <span className="alert-icon">⚠️</span>
           <div>
-            Upon verification, the IMEI will be <strong>silently</strong> flagged
-            on Airtel &amp; TNM EIR systems. The device will remain active on the network
-            so the thief continues to use it — giving police live location data.
+            Upon verification, the IMEI will be <strong>silently</strong> flagged on Airtel &amp;
+            TNM EIR systems. The device will remain active on the network so the thief continues to
+            use it — giving police live location data.
           </div>
         </div>
-
       </div>
 
       <div className="modal-footer">
-        <button className="btn btn-ghost-red" onClick={handleReject}>✗ Reject Report</button>
+        <button className="btn btn-ghost-red" onClick={handleReject}>
+          ✗ Reject Report
+        </button>
         <button className="btn btn-primary" onClick={handleVerify}>
           ✅ Verify &amp; Dispatch Alert
         </button>

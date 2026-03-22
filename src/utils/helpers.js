@@ -14,9 +14,9 @@ import { FiSmartphone, FiMonitor, FiTablet, FiTv } from 'react-icons/fi';
  */
 export function deviceIcon(type) {
   const icons = {
-    mobile:  <FiSmartphone size={20} />,
-    laptop:  <FiMonitor size={20} />,
-    tablet:  <FiTablet size={20} />,
+    mobile: <FiSmartphone size={20} />,
+    laptop: <FiMonitor size={20} />,
+    tablet: <FiTablet size={20} />,
     desktop: <FiTv size={20} />,
   };
   return icons[type] || <FiSmartphone size={20} />;
@@ -28,6 +28,7 @@ export function deviceIcon(type) {
  * @param {object} device
  */
 export function primaryIdentifier(device) {
+  if (!device) return 'N/A';
   return device.imei || device.serial || device.mac || 'N/A';
 }
 
@@ -48,15 +49,15 @@ export function formatNumber(n) {
  */
 export function getStatusConfig(status) {
   const config = {
-    registered: { className: 'badge-green',  label: 'Registered' },
-    stolen:     { className: 'badge-red',    label: 'Stolen' },
-    recovered:  { className: 'badge-blue',   label: 'Recovered' },
-    active:     { className: 'badge-red',    label: 'Active Alert' },
-    pending:    { className: 'badge-amber',  label: 'Pending' },
-    resolved:   { className: 'badge-green',  label: 'Resolved' },
-    completed:  { className: 'badge-green',  label: 'Completed' },
-    clean:      { className: 'badge-green',  label: 'Clean' },
-    not_found:  { className: 'badge-gray',   label: 'Not Found' },
+    registered: { className: 'badge-green', label: 'Registered' },
+    stolen: { className: 'badge-red', label: 'Stolen' },
+    recovered: { className: 'badge-blue', label: 'Recovered' },
+    active: { className: 'badge-red', label: 'Active Alert' },
+    pending: { className: 'badge-amber', label: 'Pending' },
+    resolved: { className: 'badge-green', label: 'Resolved' },
+    completed: { className: 'badge-green', label: 'Completed' },
+    clean: { className: 'badge-green', label: 'Clean' },
+    not_found: { className: 'badge-gray', label: 'Not Found' },
   };
   return config[status] || { className: 'badge-gray', label: status };
 }
@@ -67,7 +68,7 @@ export function getStatusConfig(status) {
  * @param {Array} devices
  */
 export function findDevice(deviceId, devices) {
-  return devices.find(d => d.id === deviceId) || null;
+  return devices.find((d) => d.id === deviceId) || null;
 }
 
 /**
@@ -81,15 +82,13 @@ export function checkIdentifier(identifier, devices, reports) {
   const q = identifier.trim();
   if (!q) return { status: 'not_found' };
 
-  const device = devices.find(
-    d => d.imei === q || d.serial === q || d.mac === q
-  );
+  const device = devices.find((d) => d.imei === q || d.serial === q || d.mac === q);
 
   if (!device) return { status: 'not_found' };
 
   // Check for any active/pending theft report on this device
   const report = reports.find(
-    r => r.deviceId === device.id && (r.status === 'active' || r.status === 'pending')
+    (r) => r.deviceId === device.id && (r.status === 'active' || r.status === 'pending')
   );
 
   if (report) return { status: 'stolen', device, report };
@@ -125,7 +124,7 @@ export function todayString() {
 /**
  * Generates a robust, unique ID with a prefix.
  * e.g. "D-K2X3-R9L1"
- * @param {string} prefix 
+ * @param {string} prefix
  */
 export function makeId(prefix = 'ID') {
   const ts = Date.now().toString(36).toUpperCase().slice(-4);

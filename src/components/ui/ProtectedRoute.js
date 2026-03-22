@@ -7,7 +7,7 @@
 
 import React from 'react';
 import { Navigate } from 'react-router-dom';
-import { useCurrentUser } from '../../context/AppContext';
+import { useCurrentUser } from '../../store/useAppStore';
 
 /**
  * @param {object} props
@@ -16,7 +16,7 @@ import { useCurrentUser } from '../../context/AppContext';
  */
 export default function ProtectedRoute({ children, allowedRoles }) {
   const user = useCurrentUser();
-  
+
   if (!user) {
     return <Navigate to="/" replace />;
   }

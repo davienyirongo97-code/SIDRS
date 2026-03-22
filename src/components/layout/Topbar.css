@@ -13,10 +13,13 @@
   position: sticky;
   top: 0;
   z-index: 50;
-  box-shadow: 0 1px 8px rgba(6,17,43,0.05);
+  box-shadow: 0 1px 8px rgba(6, 17, 43, 0.05);
 }
 
-.topbar-title { flex: 1; min-width: 0; }
+.topbar-title {
+  flex: 1;
+  min-width: 0;
+}
 
 .topbar-heading {
   font-family: var(--font-display);

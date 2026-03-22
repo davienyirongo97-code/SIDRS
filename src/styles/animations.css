@@ -7,98 +7,193 @@
 
 /* ── ENTRY ANIMATIONS ───────────────────────────────────────── */
 @keyframes fadeUp {
-  from { opacity: 0; transform: translateY(18px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @keyframes slideRight {
-  from { opacity: 0; transform: translateX(-16px); }
-  to   { opacity: 1; transform: translateX(0); }
+  from {
+    opacity: 0;
+    transform: translateX(-16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
 @keyframes slideLeft {
-  from { opacity: 0; transform: translateX(16px); }
-  to   { opacity: 1; transform: translateX(0); }
+  from {
+    opacity: 0;
+    transform: translateX(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
 /* ── MODAL / TOAST ENTRY ────────────────────────────────────── */
 @keyframes modalIn {
-  from { opacity: 0; transform: translateY(24px) scale(0.97); }
-  to   { opacity: 1; transform: translateY(0) scale(1); }
+  from {
+    opacity: 0;
+    transform: translateY(24px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 @keyframes toastIn {
-  from { opacity: 0; transform: translateX(60px); }
-  to   { opacity: 1; transform: translateX(0); }
+  from {
+    opacity: 0;
+    transform: translateX(60px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
 /* ── STATUS ANIMATIONS ──────────────────────────────────────── */
 @keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50%       { opacity: 0.4; }
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
 }
 
 /* Expanding ring for live dots */
 @keyframes ping {
-  0%   { transform: scale(1); opacity: 0.8; }
-  100% { transform: scale(2.2); opacity: 0; }
+  0% {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(2.2);
+    opacity: 0;
+  }
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 @keyframes blink {
-  0%, 100% { opacity: 1; }
-  50%       { opacity: 0; }
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
 }
 
 /* ── APP-SPECIFIC ANIMATIONS (SDIRS REDESIGN) ──────────────────── */
 @keyframes gradientShift {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
 }
 
 @keyframes floatSlow {
-  0% { transform: translateY(0px); }
-  50% { transform: translateY(-10px); }
-  100% { transform: translateY(0px); }
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
 }
 
 @keyframes pulseGlow {
-  0% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.4); }
-  70% { box-shadow: 0 0 0 10px rgba(37, 99, 235, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0); }
+  0% {
+    box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(37, 99, 235, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(37, 99, 235, 0);
+  }
 }
 
 @keyframes drawPath {
-  from { stroke-dashoffset: 2000; }
-  to   { stroke-dashoffset: 0; }
+  from {
+    stroke-dashoffset: 2000;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
 }
 
 @keyframes radarPulse {
-  0% { transform: scale(1); opacity: 0.8; }
-  100% { transform: scale(2.5); opacity: 0; }
+  0% {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(2.5);
+    opacity: 0;
+  }
 }
 
 /* ── UTILITY CLASSES ────────────────────────────────────────── */
 /* Staggered fade-up — use .fade-up, .fade-up-1, .fade-up-2 etc. */
-.fade-up   { animation: fadeUp 0.38s cubic-bezier(0.22,1,0.36,1) both; }
-.fade-up-1 { animation: fadeUp 0.38s 0.05s cubic-bezier(0.22,1,0.36,1) both; }
-.fade-up-2 { animation: fadeUp 0.38s 0.10s cubic-bezier(0.22,1,0.36,1) both; }
-.fade-up-3 { animation: fadeUp 0.38s 0.15s cubic-bezier(0.22,1,0.36,1) both; }
-.fade-up-4 { animation: fadeUp 0.38s 0.20s cubic-bezier(0.22,1,0.36,1) both; }
+.fade-up {
+  animation: fadeUp 0.38s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.fade-up-1 {
+  animation: fadeUp 0.38s 0.05s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.fade-up-2 {
+  animation: fadeUp 0.38s 0.1s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.fade-up-3 {
+  animation: fadeUp 0.38s 0.15s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.fade-up-4 {
+  animation: fadeUp 0.38s 0.2s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
 
-.pulse-anim { animation: pulse 2s infinite; }
-.spin-anim  { animation: spin 1s linear infinite; }
-.float-anim { animation: floatSlow 4s ease-in-out infinite; }
-.gradient-anim { animation: gradientShift 10s ease infinite; background-size: 200% 200%; }
+.pulse-anim {
+  animation: pulse 2s infinite;
+}
+.spin-anim {
+  animation: spin 1s linear infinite;
+}
+.float-anim {
+  animation: floatSlow 4s ease-in-out infinite;
+}
+.gradient-anim {
+  animation: gradientShift 10s ease infinite;
+  background-size: 200% 200%;
+}
 
 .spinner-small {
   width: 10px;
   height: 10px;
-  border: 1.5px solid rgba(255,255,255,0.3);
+  border: 1.5px solid rgba(255, 255, 255, 0.3);
   border-top-color: #fff;
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
@@ -111,7 +206,9 @@
 }
 
 @keyframes march {
-  to { stroke-dashoffset: -100; }
+  to {
+    stroke-dashoffset: -100;
+  }
 }
 
 .radar-pulse-fast {
