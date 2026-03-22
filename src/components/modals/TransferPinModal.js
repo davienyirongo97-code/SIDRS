@@ -28,8 +28,25 @@ export default function TransferPinModal({ onClose, pin, device }) {
           <div className="cert-seal">🏛️</div>
           <div className="cert-label">MACRA SDIRS — Ownership Transfer Certificate</div>
 
-          {/* The PIN itself */}
-          <div className="cert-pin">{pin}</div>
+          {/* The PIN itself - Force blue/white with inline styles for reliability */}
+          <div
+            className="cert-pin"
+            style={{
+              background: '#2563eb',
+              color: '#ffffff',
+              padding: '16px',
+              borderRadius: '12px',
+              boxShadow: '0 8px 20px rgba(37, 99, 235, 0.4)',
+              border: 'none',
+              fontSize: '32px',
+              fontWeight: '800',
+              margin: '20px 0',
+              display: 'block',
+              textAlign: 'center',
+            }}
+          >
+            {pin}
+          </div>
 
           <div className="cert-validity">
             Valid for 48 hours · Single use only · Expires after claim

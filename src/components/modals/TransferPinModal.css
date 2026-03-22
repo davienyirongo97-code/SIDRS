@@ -44,7 +44,7 @@
 .cert-label {
   font-size: 11px;
   font-weight: 800;
-  color: var(--muted);
+  color: #6b7280; /* Hardcoded dark gray */
   letter-spacing: 2px;
   text-transform: uppercase;
   margin-bottom: 12px;
@@ -55,18 +55,19 @@
   font-family: var(--font-mono);
   font-size: 32px;
   font-weight: 700;
-  color: var(--ink);
+  color: #ffffff !important; /* Pure white text for maximum contrast on blue */
   letter-spacing: 6px;
   margin: 16px 0;
-  padding: 12px;
-  background: rgba(255, 255, 255, 0.7);
+  padding: 14px;
+  background: #2563eb !important; /* Bright action blue background */
   border-radius: 8px;
-  border: 1px dashed #d4b896;
+  border: none;
+  box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3); /* Subtle glow */
 }
 
 .cert-validity {
   font-size: 12px;
-  color: var(--muted);
+  color: #4b5563; /* Hardcoded dark gray */
 }
 
 .cert-device {
@@ -75,6 +76,6 @@
   background: rgba(0, 0, 0, 0.04);
   border-radius: 8px;
   font-size: 12px;
-  color: var(--ink-2);
+  color: #1f2937; /* Hardcoded dark gray */
   line-height: 1.6;
 }

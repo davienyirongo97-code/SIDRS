@@ -181,6 +181,54 @@ export default function HomePage() {
 
         {/* Right Side: Visual Assets */}
         <div className="hero-visual-area">
+          {/* Honey Trap Slogan Overlay: Edge-fitted HUD Label */}
+          <div
+            className="fade-in"
+            style={{
+              position: 'absolute',
+              top: '10px',
+              left: '10px',
+              right: '10px',
+              zIndex: 10,
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 10,
+              background: 'rgba(15, 23, 42, 0.75)',
+              border: '1px solid rgba(59, 130, 246, 0.4)',
+              padding: '6px 16px',
+              borderRadius: 8,
+              boxShadow: '0 4px 15px rgba(0, 0, 0, 0.5)',
+              backdropFilter: 'blur(12px)',
+            }}
+          >
+            <div
+              className="pulse-anim"
+              style={{
+                flexShrink: 0,
+                width: 6,
+                height: 6,
+                borderRadius: '50%',
+                background: '#3b82f6',
+                boxShadow: '0 0 10px #3b82f6',
+              }}
+            />
+            <span
+              style={{
+                fontSize: 10,
+                fontWeight: 900,
+                color: '#fff',
+                letterSpacing: 1,
+                fontFamily: 'var(--font-display)',
+                textTransform: 'uppercase',
+                whiteSpace: 'nowrap',
+                textAlign: 'center',
+                flex: 1,
+              }}
+            >
+              "TURN STOLEN DEVICES INTO HONEY TRAPS"
+            </span>
+          </div>
           <img
             src="/laptop-hero.png"
             alt="Laptop Tracking"

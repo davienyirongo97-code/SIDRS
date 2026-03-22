@@ -126,14 +126,24 @@ export const useAppStore = create(
 
       completeTransfer: (payload) =>
         set((state) => {
+          const transfer = state.transfers.find((t) => t.id === payload.transferId);
+          const device = state.devices.find((d) => d.id === transfer?.deviceId);
+
+          // SAFEGUARD: Refuse transfer if device was reported stolen after PIN generation
+          if (device?.status === 'stolen') {
+            console.error('Transfer blocked: Device is reported stolen.');
+            return state;
+          }
+
           const updatedTransfers = state.transfers.map((t) =>
             t.id === payload.transferId
               ? { ...t, status: 'completed', buyerId: payload.buyerId }
               : t
           );
-          const transfer = state.transfers.find((t) => t.id === payload.transferId);
           const updatedDevices = state.devices.map((d) =>
-            d.id === transfer?.deviceId ? { ...d, ownerId: payload.buyerId } : d
+            d.id === transfer?.deviceId
+              ? { ...d, ownerId: payload.buyerId, status: 'registered' }
+              : d
           );
           return { transfers: updatedTransfers, devices: updatedDevices };
         }),

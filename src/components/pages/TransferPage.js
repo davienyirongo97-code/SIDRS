@@ -63,6 +63,17 @@ export default function TransferPage() {
       return;
     }
 
+    // SECURITY CHECK: Block transfer if device is currently reported stolen
+    const device = devices.find((d) => d.id === transfer.deviceId);
+    if (device?.status === 'stolen') {
+      showToast(
+        'Transfer Blocked',
+        'This device is currently reported stolen. Ownership cannot be transferred.',
+        'error'
+      );
+      return;
+    }
+
     if (transfer.sellerId === currentUserId) {
       showToast('Invalid Action', 'You cannot claim a device you already own.', 'warn');
       return;
