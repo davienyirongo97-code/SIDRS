@@ -474,14 +474,14 @@ export default function HomePage() {
           >
             <div
               style={{
-                height: 220,
+                height: 180, // Reverted to original height
                 overflow: 'hidden',
                 position: 'relative',
-                background: '#0a0f1e', // Dark matching background
+                background: '#0a0f1e',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                padding: '10px',
+                padding: '16px', // Increased padding for a contained look at 180px
               }}
             >
               <img
