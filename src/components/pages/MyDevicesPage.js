@@ -37,19 +37,28 @@ import StatCard from '../ui/StatCard';
 import RegisterDeviceModal from '../modals/RegisterDeviceModal';
 import ReportTheftModal from '../modals/ReportTheftModal';
 import TransferInitiateModal from '../modals/TransferInitiateModal';
+import { useNavigate, Link } from 'react-router-dom';
 import {
   FiSmartphone,
   FiAlertCircle,
   FiCheckCircle,
+  FiPlus,
+  FiArrowRight,
+  FiShield,
+  FiCpu,
+  FiActivity,
   FiMapPin,
+  FiClock,
+  FiSettings,
+  FiShare2,
+  FiCheck,
   FiRadio,
   FiAlertTriangle,
-  FiInfo,
   FiClipboard,
-  FiRefreshCw,
+  FiList,
+  FiLink,
   FiMessageCircle,
-  FiClock,
-  FiCheck,
+  FiInfo,
 } from 'react-icons/fi';
 
 export default function MyDevicesPage() {
@@ -244,7 +253,20 @@ export default function MyDevicesPage() {
                       <div style={{ fontSize: 11, color: 'var(--muted)' }}>IMEI: {device.imei}</div>
                     </div>
                   </div>
-                  <div style={{ display: 'flex', gap: 8 }}>
+                  <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                    <Link
+                      to={`/chain?deviceId=${device.id}`}
+                      className="btn btn-ghost btn-xs"
+                      style={{
+                        color: 'var(--purple)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 4,
+                      }}
+                      title="View immutable ownership history"
+                    >
+                      <FiLink size={12} /> History
+                    </Link>
                     {device.status === 'registered' ? (
                       <>
                         <button

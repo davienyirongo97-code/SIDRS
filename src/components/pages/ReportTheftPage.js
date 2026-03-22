@@ -51,7 +51,7 @@ export default function ReportTheftPage() {
   }
 
   return (
-    <div className="fade-up" style={{ maxWidth: 600 }}>
+    <div className="fade-up" style={{ maxWidth: 600, margin: '0 auto' }}>
       <div className="alert alert-red" style={{ marginBottom: 24 }}>
         <span className="alert-icon">
           <FiAlertCircle />

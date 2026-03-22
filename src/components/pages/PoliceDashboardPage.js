@@ -12,6 +12,7 @@ import { deviceIcon, findDevice } from '../../utils/helpers';
 import Badge from '../ui/Badge';
 import DeviceLookup from '../ui/DeviceLookup';
 import VerifyReportModal from '../modals/VerifyReportModal';
+import { Link } from 'react-router-dom';
 import {
   FiUsers,
   FiClipboard,
@@ -21,6 +22,7 @@ import {
   FiSmartphone,
   FiBell,
   FiCheckCircle,
+  FiLink,
 } from 'react-icons/fi';
 import MalawiMap from '../ui/MalawiMap';
 
@@ -223,6 +225,20 @@ export default function PoliceDashboardPage() {
                         gap: 8,
                       }}
                     >
+                      <Link
+                        to={`/chain?deviceId=${report.deviceId}`}
+                        className="btn btn-ghost btn-xs"
+                        style={{
+                          color: 'var(--purple)',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: 4,
+                          padding: '2px 6px',
+                        }}
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <FiLink size={12} /> Chain of Custody
+                      </Link>
                       <Badge status={report.status} />
                       {String(report.status) === 'active' && (
                         <button

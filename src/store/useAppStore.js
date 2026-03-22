@@ -10,6 +10,7 @@ import {
   INITIAL_TRANSFERS,
   INITIAL_REMINDERS,
 } from '../data/mockData';
+import { generateTransferPin } from '../utils/helpers';
 
 // ─── HELPER: generate unique IDs ─────────────────────────────
 function makeId(prefix) {
@@ -21,16 +22,6 @@ function makeId(prefix) {
 function makeReportId(reports) {
   const n = String(reports.length + 1).padStart(5, '0');
   return `RPT-2026-${n}`;
-}
-
-function generateTransferPin() {
-  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-  const block = () =>
-    Array(4)
-      .fill(0)
-      .map(() => chars[Math.floor(Math.random() * chars.length)])
-      .join('');
-  return `TRF-${block()}-${block()}`;
 }
 
 function nowString() {
@@ -125,7 +116,7 @@ export const useAppStore = create(
             deviceId: payload.deviceId,
             sellerId: state.currentUserId,
             buyerId: null,
-            pin: generateTransferPin(),
+            pin: payload.pin || generateTransferPin(),
             status: 'pending',
             createdAt: nowString(),
             priceMWK: payload.priceMWK || 0,

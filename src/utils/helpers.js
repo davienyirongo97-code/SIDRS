@@ -131,3 +131,16 @@ export function makeId(prefix = 'ID') {
   const r = Math.random().toString(36).substring(2, 6).toUpperCase();
   return `${prefix}-${ts}-${r}`;
 }
+
+/**
+ * Generates a 12-character transfer PIN in TRF-XXXX-XXXX format.
+ */
+export function generateTransferPin() {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  const block = () =>
+    Array(4)
+      .fill(0)
+      .map(() => chars[Math.floor(Math.random() * chars.length)])
+      .join('');
+  return `TRF-${block()}-${block()}`;
+}

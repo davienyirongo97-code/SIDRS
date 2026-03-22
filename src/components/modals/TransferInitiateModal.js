@@ -9,7 +9,7 @@
 import React, { useState } from 'react';
 import Modal from '../ui/Modal';
 import { useAppDispatch } from '../../store/useAppStore';
-import { primaryIdentifier } from '../../utils/helpers';
+import { primaryIdentifier, generateTransferPin } from '../../utils/helpers';
 import TransferPinModal from './TransferPinModal';
 
 export default function TransferInitiateModal({ onClose, device }) {
@@ -22,26 +22,18 @@ export default function TransferInitiateModal({ onClose, device }) {
   if (!device) return null;
 
   function handleGenerate() {
+    const newPin = generateTransferPin();
     dispatch({
       type: 'ADD_TRANSFER',
       payload: {
         deviceId: device.id,
         buyerPhone,
         priceMWK: parseInt(priceMWK) || 0,
+        pin: newPin,
       },
     });
 
-    // Find the newly created transfer to get its PIN
-    // (Will be last in the transfers array after dispatch, but
-    //  since state updates asynchronously we store a local pin)
-    // In production: backend returns the PIN in the API response.
-    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-    const block = () =>
-      Array(4)
-        .fill(0)
-        .map(() => chars[Math.floor(Math.random() * chars.length)])
-        .join('');
-    setPin(`TRF-${block()}-${block()}`);
+    setPin(newPin);
   }
 
   // After PIN is generated, show the certificate modal

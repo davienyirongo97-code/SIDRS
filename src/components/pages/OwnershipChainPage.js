@@ -1,4 +1,5 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { useAppStore } from '../../store/useAppStore';
 import { deviceIcon } from '../../utils/helpers';
 import {
@@ -81,26 +82,14 @@ const EVENT_TYPES = {
 
 // ── BUILD BLOCKCHAIN FROM APP STATE ──────────────────────────
 function buildChain(devices, reports, transfers, events) {
-  const blocks = [];
+  // We want to return a map of deviceId -> blocks[]
+  const deviceChains = {};
 
-  // Block 0 — Genesis
-  blocks.push({
-    index: 0,
-    type: 'GENESIS',
-    timestamp: '2025-09-01 00:00',
-    actor: 'MACRA System',
-    deviceId: null,
-    payload: {
-      message: 'SDIRS National Device Registry — Blockchain Ledger Initialised',
-      network: 'Malawi',
-    },
-    prevHash: '0'.repeat(64),
-  });
+  const allRawBlocks = [];
 
-  // One block per device registration
+  // 1. One block per device registration (The "Genesis" for each device)
   devices.forEach((d, i) => {
-    blocks.push({
-      index: blocks.length,
+    allRawBlocks.push({
       type: 'DEVICE_REGISTERED',
       timestamp: d.registeredDate + ' 09:00',
       actor: `Citizen U${String((i % 3) + 1).padStart(3, '0')}`,
@@ -110,16 +99,14 @@ function buildChain(devices, reports, transfers, events) {
         imei: d.imei || '—',
         serial: d.serial || '—',
         mac: d.mac || '—',
-        owner: d.ownerId,
+        ownerId: d.ownerId,
       },
-      prevHash: null, // filled below
     });
   });
 
-  // Transfer blocks
+  // 2. Transfer blocks
   transfers.forEach((t) => {
-    blocks.push({
-      index: blocks.length,
+    allRawBlocks.push({
       type: 'OWNERSHIP_TRANSFER',
       timestamp: t.createdAt,
       actor: `Citizen ${t.sellerId}`,
@@ -131,14 +118,12 @@ function buildChain(devices, reports, transfers, events) {
         status: t.status,
         priceMWK: t.priceMWK,
       },
-      prevHash: null,
     });
   });
 
-  // Report blocks
+  // 3. Report blocks
   reports.forEach((r) => {
-    blocks.push({
-      index: blocks.length,
+    allRawBlocks.push({
       type: 'THEFT_REPORTED',
       timestamp: r.date + ' 14:00',
       actor: `Citizen ${r.reportedBy}`,
@@ -148,13 +133,11 @@ function buildChain(devices, reports, transfers, events) {
         location: r.location,
         station: r.policeStation,
       },
-      prevHash: null,
     });
     if (r.status === 'active' || r.status === 'resolved') {
-      blocks.push({
-        index: blocks.length,
+      allRawBlocks.push({
         type: 'THEFT_VERIFIED',
-        timestamp: r.verifiedAt + ' 10:00',
+        timestamp: (r.verifiedAt || r.date) + ' 10:00',
         actor: 'Malawi Police Service',
         deviceId: r.deviceId,
         payload: {
@@ -162,25 +145,21 @@ function buildChain(devices, reports, transfers, events) {
           dispatched: r.dispatched,
           network: 'Airtel + TNM EIR Alert Dispatched',
         },
-        prevHash: null,
       });
     }
     if (r.status === 'resolved') {
-      blocks.push({
-        index: blocks.length,
+      allRawBlocks.push({
         type: 'DEVICE_RECOVERED',
-        timestamp: r.verifiedAt + ' 16:30',
+        timestamp: (r.verifiedAt || r.date) + ' 16:30',
         actor: 'Malawi Police Service',
         deviceId: r.deviceId,
         payload: { caseNumber: r.caseNumber, method: 'SDIRS Intelligence-led recovery' },
-        prevHash: null,
       });
     }
   });
 
-  // IMEI anomaly blocks (simulated — real ones come from telecom EIR)
-  blocks.push({
-    index: blocks.length,
+  // 4. Telecom Anomaly blocks
+  allRawBlocks.push({
     type: 'IMEI_ANOMALY',
     timestamp: '2026-03-09 13:22',
     actor: 'SDIRS Anomaly Engine',
@@ -192,12 +171,10 @@ function buildChain(devices, reports, transfers, events) {
       operator: 'Airtel',
       note: 'IMEI changed between consecutive connections on same SIM',
     },
-    prevHash: null,
   });
 
-  // IoT detection block (WiFi node)
-  blocks.push({
-    index: blocks.length,
+  // 5. IoT blocks
+  allRawBlocks.push({
     type: 'IOT_DETECTION',
     timestamp: '2026-03-10 08:45',
     actor: 'IoT Node — Shoprite City Mall WiFi',
@@ -208,23 +185,34 @@ function buildChain(devices, reports, transfers, events) {
       macSeen: 'Probing signature matched D002',
       confidence: '94%',
     },
-    prevHash: null,
   });
 
-  // Sort all blocks by timestamp
-  blocks.sort((a, b) => {
-    if (a.index === 0) return -1;
-    return a.timestamp.localeCompare(b.timestamp);
+  // Now, group and chain
+  const grouped = {};
+  allRawBlocks.forEach((b) => {
+    if (!grouped[b.deviceId]) grouped[b.deviceId] = [];
+    grouped[b.deviceId].push(b);
   });
 
-  // Re-index and chain hashes
-  blocks.forEach((block, i) => {
-    block.index = i;
-    block.prevHash = i === 0 ? '0'.repeat(64) : simulateHash(blocks[i - 1]);
-    block.hash = simulateHash(block);
+  // Sort each group and chain hashes
+  const finalChains = {};
+  Object.keys(grouped).forEach((dId) => {
+    const deviceBlocks = grouped[dId];
+    deviceBlocks.sort((a, b) => a.timestamp.localeCompare(b.timestamp));
+
+    // Add Genesis for each device if it's the first time we see it
+    // Wait, the DEVICE_REGISTERED is the genesis.
+    // But we can add a system-level genesis if we want.
+    // Let's just chain them.
+    deviceBlocks.forEach((block, i) => {
+      block.index = i;
+      block.prevHash = i === 0 ? '0'.repeat(64) : simulateHash(deviceBlocks[i - 1]);
+      block.hash = simulateHash(block);
+    });
+    finalChains[dId] = deviceBlocks;
   });
 
-  return blocks;
+  return finalChains;
 }
 
 // ── PAGE COMPONENT ────────────────────────────────────────────
@@ -233,29 +221,52 @@ export default function OwnershipChainPage() {
   const reports = useAppStore((state) => state.reports);
   const transfers = useAppStore((state) => state.transfers);
   const events = useAppStore((state) => state.events);
-  const [selectedDevice, setSelectedDevice] = useState('ALL');
+
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const urlDeviceId = queryParams.get('deviceId');
+
+  const [selectedDevice, setSelectedDevice] = useState(urlDeviceId || 'ALL');
   const [expandedBlock, setExpandedBlock] = useState(null);
   const [search, setSearch] = useState('');
 
-  const chain = useMemo(
+  // Handle URL change
+  useEffect(() => {
+    if (urlDeviceId) {
+      setSelectedDevice(urlDeviceId);
+    }
+  }, [urlDeviceId]);
+
+  const chains = useMemo(
     () => buildChain(devices, reports, transfers, events),
     [devices, reports, transfers, events]
   );
 
-  // Filter by device or search
-  const filtered = chain.filter((b) => {
-    if (selectedDevice !== 'ALL' && b.deviceId && b.deviceId !== selectedDevice) return false;
+  // Filtered list: ALL (interleaved) or specific device (chained)
+  const filtered = useMemo(() => {
+    let result = [];
+    if (selectedDevice === 'ALL') {
+      // Interleave all blocks from all chains and sort by date
+      result = Object.values(chains).flat();
+      result.sort((a, b) => a.timestamp.localeCompare(b.timestamp));
+    } else {
+      result = chains[selectedDevice] || [];
+    }
+
     if (search) {
       const s = search.toLowerCase();
-      return (
-        b.type.toLowerCase().includes(s) ||
-        b.actor.toLowerCase().includes(s) ||
-        JSON.stringify(b.payload).toLowerCase().includes(s) ||
-        b.hash.toLowerCase().includes(s)
+      return result.filter(
+        (b) =>
+          b.type.toLowerCase().includes(s) ||
+          b.actor.toLowerCase().includes(s) ||
+          JSON.stringify(b.payload).toLowerCase().includes(s) ||
+          b.hash.toLowerCase().includes(s)
       );
     }
-    return true;
-  });
+    return result;
+  }, [chains, selectedDevice, search]);
+
+  const currentDevice = devices.find((d) => d.id === selectedDevice);
 
   return (
     <div className="fade-up">
@@ -308,14 +319,22 @@ export default function OwnershipChainPage() {
           </div>
           <div style={{ display: 'flex', gap: 28, flexWrap: 'wrap' }}>
             {[
-              [chain.length, 'Total Blocks', '#C4B5FD'],
+              [filtered.length, 'Blocks in View', '#C4B5FD'],
               [
-                chain.filter((b) => b.type === 'DEVICE_REGISTERED').length,
+                filtered.filter((b) => b.type === 'DEVICE_REGISTERED').length,
                 'Registrations',
                 '#86EFAC',
               ],
-              [chain.filter((b) => b.type === 'IMEI_ANOMALY').length, 'IMEI Anomalies', '#FCA5A5'],
-              [chain.filter((b) => b.type === 'OWNERSHIP_TRANSFER').length, 'Transfers', '#93C5FD'],
+              [
+                filtered.filter((b) => b.type === 'IMEI_ANOMALY').length,
+                'IMEI Anomalies',
+                '#FCA5A5',
+              ],
+              [
+                filtered.filter((b) => b.type === 'OWNERSHIP_TRANSFER').length,
+                'Transfers',
+                '#93C5FD',
+              ],
             ].map(([n, l, c]) => (
               <div key={l}>
                 <div
@@ -348,7 +367,9 @@ export default function OwnershipChainPage() {
               Chain Integrity: VERIFIED ✓
             </div>
             <div style={{ fontSize: 12, color: 'var(--muted)', marginTop: 2 }}>
-              All {chain.length} blocks validated · Hash chain unbroken · No tampering detected
+              {selectedDevice === 'ALL'
+                ? `All ${filtered.length} global blocks validated · Network ledger synchronized`
+                : `Verified lineage for ${currentDevice?.make} ${currentDevice?.model} · ${filtered.length} sequential blocks matching device ID`}
             </div>
           </div>
           <div
@@ -362,7 +383,7 @@ export default function OwnershipChainPage() {
           >
             Latest hash:{' '}
             <span style={{ color: '#6B46C1', fontWeight: 700 }}>
-              {chain[chain.length - 1]?.hash}
+              {filtered[filtered.length - 1]?.hash}
             </span>
           </div>
         </div>
@@ -391,6 +412,63 @@ export default function OwnershipChainPage() {
           ))}
         </select>
       </div>
+
+      {/* ── Device Lifecycle Summary ── */}
+      {selectedDevice !== 'ALL' && currentDevice && (
+        <div
+          className="card"
+          style={{
+            marginBottom: 24,
+            background: 'var(--bg)',
+            borderLeft: '4px solid var(--purple)',
+          }}
+        >
+          <div style={{ display: 'flex', gap: 20, alignItems: 'center' }}>
+            <div
+              style={{
+                width: 60,
+                height: 60,
+                borderRadius: 12,
+                background: 'var(--surface)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: 32,
+              }}
+            >
+              {deviceIcon(currentDevice.type)}
+            </div>
+            <div>
+              <div
+                style={{
+                  fontSize: 10,
+                  fontWeight: 800,
+                  color: 'var(--purple)',
+                  textTransform: 'uppercase',
+                  letterSpacing: 1.5,
+                  marginBottom: 4,
+                }}
+              >
+                Device Lifecycle Tracking
+              </div>
+              <div style={{ fontSize: 18, fontWeight: 800, color: 'var(--ink)' }}>
+                {currentDevice.make} {currentDevice.model}
+              </div>
+              <div style={{ fontSize: 12, color: 'var(--muted)', marginTop: 4 }}>
+                <strong>Status:</strong>{' '}
+                <span style={{ color: 'var(--ink-2)', fontWeight: 600 }}>
+                  {currentDevice.status.toUpperCase()}
+                </span>{' '}
+                &nbsp;·&nbsp;
+                <strong>ID:</strong>{' '}
+                <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11 }}>
+                  {currentDevice.id}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* ── Chain blocks ── */}
       <div>
