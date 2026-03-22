@@ -216,9 +216,13 @@ export default function MalawiMap({ points = [], type = 'events', selectedId = n
       <div
         style={{
           flex: 1,
+          minWidth: 0,
+          height: '100%',
           position: 'relative',
           background: 'var(--surface)',
           borderRight: '1px solid var(--muted-3)',
+          display: 'flex',
+          flexDirection: 'column',
         }}
       >
         <div
@@ -255,6 +259,7 @@ export default function MalawiMap({ points = [], type = 'events', selectedId = n
           ref={mapRef}
           mapLib={maplibregl}
           initialViewState={initialViewState}
+          style={{ width: '100%', height: '100%' }}
           mapStyle="https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json"
           attributionControl={false}
         >
@@ -555,7 +560,7 @@ export default function MalawiMap({ points = [], type = 'events', selectedId = n
       </div>
 
       {/* ── Right: Intelligence Side Panel ── */}
-      <div className="map-intel-panel" style={{ overflowY: 'auto' }}>
+      <div className="map-intel-panel" style={{ overflowY: 'auto', flexShrink: 0 }}>
         <div
           className="panel-header"
           style={{

@@ -219,12 +219,33 @@ export default function PoliceDashboardPage() {
                     <div
                       style={{
                         display: 'flex',
-                        flexDirection: 'column',
-                        gap: 5,
-                        alignItems: 'flex-end',
+                        alignItems: 'center',
+                        gap: 8,
                       }}
                     >
                       <Badge status={report.status} />
+                      {String(report.status) === 'active' && (
+                        <button
+                          className="btn btn-green btn-sm"
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 6,
+                            boxShadow: '0 0 15px rgba(0, 255, 0, 0.4)',
+                            border: '2px solid #fff',
+                            fontWeight: 900,
+                            background: '#15803d',
+                            color: '#fff',
+                          }}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            dispatch({ type: 'RESOLVE_REPORT', payload: { reportId: report.id } });
+                            showToast('Device recovered!', 'Case has been resolved.', 'success');
+                          }}
+                        >
+                          <FiCheckCircle size={14} /> Mark Recovered
+                        </button>
+                      )}
                       {report.status === 'pending' && (
                         <button
                           className="btn btn-amber btn-sm"
@@ -452,15 +473,31 @@ export default function PoliceDashboardPage() {
                       <span style={{ fontSize: 10, color: 'var(--red)', fontWeight: 800 }}>
                         ● ACTIVE SIGNAL
                       </span>
-                      <button
-                        className="btn btn-primary btn-sm"
-                        style={{ fontSize: 10, padding: '4px 8px' }}
-                        onClick={() =>
-                          showToast('Dispatch initiated.', 'Units notified of coordinates.')
-                        }
-                      >
-                        Dispatch
-                      </button>
+                      <div style={{ display: 'flex', gap: 6 }}>
+                        <button
+                          className="btn btn-primary btn-sm"
+                          style={{ fontSize: 10, padding: '4px 8px' }}
+                          onClick={() =>
+                            showToast('Dispatch initiated.', 'Units notified of coordinates.')
+                          }
+                        >
+                          Dispatch
+                        </button>
+                        <button
+                          className="btn btn-green btn-sm"
+                          style={{ fontSize: 10, padding: '4px 8px' }}
+                          onClick={() => {
+                            dispatch({ type: 'RESOLVE_REPORT', payload: { reportId: report.id } });
+                            showToast(
+                              'Device marked as recovered',
+                              'Case has been resolved.',
+                              'success'
+                            );
+                          }}
+                        >
+                          Mark Recovered
+                        </button>
+                      </div>
                     </div>
                   </div>
                 );
@@ -471,7 +508,15 @@ export default function PoliceDashboardPage() {
       </div>
 
       {/* Verify modal */}
-      {verifyId && <VerifyReportModal reportId={verifyId} onClose={() => setVerifyId(null)} />}
+      {verifyId && (
+        <VerifyReportModal
+          reportId={verifyId}
+          onClose={() => {
+            setVerifyId(null);
+            setActiveTab('active');
+          }}
+        />
+      )}
     </div>
   );
 }

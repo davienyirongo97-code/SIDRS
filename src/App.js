@@ -41,7 +41,7 @@ function App() {
   const closeModal = useAppStore((state) => state.closeModal);
 
   // Start WebSocket tracking globally
-  // useDeviceTracking();
+  useDeviceTracking();
 
   // Apply theme class to document body
   React.useEffect(() => {

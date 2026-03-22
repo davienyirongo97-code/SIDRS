@@ -182,13 +182,13 @@ export default function HomePage() {
         {/* Right Side: Visual Assets */}
         <div className="hero-visual-area">
           <img
-            src="/laptop_tracking_mockup_1773871105975.png"
+            src="/laptop-hero.png"
             alt="Laptop Tracking"
             className="floating-device laptop"
             style={{ filter: 'drop-shadow(0 20px 40px rgba(30,58,138,0.15))' }}
           />
           <img
-            src="/phone_security_mockup_1773870952483.png"
+            src="/phone-hero.png"
             alt="Phone Security"
             className="floating-device phone"
             style={{ filter: 'drop-shadow(0 20px 40px rgba(30,58,138,0.2))' }}

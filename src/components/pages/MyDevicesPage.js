@@ -148,7 +148,6 @@ export default function MyDevicesPage() {
       </div>
 
       {/* ── Stats ── */}
-      {/* 
       <div className="grid-3" style={{ marginBottom: 24 }}>
         <StatCard
           icon={<FiSmartphone />}
@@ -172,10 +171,8 @@ export default function MyDevicesPage() {
           color="var(--green)"
         />
       </div>
-      */}
 
       {/* ── Citizen Intelligence Map ── */}
-      {/*
       {activeReports.map((report) => {
         const reportEvents = events.filter((e) => e.reportId === report.id);
         if (reportEvents.length === 0) return null;
@@ -204,17 +201,112 @@ export default function MyDevicesPage() {
           />
         );
       })}
-      */}
 
       {/* ── Main grid: devices + reports ── */}
-      {/*
       <div className="grid-2">
-        <div className="card">...</div>
-        <div className="card">...</div>
-      </div>
-      */}
-      <div style={{ padding: 40, textAlign: 'center', color: 'var(--muted)' }}>
-        [DEBUG] Components temporarily disabled to isolate re-render loop.
+        {/* Registered Devices */}
+        <div className="card">
+          <div className="card-header">
+            <div className="card-title">My Registered Devices</div>
+            <button className="btn btn-primary btn-sm" onClick={() => setModal('register')}>
+              + Register New
+            </button>
+          </div>
+          <div className="card-body">
+            {devices.length === 0 ? (
+              <div style={{ padding: 40, textAlign: 'center', color: 'var(--muted)' }}>
+                No devices registered yet.
+              </div>
+            ) : (
+              devices.map((device) => (
+                <div
+                  key={device.id}
+                  className="device-row"
+                  style={{
+                    padding: '12px 0',
+                    borderBottom: '1px solid var(--muted-3)',
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                    <div
+                      className="icon-box"
+                      style={{ background: 'var(--bg)', padding: 10, borderRadius: 10 }}
+                    >
+                      <FiSmartphone size={18} color="var(--blue)" />
+                    </div>
+                    <div>
+                      <div style={{ fontWeight: 700, fontSize: 14 }}>
+                        {device.make} {device.model}
+                      </div>
+                      <div style={{ fontSize: 11, color: 'var(--muted)' }}>IMEI: {device.imei}</div>
+                    </div>
+                  </div>
+                  <div style={{ display: 'flex', gap: 8 }}>
+                    {device.status === 'registered' ? (
+                      <>
+                        <button
+                          className="btn btn-ghost btn-sm"
+                          onClick={() => {
+                            setSelectedDevice(device);
+                            setModal('transfer');
+                          }}
+                        >
+                          Transfer
+                        </button>
+                        <button
+                          className="btn btn-danger btn-sm"
+                          onClick={() => {
+                            setSelectedDevice(device);
+                            setModal('report');
+                          }}
+                        >
+                          Report Theft
+                        </button>
+                      </>
+                    ) : (
+                      <Badge status={device.status} />
+                    )}
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+
+        {/* Theft Reports */}
+        <div className="card">
+          <div className="card-header">
+            <div className="card-title">My Theft Reports</div>
+          </div>
+          <div className="card-body">
+            {reports.length === 0 ? (
+              <div style={{ padding: 40, textAlign: 'center', color: 'var(--muted)' }}>
+                No theft reports filed.
+              </div>
+            ) : (
+              reports.map((report) => (
+                <div
+                  key={report.id}
+                  style={{ padding: '14px 0', borderBottom: '1px solid var(--muted-3)' }}
+                >
+                  <div
+                    style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}
+                  >
+                    <div style={{ fontWeight: 700, fontSize: 14 }}>RPT-{report.id}</div>
+                    <Badge status={report.status} />
+                  </div>
+                  <CaseProgressTracker
+                    report={report}
+                    detections={events.filter((e) => e.reportId === report.id).length}
+                  />
+                </div>
+              ))
+            )}
+          </div>
+        </div>
       </div>
 
       {/* Modals */}
