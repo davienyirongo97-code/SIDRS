@@ -474,10 +474,14 @@ export default function HomePage() {
           >
             <div
               style={{
-                height: 180,
+                height: 220,
                 overflow: 'hidden',
                 position: 'relative',
-                background: 'rgba(255,255,255,0.02)',
+                background: '#0a0f1e', // Dark matching background
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: '10px',
               }}
             >
               <img
@@ -486,7 +490,7 @@ export default function HomePage() {
                 style={{
                   width: '100%',
                   height: '100%',
-                  objectFit: 'cover',
+                  objectFit: 'contain', // Change to contain for full visibility
                   opacity: 0.9,
                 }}
               />
