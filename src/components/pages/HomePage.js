@@ -35,39 +35,28 @@ export default function HomePage() {
   const stolenCount = devices.filter((d) => d.status === 'stolen').length;
   const recoveredCount = devices.filter((d) => d.status === 'recovered').length;
 
-  // Feature module cards
-  const MODULES = [
+  // How it Works Steps
+  const STRATEGY_STEPS = [
     {
-      icon: <FiSmartphone size={28} />,
-      title: 'Device Registration',
-      tag: 'Citizen',
-      tagColor: 'var(--blue)',
-      desc: 'Pre-register phones, laptops, and tablets using IMEI, serial number, or MAC address. Establish legal proof of ownership before theft occurs.',
-      path: '/my-devices',
+      image: '/how-1-register.png',
+      title: 'Fast Registration',
+      desc: 'Connect your IMEI and serial numbers to the National Registry in seconds. Establish legal proof of ownership before theft occurs.',
+      tag: 'Step 01',
+      color: '#3b82f6',
     },
     {
-      icon: <FiSearch size={28} />,
-      title: 'IMEI Verification',
-      tag: 'Public',
-      tagColor: 'var(--green)',
-      desc: 'Any buyer at any market can check an IMEI or serial number before purchase. Returns clean or stolen status instantly. Works via USSD too.',
-      path: '/checker',
+      image: '/how-2-monitor.png',
+      title: 'Active Monitoring',
+      desc: 'Our "Honey Trap" system silently monitors stolen devices across all national networks, tracking SIM changes and tower locations in real-time.',
+      tag: 'Step 02',
+      color: '#fbbf24',
     },
     {
-      icon: <FiMapPin size={28} />,
-      title: 'Police Intelligence Map',
-      tag: 'Law Enforcement',
-      tagColor: 'var(--red)',
-      desc: 'Stolen devices silently monitored on Airtel & TNM networks. Every connection gives police the active SIM number and tower location in real time.',
-      path: '/police',
-    },
-    {
-      icon: <FiRefreshCw size={28} />,
-      title: 'Ownership Transfer',
-      tag: 'Citizen',
-      tagColor: 'var(--amber)',
-      desc: 'Sell your device safely with a Transfer PIN. Buyer claims ownership. A government-issued digital certificate proves the chain of title.',
-      path: '/transfer',
+      image: '/how-3-recover.png',
+      title: 'Forensic Recovery',
+      desc: 'Turn stolen assets into legal evidence. Integrated police dashboards allow for rapid response and secure asset restoration.',
+      tag: 'Step 03',
+      color: '#10b981',
     },
   ];
 
@@ -455,95 +444,92 @@ export default function HomePage() {
         </div>
       </div>
 
-      {/* ── MODULE CARDS ── */}
-      <div className="section-title fade-up-2" style={{ marginBottom: 24, fontSize: 14 }}>
-        Platform Modules
+      {/* ── HOW IT WORKS STRATEGY section ── */}
+      <div
+        className="section-title fade-up-2"
+        style={{
+          marginBottom: 32,
+          fontSize: 24,
+          fontFamily: 'var(--font-display)',
+          textAlign: 'center',
+          fontWeight: 900,
+          color: '#fff',
+        }}
+      >
+        How SIDRS Protects You
       </div>
-      <div className="grid-2 fade-up-2" style={{ marginBottom: 40 }}>
-        {MODULES.map((m) => (
+
+      <div className="grid-3 fade-up-2" style={{ marginBottom: 60, gap: 24 }}>
+        {STRATEGY_STEPS.map((s, idx) => (
           <div
-            key={m.path}
+            key={idx}
             className="glass-card"
-            style={{ cursor: 'pointer', padding: 30 }}
-            onClick={() => navigate(m.path)}
+            style={{
+              padding: 0,
+              overflow: 'hidden',
+              display: 'flex',
+              flexDirection: 'column',
+              transition: 'transform 0.3s ease',
+            }}
           >
             <div
               style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'flex-start',
-                marginBottom: 20,
+                height: 180,
+                overflow: 'hidden',
+                position: 'relative',
+                background: 'rgba(255,255,255,0.02)',
               }}
             >
+              <img
+                src={s.image}
+                alt={s.title}
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  objectFit: 'cover',
+                  opacity: 0.9,
+                }}
+              />
               <div
                 style={{
-                  width: 64,
-                  height: 64,
-                  borderRadius: 20,
-                  background: `linear-gradient(135deg, ${m.tagColor}22, transparent)`,
-                  border: `1px solid ${m.tagColor}44`,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  color: m.tagColor,
-                  boxShadow: `0 8px 24px ${m.tagColor}33`,
-                }}
-              >
-                {m.icon}
-              </div>
-              <span
-                style={{
-                  fontSize: 11,
-                  fontWeight: 800,
+                  position: 'absolute',
+                  top: 12,
+                  right: 12,
+                  background: s.color,
+                  color: '#fff',
+                  fontSize: 10,
+                  fontWeight: 900,
+                  padding: '4px 10px',
+                  borderRadius: 4,
                   letterSpacing: 1,
-                  color: m.tagColor,
-                  background: `${m.tagColor}1A`,
-                  padding: '6px 12px',
-                  borderRadius: 20,
                 }}
               >
-                {m.tag}
-              </span>
+                {s.tag}
+              </div>
             </div>
-            <div
-              style={{
-                fontFamily: 'var(--font-display)',
-                fontSize: 20,
-                fontWeight: 800,
-                color: 'var(--ink)',
-                marginBottom: 10,
-              }}
-            >
-              {m.title}
-            </div>
-            <p
-              style={{
-                fontSize: 14,
-                color: 'var(--ink-3)',
-                lineHeight: 1.7,
-                margin: '0 0 20px',
-                fontWeight: 500,
-              }}
-            >
-              {m.desc}
-            </p>
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 6,
-                fontSize: 14,
-                color: m.tagColor,
-                fontWeight: 700,
-              }}
-            >
-              Access Module
-              <span
-                className="spin-anim"
-                style={{ display: 'inline-block', transition: 'transform 0.3s' }}
+            <div style={{ padding: 24 }}>
+              <div
+                style={{
+                  fontFamily: 'var(--font-display)',
+                  fontSize: 20,
+                  fontWeight: 800,
+                  color: '#fff',
+                  marginBottom: 12,
+                }}
               >
-                <FiArrowRight />
-              </span>
+                {s.title}
+              </div>
+              <p
+                style={{
+                  fontSize: 14,
+                  color: 'rgba(255,255,255,0.6)',
+                  lineHeight: 1.6,
+                  margin: 0,
+                  fontWeight: 500,
+                }}
+              >
+                {s.desc}
+              </p>
             </div>
           </div>
         ))}
