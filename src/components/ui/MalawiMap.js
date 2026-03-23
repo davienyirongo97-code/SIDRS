@@ -262,6 +262,27 @@ export default function MalawiMap({ points = [], type = 'events', selectedId = n
           style={{ width: '100%', height: '100%' }}
           mapStyle="https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json"
           attributionControl={false}
+          onLoad={(e) => {
+            const map = e.target;
+            const layers = map.getStyle().layers;
+            // Boost visibility for ALL map labels (streets, cities, etc)
+            layers.forEach((layer) => {
+              if (layer.type === 'symbol' && layer.layout && layer.layout['text-field']) {
+                try {
+                  map.setPaintProperty(layer.id, 'text-color', '#ffffff');
+                  map.setPaintProperty(layer.id, 'text-halo-color', 'rgba(0,0,0,0.9)');
+                  map.setPaintProperty(layer.id, 'text-halo-width', 2);
+                  // Increase base size slightly
+                  const currentSize = map.getLayoutProperty(layer.id, 'text-size') || 12;
+                  if (typeof currentSize === 'number') {
+                    map.setLayoutProperty(layer.id, 'text-size', currentSize + 1);
+                  }
+                } catch (err) {
+                  console.warn('Could not update map layer:', layer.id);
+                }
+              }
+            });
+          }}
         >
           <NavigationControl position="bottom-right" />
 
@@ -321,7 +342,7 @@ export default function MalawiMap({ points = [], type = 'events', selectedId = n
 
           {/* Markers */}
           {points.map((p, idx) => {
-            if (type === 'hotspots') return null; // Only heatmap for hotspots
+            if (type === 'hotspots') return null;
 
             const isTelecom = !!p.operator;
             const isLatest = idx === points.length - 1 || p.isLatest;
@@ -361,7 +382,7 @@ export default function MalawiMap({ points = [], type = 'events', selectedId = n
                   <div
                     style={{
                       background: 'var(--surface)',
-                      border: `2px solid ${color}`,
+                      border: '2px solid ' + color,
                       borderRadius: '50%',
                       width: 32,
                       height: 32,
@@ -421,24 +442,25 @@ export default function MalawiMap({ points = [], type = 'events', selectedId = n
                   </div>
 
                   {/* Visual Label for latest or hovered */}
-                  {(isLatest || hovered?.id === p.id) && (
+                  {(isLatest || (hovered && hovered.id === p.id)) && (
                     <div
                       className="fade-in"
                       style={{
                         position: 'absolute',
-                        top: -35,
+                        top: -40,
                         left: '50%',
                         transform: 'translateX(-50%)',
                         background: 'var(--navy)',
-                        border: `1px solid ${color}`,
-                        borderRadius: 6,
-                        padding: '4px 10px',
+                        border: '2px solid ' + color,
+                        borderRadius: 8,
+                        padding: '6px 12px',
                         color: '#fff',
-                        fontSize: 10,
-                        fontWeight: 800,
+                        fontSize: 12,
+                        fontWeight: 900,
                         whiteSpace: 'nowrap',
-                        boxShadow: '0 4px 12px rgba(0,0,0,0.6)',
+                        boxShadow: '0 4px 20px rgba(0,0,0,0.8)',
                         pointerEvents: 'none',
+                        zIndex: 100,
                       }}
                     >
                       {p.tower || p.nodeName || p.name || p.area || p.title || 'ACTIVE SIGNAL'}
@@ -469,19 +491,19 @@ export default function MalawiMap({ points = [], type = 'events', selectedId = n
                   className="fade-in"
                   style={{
                     background: 'var(--navy)',
-                    border: `1px solid ${t.isActive ? 'var(--blue)' : 'var(--muted)'}`,
-                    padding: '5px 10px',
-                    borderRadius: 8,
+                    border: '2px solid ' + (t.isActive ? 'var(--blue)' : 'var(--muted)'),
+                    padding: '8px 14px',
+                    borderRadius: 10,
                     color: '#fff',
                     whiteSpace: 'nowrap',
-                    boxShadow: '0 4px 16px rgba(0,0,0,0.8)',
-                    marginBottom: 8,
+                    boxShadow: '0 8px 24px rgba(0,0,0,0.9)',
+                    marginBottom: 10,
                     display: 'flex',
                     flexDirection: 'column',
                     alignItems: 'center',
                   }}
                 >
-                  <div style={{ color: 'var(--amber)', fontSize: 11, fontWeight: 900 }}>
+                  <div style={{ color: 'var(--amber)', fontSize: 13, fontWeight: 900 }}>
                     {t.deviceName}
                   </div>
                   <div
@@ -500,7 +522,7 @@ export default function MalawiMap({ points = [], type = 'events', selectedId = n
                 <div
                   style={{
                     background: 'var(--surface)',
-                    border: `2px solid ${t.isActive ? '#2563EB' : '#93C5FD'}`,
+                    border: '2px solid ' + (t.isActive ? '#2563EB' : '#93C5FD'),
                     borderRadius: '50%',
                     width: 28,
                     height: 28,
@@ -517,7 +539,7 @@ export default function MalawiMap({ points = [], type = 'events', selectedId = n
                       position: 'absolute',
                       inset: 0,
                       borderRadius: '50%',
-                      border: `2px solid ${t.isActive ? '#2563EB' : '#93C5FD'}`,
+                      border: '2px solid ' + (t.isActive ? '#2563EB' : '#93C5FD'),
                       animation: 'ping 1.2s cubic-bezier(0, 0, 0.2, 1) infinite',
                       pointerEvents: 'none',
                     }}

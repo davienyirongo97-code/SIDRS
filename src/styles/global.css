@@ -44,7 +44,7 @@
   --purple: #6b46c1;
   --purple-pale: #f3f0ff;
 
-  /* Surfaces - Original Dark Theme */
+  /* Surfaces - Modern Slate Theme (Softer) */
   --surface: #1e293b;
   --bg: #0f172a;
   --bg-2: #1e293b;
@@ -111,10 +111,24 @@ html {
 
 body {
   font-family: var(--font-body);
-  background: var(--bg);
+  /* Premium radial depth */
+  background: radial-gradient(ellipse at top center, #1e293b 0%, var(--bg) 80%);
+  background-attachment: fixed;
   color: var(--ink);
   min-height: 100vh;
   overflow-x: hidden;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  top: -10%;
+  right: -10%;
+  width: 60%;
+  height: 60%;
+  background: radial-gradient(circle, rgba(37, 92, 219, 0.08) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: -1;
 }
 
 /* Inherit fonts in form elements */

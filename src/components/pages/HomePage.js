@@ -444,7 +444,6 @@ export default function HomePage() {
         </div>
       </div>
 
-      {/* ── HOW IT WORKS STRATEGY section ── */}
       <div
         className="section-title fade-up-2"
         style={{
@@ -461,85 +460,122 @@ export default function HomePage() {
           gap: 20,
         }}
       >
-        <span>How SIDRS Protects You</span>
+        <span style={{ position: 'relative' }}>
+          How SIDRS Protects You
+          <div
+            style={{
+              position: 'absolute',
+              bottom: -4,
+              left: 0,
+              width: '40%',
+              height: 3,
+              background: 'linear-gradient(to right, var(--red), var(--green))',
+              borderRadius: 2,
+            }}
+          />
+        </span>
         <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.1)' }} />
       </div>
 
       <div className="grid-3 fade-up-2" style={{ marginBottom: 60, gap: 24 }}>
-        {STRATEGY_STEPS.map((s, idx) => (
-          <div
-            key={idx}
-            className="glass-card"
-            style={{
-              padding: 0,
-              overflow: 'hidden',
-              display: 'flex',
-              flexDirection: 'column',
-              transition: 'transform 0.3s ease',
-            }}
-          >
+        {STRATEGY_STEPS.map((s, idx) => {
+          // National color logic: 0 -> Green, 1 -> Red, 2 -> Blue (or mix)
+          const accentColor =
+            idx === 0 ? 'var(--green-2)' : idx === 1 ? 'var(--red-2)' : 'var(--blue-2)';
+          const glowShadow = `0 8px 32px rgba(0,0,0,0.4), 0 0 15px ${accentColor}22`;
+
+          return (
             <div
+              key={idx}
+              className="glass-card"
               style={{
-                height: 200,
+                padding: 0,
                 overflow: 'hidden',
+                display: 'flex',
+                flexDirection: 'column',
+                transition: 'all 0.4s cubic-bezier(0.2, 1, 0.3, 1)',
+                border: `1px solid rgba(255,255,255,0.05)`,
+                boxShadow: glowShadow,
                 position: 'relative',
-                background: '#000',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = 'translateY(-10px) scale(1.02)';
+                e.currentTarget.style.borderColor = accentColor;
+                e.currentTarget.style.boxShadow = `0 20px 40px rgba(0,0,0,0.6), 0 0 25px ${accentColor}44`;
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'translateY(0) scale(1)';
+                e.currentTarget.style.borderColor = 'rgba(255,255,255,0.05)';
+                e.currentTarget.style.boxShadow = glowShadow;
               }}
             >
-              <img
-                src={s.image}
-                alt={s.title}
-                style={{
-                  width: '100%',
-                  height: '100%',
-                  objectFit: 'cover',
-                  opacity: 0.8,
-                }}
-              />
+              {/* Top Accent Line */}
+              <div style={{ height: 3, background: accentColor, width: '100%' }} />
+
               <div
                 style={{
-                  position: 'absolute',
-                  top: 12,
-                  right: 12,
-                  background: s.color,
-                  color: '#fff',
-                  fontSize: 10,
-                  fontWeight: 900,
-                  padding: '4px 10px',
-                  borderRadius: 4,
-                  letterSpacing: 1,
+                  height: 200,
+                  overflow: 'hidden',
+                  position: 'relative',
+                  background: '#000',
                 }}
               >
-                {s.tag}
+                <img
+                  src={s.image}
+                  alt={s.title}
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'cover',
+                    opacity: 0.8,
+                  }}
+                />
+                <div
+                  style={{
+                    position: 'absolute',
+                    top: 12,
+                    right: 12,
+                    background: s.color,
+                    color: '#fff',
+                    fontSize: 10,
+                    fontWeight: 900,
+                    padding: '4px 10px',
+                    borderRadius: 4,
+                    letterSpacing: 1,
+                    boxShadow: `0 0 10px ${s.color}66`,
+                  }}
+                >
+                  {s.tag}
+                </div>
+              </div>
+              <div style={{ padding: 24 }}>
+                <div
+                  style={{
+                    fontFamily: 'var(--font-display)',
+                    fontSize: 22,
+                    fontWeight: 900,
+                    color: '#fff',
+                    marginBottom: 16,
+                    letterSpacing: -0.5,
+                  }}
+                >
+                  {s.title}
+                </div>
+                <p
+                  style={{
+                    fontSize: 13,
+                    color: 'rgba(255,255,255,0.5)',
+                    lineHeight: 1.6,
+                    margin: 0,
+                    fontWeight: 500,
+                  }}
+                >
+                  {s.desc}
+                </p>
               </div>
             </div>
-            <div style={{ padding: 24 }}>
-              <div
-                style={{
-                  fontFamily: 'var(--font-display)',
-                  fontSize: 22,
-                  fontWeight: 900,
-                  color: '#fff',
-                  marginBottom: 16,
-                  letterSpacing: -0.5,
-                }}
-              >
-                {s.title}
-              </div>
-              <p
-                style={{
-                  fontSize: 13,
-                  color: 'rgba(255,255,255,0.5)',
-                  lineHeight: 1.6,
-                  margin: 0,
-                  fontWeight: 500,
-                }}
-              >
-                {s.desc}
-              </p>
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       {/* ── INTELLIGENCE-FIRST PHILOSOPHY ── */}
