@@ -83,8 +83,6 @@ const EVENT_TYPES = {
 // ── BUILD BLOCKCHAIN FROM APP STATE ──────────────────────────
 function buildChain(devices, reports, transfers, events) {
   // We want to return a map of deviceId -> blocks[]
-  const deviceChains = {};
-
   const allRawBlocks = [];
 
   // 1. One block per device registration (The "Genesis" for each device)

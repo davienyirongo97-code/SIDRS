@@ -15,13 +15,10 @@ import { useAppStore } from '../../store/useAppStore';
 import {
   FiSmartphone,
   FiSearch,
-  FiMapPin,
-  FiRefreshCw,
   FiShield,
   FiAlertCircle,
   FiRadio,
   FiCheckCircle,
-  FiArrowRight,
   FiXOctagon,
   FiCheckSquare,
 } from 'react-icons/fi';

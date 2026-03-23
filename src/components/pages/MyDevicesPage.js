@@ -31,31 +31,21 @@ import {
   useAppDispatch,
   useToast,
 } from '../../store/useAppStore';
-import { deviceIcon, primaryIdentifier } from '../../utils/helpers';
 import Badge from '../ui/Badge';
 import StatCard from '../ui/StatCard';
 import RegisterDeviceModal from '../modals/RegisterDeviceModal';
 import ReportTheftModal from '../modals/ReportTheftModal';
 import TransferInitiateModal from '../modals/TransferInitiateModal';
-import { useNavigate, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import {
   FiSmartphone,
   FiAlertCircle,
   FiCheckCircle,
-  FiPlus,
-  FiArrowRight,
-  FiShield,
-  FiCpu,
-  FiActivity,
   FiMapPin,
-  FiClock,
-  FiSettings,
-  FiShare2,
   FiCheck,
   FiRadio,
   FiAlertTriangle,
   FiClipboard,
-  FiList,
   FiLink,
   FiMessageCircle,
   FiInfo,
@@ -69,22 +59,12 @@ export default function MyDevicesPage() {
   const dispatch = useAppDispatch();
   const allDevices = useAppStore((state) => state.devices);
   const events = useAppStore((state) => state.events);
-  const allReports = useAppStore((state) => state.reports);
 
   const [modal, setModal] = useState(null);
   const [selectedDevice, setSelectedDevice] = useState(null);
 
   // Which report is expanded in the intelligence map
   const [expandedReport, setExpandedReport] = useState(null);
-
-  function openReport(device) {
-    setSelectedDevice(device);
-    setModal('report');
-  }
-  function openTransfer(device) {
-    setSelectedDevice(device);
-    setModal('transfer');
-  }
 
   // Only show intelligence for active reports belonging to this citizen
   const activeReports = reports.filter((r) => r.status === 'active');
