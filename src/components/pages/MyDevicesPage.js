@@ -256,9 +256,11 @@ export default function MyDevicesPage() {
                   <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
                     <Link
                       to={`/chain?deviceId=${device.id}`}
-                      className="btn btn-ghost btn-xs"
+                      className="btn btn-xs"
                       style={{
+                        background: 'var(--purple-pale)',
                         color: 'var(--purple)',
+                        border: '1px solid rgba(107, 70, 193, 0.2)',
                         display: 'flex',
                         alignItems: 'center',
                         gap: 4,

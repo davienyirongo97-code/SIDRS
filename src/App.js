@@ -141,7 +141,7 @@ function App() {
               <Route
                 path="/chain"
                 element={
-                  <ProtectedRoute allowedRoles={['macra', 'police']}>
+                  <ProtectedRoute allowedRoles={['macra', 'police', 'citizen']}>
                     <OwnershipChainPage />
                   </ProtectedRoute>
                 }

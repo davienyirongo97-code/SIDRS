@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
-import { useAppStore } from '../../store/useAppStore';
+import { useLocation, Navigate } from 'react-router-dom';
+import { useAppStore, useCurrentUser } from '../../store/useAppStore';
 import { deviceIcon } from '../../utils/helpers';
 import {
   FiLink,
@@ -217,25 +217,56 @@ function buildChain(devices, reports, transfers, events) {
 
 // ── PAGE COMPONENT ────────────────────────────────────────────
 export default function OwnershipChainPage() {
-  const devices = useAppStore((state) => state.devices);
-  const reports = useAppStore((state) => state.reports);
-  const transfers = useAppStore((state) => state.transfers);
-  const events = useAppStore((state) => state.events);
+  const allDevices = useAppStore((state) => state.devices);
+  const allReports = useAppStore((state) => state.reports);
+  const allTransfers = useAppStore((state) => state.transfers);
+  const allEvents = useAppStore((state) => state.events);
+  const user = useCurrentUser();
 
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const urlDeviceId = queryParams.get('deviceId');
 
-  const [selectedDevice, setSelectedDevice] = useState(urlDeviceId || 'ALL');
+  // If citizen, only show their own devices and related data
+  const isCitizen = user?.role === 'citizen';
+
+  const devices = useMemo(
+    () => (isCitizen ? allDevices.filter((d) => d.ownerId === user.id) : allDevices),
+    [allDevices, isCitizen, user?.id]
+  );
+
+  const reports = useMemo(
+    () =>
+      isCitizen ? allReports.filter((r) => devices.some((d) => d.id === r.deviceId)) : allReports,
+    [allReports, isCitizen, devices]
+  );
+
+  const transfers = useMemo(
+    () =>
+      isCitizen
+        ? allTransfers.filter((t) => devices.some((d) => d.id === t.deviceId))
+        : allTransfers,
+    [allTransfers, isCitizen, devices]
+  );
+
+  const events = useMemo(
+    () =>
+      isCitizen ? allEvents.filter((e) => reports.some((r) => r.id === e.reportId)) : allEvents,
+    [allEvents, isCitizen, reports]
+  );
+
+  const [selectedDevice, setSelectedDevice] = useState(
+    urlDeviceId || (isCitizen && devices.length > 0 ? devices[0].id : 'ALL')
+  );
   const [expandedBlock, setExpandedBlock] = useState(null);
   const [search, setSearch] = useState('');
 
   // Handle URL change
   useEffect(() => {
-    if (urlDeviceId) {
+    if (urlDeviceId && (!isCitizen || devices.some((d) => d.id === urlDeviceId))) {
       setSelectedDevice(urlDeviceId);
     }
-  }, [urlDeviceId]);
+  }, [urlDeviceId, isCitizen, devices]);
 
   const chains = useMemo(
     () => buildChain(devices, reports, transfers, events),
@@ -265,6 +296,11 @@ export default function OwnershipChainPage() {
     }
     return result;
   }, [chains, selectedDevice, search]);
+
+  // Security check: if citizen tries to access unauthorized deviceId via URL
+  if (isCitizen && selectedDevice !== 'ALL' && !devices.some((d) => d.id === selectedDevice)) {
+    return <Navigate to="/my-devices" replace />;
+  }
 
   const currentDevice = devices.find((d) => d.id === selectedDevice);
 
@@ -404,7 +440,7 @@ export default function OwnershipChainPage() {
           value={selectedDevice}
           onChange={(e) => setSelectedDevice(e.target.value)}
         >
-          <option value="ALL">All Devices</option>
+          {!isCitizen && <option value="ALL">All Devices</option>}
           {devices.map((d) => (
             <option key={d.id} value={d.id}>
               {d.make} {d.model}
