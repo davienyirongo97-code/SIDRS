@@ -430,126 +430,126 @@ export default function ThreatIntelPage() {
           TAB 1: PREDICTIVE HOTSPOTS
       ════════════════════════════════════════════ */}
       {activeTab === 'hotspots' && (
-        <div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 380px', gap: 24 }}>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-              {/* Risk area cards */}
-              {HOTSPOT_AREAS.map((h, i) => (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+          {/* Top: Full Width Map */}
+          <MalawiMap points={HOTSPOT_AREAS} type="hotspots" />
+
+          {/* Bottom: Risk Areas */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+            {HOTSPOT_AREAS.map((h, i) => (
+              <div
+                key={h.area}
+                style={{
+                  borderRadius: 'var(--radius-2)',
+                  border: `1px solid ${h.risk >= 80 ? 'var(--red-2)' : h.risk >= 60 ? '#F5C35A' : 'var(--muted-3)'}`,
+                  overflow: 'hidden',
+                  background: 'var(--surface)',
+                  boxShadow: 'var(--shadow)',
+                }}
+              >
                 <div
-                  key={h.area}
                   style={{
-                    borderRadius: 'var(--radius-2)',
-                    border: `1px solid ${h.risk >= 80 ? 'var(--red-2)' : h.risk >= 60 ? '#F5C35A' : 'var(--muted-3)'}`,
-                    overflow: 'hidden',
-                    background: 'var(--surface)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    padding: '16px 20px',
+                    gap: 16,
+                    flexWrap: 'wrap',
                   }}
                 >
+                  {/* Rank */}
                   <div
                     style={{
+                      width: 32,
+                      height: 32,
+                      borderRadius: '50%',
+                      flexShrink: 0,
+                      background:
+                        h.risk >= 80
+                          ? 'var(--red)'
+                          : h.risk >= 60
+                            ? 'var(--amber)'
+                            : 'var(--green)',
                       display: 'flex',
                       alignItems: 'center',
-                      padding: '14px 18px',
-                      gap: 14,
-                      flexWrap: 'wrap',
+                      justifyContent: 'center',
+                      fontWeight: 900,
+                      fontSize: 14,
+                      color: '#fff',
                     }}
                   >
-                    {/* Rank */}
-                    <div
-                      style={{
-                        width: 32,
-                        height: 32,
-                        borderRadius: '50%',
-                        flexShrink: 0,
-                        background:
-                          h.risk >= 80
-                            ? 'var(--red)'
-                            : h.risk >= 60
-                              ? 'var(--amber)'
-                              : 'var(--green)',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        fontWeight: 900,
-                        fontSize: 14,
-                        color: '#fff',
-                      }}
-                    >
-                      {i + 1}
-                    </div>
+                    {i + 1}
+                  </div>
 
-                    {/* Area info */}
-                    <div style={{ flex: 1, minWidth: 140 }}>
-                      <div style={{ fontWeight: 800, fontSize: 14, color: 'var(--ink)' }}>
-                        📍 {h.area}
-                      </div>
-                      <div style={{ fontSize: 12, color: 'var(--muted)', marginTop: 2 }}>
-                        {h.city} · Peak: {h.peak} · {h.avgTime}
-                      </div>
+                  {/* Area info */}
+                  <div style={{ flex: 1, minWidth: 140 }}>
+                    <div style={{ fontWeight: 800, fontSize: 14, color: 'var(--ink)' }}>
+                      📍 {h.area}
                     </div>
-
-                    {/* Risk score bar */}
-                    <div style={{ minWidth: 160 }}>
-                      <div
-                        style={{
-                          display: 'flex',
-                          justifyContent: 'space-between',
-                          marginBottom: 4,
-                        }}
-                      >
-                        <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--muted)' }}>
-                          AI Risk Score
-                        </span>
-                        <span
-                          style={{
-                            fontSize: 13,
-                            fontWeight: 900,
-                            color:
-                              h.risk >= 80
-                                ? 'var(--red)'
-                                : h.risk >= 60
-                                  ? 'var(--amber)'
-                                  : 'var(--green)',
-                          }}
-                        >
-                          {h.risk}%
-                        </span>
-                      </div>
-                      <div
-                        style={{
-                          height: 8,
-                          borderRadius: 4,
-                          background: 'var(--bg-2)',
-                          overflow: 'hidden',
-                        }}
-                      >
-                        <div
-                          style={{
-                            height: '100%',
-                            borderRadius: 4,
-                            width: `${h.risk}%`,
-                            background:
-                              h.risk >= 80
-                                ? 'var(--red)'
-                                : h.risk >= 60
-                                  ? 'var(--amber)'
-                                  : 'var(--green)',
-                            transition: 'width .5s ease',
-                          }}
-                        />
-                      </div>
-                    </div>
-
-                    {/* Stats */}
-                    <div style={{ textAlign: 'right', flexShrink: 0 }}>
-                      <div style={{ fontSize: 12, fontWeight: 700 }}>{h.reports7d} reports</div>
-                      <div style={{ fontSize: 11, color: 'var(--muted)' }}>last 7 days</div>
+                    <div style={{ fontSize: 12, color: 'var(--muted)', marginTop: 2 }}>
+                      {h.city} · Peak: {h.peak} · {h.avgTime}
                     </div>
                   </div>
-                </div>
-              ))}
-            </div>
 
-            <MalawiMap points={HOTSPOT_AREAS} type="hotspots" />
+                  {/* Risk score bar */}
+                  <div style={{ minWidth: 200 }}>
+                    <div
+                      style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        marginBottom: 4,
+                      }}
+                    >
+                      <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--muted)' }}>
+                        AI Risk Score
+                      </span>
+                      <span
+                        style={{
+                          fontSize: 13,
+                          fontWeight: 900,
+                          color:
+                            h.risk >= 80
+                              ? 'var(--red)'
+                              : h.risk >= 60
+                                ? 'var(--amber)'
+                                : 'var(--green)',
+                        }}
+                      >
+                        {h.risk}%
+                      </span>
+                    </div>
+                    <div
+                      style={{
+                        height: 8,
+                        borderRadius: 4,
+                        background: 'var(--bg-2)',
+                        overflow: 'hidden',
+                      }}
+                    >
+                      <div
+                        style={{
+                          height: '100%',
+                          borderRadius: 4,
+                          width: `${h.risk}%`,
+                          background:
+                            h.risk >= 80
+                              ? 'var(--red)'
+                              : h.risk >= 60
+                                ? 'var(--amber)'
+                                : 'var(--green)',
+                          transition: 'width .5s ease',
+                        }}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Stats */}
+                  <div style={{ textAlign: 'right', flexShrink: 0 }}>
+                    <div style={{ fontSize: 12, fontWeight: 700 }}>{h.reports7d} reports</div>
+                    <div style={{ fontSize: 11, color: 'var(--muted)' }}>last 7 days</div>
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       )}
@@ -558,29 +558,35 @@ export default function ThreatIntelPage() {
           TAB 2: ANOMALY DETECTION
       ════════════════════════════════════════════ */}
       {activeTab === 'anomalies' && (
-        <div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+          {/* Top: Full Width Map */}
+          <MalawiMap points={ANOMALIES} type="anomalies" selectedId={expandedAnomaly} />
+
+          {/* Bottom: Alert Feed */}
           <div
-            style={{ display: 'grid', gridTemplateColumns: 'minmax(300px, 1fr) 380px', gap: 24 }}
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 12,
+            }}
           >
+            <div className="alert alert-red" style={{ margin: 0 }}>
+              <span className="alert-icon">
+                <FiAlertTriangle />
+              </span>
+              <div style={{ fontSize: 11 }}>
+                Anomalies are flagged automatically by the AI engine and recorded as immutable
+                proof in the Ownership Chain.
+              </div>
+            </div>
+
             <div
               style={{
-                display: 'flex',
-                flexDirection: 'column',
-                gap: 12,
-                maxHeight: 620,
-                overflowY: 'auto',
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fill, minmax(400px, 1fr))',
+                gap: 16,
               }}
             >
-              <div className="alert alert-red" style={{ margin: 0 }}>
-                <span className="alert-icon">
-                  <FiAlertTriangle />
-                </span>
-                <div style={{ fontSize: 11 }}>
-                  Anomalies are flagged automatically by the AI engine and recorded as immutable
-                  proof in the Ownership Chain.
-                </div>
-              </div>
-
               {ANOMALIES.map((anomaly) => {
                 const sev = SEVERITY_CONFIG[anomaly.severity];
                 const isOpen = expandedAnomaly === anomaly.id;
@@ -592,11 +598,12 @@ export default function ThreatIntelPage() {
                       border: `1px solid ${sev.color}40`,
                       overflow: 'hidden',
                       background: 'var(--surface)',
+                      boxShadow: 'var(--shadow)',
                     }}
                   >
                     <div
                       style={{
-                        padding: '12px 16px',
+                        padding: '16px',
                         cursor: 'pointer',
                         display: 'flex',
                         gap: 12,
@@ -605,19 +612,19 @@ export default function ThreatIntelPage() {
                       }}
                       onClick={() => setExpandedAnomaly(isOpen ? null : anomaly.id)}
                     >
-                      <div style={{ fontSize: 20, flexShrink: 0, color: sev.color }}>
+                      <div style={{ fontSize: 24, flexShrink: 0, color: sev.color }}>
                         {ANOMALY_ICONS[anomaly.type]}
                       </div>
                       <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{ fontWeight: 800, fontSize: 13, color: 'var(--ink)' }}>
+                        <div style={{ fontWeight: 800, fontSize: 14, color: 'var(--ink)' }}>
                           {anomaly.title}
                         </div>
-                        <div style={{ fontSize: 11, color: 'var(--muted)', marginTop: 2 }}>
+                        <div style={{ fontSize: 11, color: 'var(--muted)', marginTop: 4 }}>
                           🕐 {anomaly.detectedAt}
                         </div>
                       </div>
                       <div style={{ textAlign: 'right' }}>
-                        <div style={{ fontWeight: 900, fontSize: 14, color: sev.color }}>
+                        <div style={{ fontWeight: 900, fontSize: 16, color: sev.color }}>
                           {anomaly.confidence}%
                         </div>
                         <div style={{ fontSize: 10, color: 'var(--muted)' }}>Match</div>
@@ -627,17 +634,17 @@ export default function ThreatIntelPage() {
                     {isOpen && (
                       <div
                         style={{
-                          padding: '12px 16px',
+                          padding: '16px',
                           borderTop: `1px solid ${sev.color}20`,
                           background: 'rgba(0,0,0,0.05)',
                         }}
                       >
                         <div
                           style={{
-                            fontSize: 11,
+                            fontSize: 12,
                             color: 'var(--ink-2)',
-                            lineHeight: 1.5,
-                            marginBottom: 10,
+                            lineHeight: 1.6,
+                            marginBottom: 12,
                           }}
                         >
                           {anomaly.detail}
@@ -645,10 +652,10 @@ export default function ThreatIntelPage() {
                         <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>
                           <div
                             style={{
-                              padding: 8,
+                              padding: '10px 12px',
                               background: sev.bg,
-                              borderRadius: 6,
-                              borderLeft: `3px solid ${sev.color}`,
+                              borderRadius: 8,
+                              borderLeft: `4px solid ${sev.color}`,
                               fontSize: 11,
                               color: sev.color,
                               fontWeight: 700,
@@ -660,18 +667,18 @@ export default function ThreatIntelPage() {
                           <button
                             className="btn btn-blue"
                             style={{
-                              padding: '0 12px',
-                              height: 32,
+                              padding: '0 16px',
+                              height: 36,
                               fontSize: 11,
                               fontWeight: 700,
                               display: 'flex',
                               alignItems: 'center',
                               gap: 6,
-                              borderRadius: 6,
+                              borderRadius: 8,
                             }}
                             onClick={(e) => {
                               e.stopPropagation();
-                              setExpandedAnomaly(anomaly.id);
+                              // In a real app, this would scroll to map
                             }}
                           >
                             <FiMapPin /> Locate Target
@@ -683,8 +690,6 @@ export default function ThreatIntelPage() {
                 );
               })}
             </div>
-
-            <MalawiMap points={ANOMALIES} type="anomalies" selectedId={expandedAnomaly} />
           </div>
         </div>
       )}

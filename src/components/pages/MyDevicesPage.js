@@ -249,30 +249,7 @@ export default function MyDevicesPage() {
                     >
                       <FiLink size={12} /> History
                     </Link>
-                    {device.status === 'registered' ? (
-                      <>
-                        <button
-                          className="btn btn-ghost btn-sm"
-                          onClick={() => {
-                            setSelectedDevice(device);
-                            setModal('transfer');
-                          }}
-                        >
-                          Transfer
-                        </button>
-                        <button
-                          className="btn btn-danger btn-sm"
-                          onClick={() => {
-                            setSelectedDevice(device);
-                            setModal('report');
-                          }}
-                        >
-                          Report Theft
-                        </button>
-                      </>
-                    ) : (
-                      <Badge status={device.status} />
-                    )}
+                    <Badge status={device.status} />
                   </div>
                 </div>
               ))

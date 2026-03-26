@@ -172,7 +172,7 @@ export default function HomePage() {
             className="fade-in"
             style={{
               position: 'absolute',
-              top: '10px',
+              top: '-60px',
               left: '10px',
               right: '10px',
               zIndex: 10,
@@ -233,8 +233,8 @@ export default function HomePage() {
             className="glass-panel"
             style={{
               position: 'absolute',
-              bottom: -20,
-              right: 40,
+              bottom: '-80px',
+              right: '40px',
               borderRadius: 16,
               padding: '16px 20px',
               display: 'flex',

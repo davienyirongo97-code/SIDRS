@@ -19,6 +19,7 @@ import MacraAdminPage from './components/pages/MacraAdminPage';
 import DeviceRegistryPage from './components/pages/DeviceRegistryPage';
 import OwnershipChainPage from './components/pages/OwnershipChainPage';
 import ThreatIntelPage from './components/pages/ThreatIntelPage';
+import USSDSimulatorPage from './components/pages/USSDSimulatorPage';
 import NotFoundPage from './components/pages/NotFoundPage';
 
 import ProtectedRoute from './components/ui/ProtectedRoute';
@@ -68,6 +69,7 @@ function App() {
             <Routes>
               <Route path="/" element={<HomePage />} />
               <Route path="/checker" element={<IMEICheckerPage />} />
+              <Route path="/ussd" element={<USSDSimulatorPage />} />
 
               {/* Citizen Routes */}
               <Route

@@ -430,94 +430,124 @@ export default function PoliceDashboardPage() {
             No active device alerts at this time
           </div>
         ) : (
-          <div
-            style={{ display: 'grid', gridTemplateColumns: 'minmax(300px, 1fr) 340px', gap: 24 }}
-          >
-            {/* Left: The Map */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+            {/* The Map - Now Full Width */}
             <MalawiMap points={activeEvents} type="events" />
 
-            {/* Right: Quick List */}
-            <div
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                gap: 12,
-                maxHeight: 600,
-                overflowY: 'auto',
-                paddingRight: 4,
-              }}
-            >
+            {/* Targets in Vicinity - Now at the bottom */}
+            <div>
               <div
                 style={{
                   fontSize: 10,
                   fontWeight: 800,
                   color: 'var(--muted)',
                   letterSpacing: 1,
-                  marginBottom: 4,
+                  marginBottom: 12,
+                  paddingLeft: 4,
                 }}
               >
                 TARGETS IN VICINITY
               </div>
-              {active.map((report) => {
-                const device = findDevice(report.deviceId, devices);
-                const devEvts = events.filter((e) => e.reportId === report.id);
-                const latest = devEvts[devEvts.length - 1];
-                if (!latest) return null;
+              <div
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))',
+                  gap: 16,
+                }}
+              >
+                {active.map((report) => {
+                  const device = findDevice(report.deviceId, devices);
+                  const devEvts = events.filter((e) => e.reportId === report.id);
+                  const latest = devEvts[devEvts.length - 1];
+                  if (!latest) return null;
 
-                return (
-                  <div
-                    key={report.id}
-                    style={{
-                      background: 'var(--bg)',
-                      border: '1px solid var(--muted-3)',
-                      borderRadius: 12,
-                      padding: 14,
-                    }}
-                  >
-                    <div style={{ fontWeight: 700, fontSize: 13, marginBottom: 4 }}>
-                      {device?.make} {device?.model}
-                    </div>
-                    <div style={{ fontSize: 11, color: 'var(--muted)' }}>Last: {latest.tower}</div>
+                  return (
                     <div
+                      key={report.id}
                       style={{
-                        marginTop: 8,
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
+                        background: 'var(--bg)',
+                        border: '1px solid var(--muted-3)',
+                        borderRadius: 12,
+                        padding: 16,
+                        boxShadow: 'var(--shadow)',
                       }}
                     >
-                      <span style={{ fontSize: 10, color: 'var(--red)', fontWeight: 800 }}>
-                        ● ACTIVE SIGNAL
-                      </span>
-                      <div style={{ display: 'flex', gap: 6 }}>
-                        <button
-                          className="btn btn-primary btn-sm"
-                          style={{ fontSize: 10, padding: '4px 8px' }}
-                          onClick={() =>
-                            showToast('Dispatch initiated.', 'Units notified of coordinates.')
-                          }
-                        >
-                          Dispatch
-                        </button>
-                        <button
-                          className="btn btn-green btn-sm"
-                          style={{ fontSize: 10, padding: '4px 8px' }}
-                          onClick={() => {
-                            dispatch({ type: 'RESOLVE_REPORT', payload: { reportId: report.id } });
-                            showToast(
-                              'Device marked as recovered',
-                              'Case has been resolved.',
-                              'success'
-                            );
+                      <div style={{ fontWeight: 700, fontSize: 13, marginBottom: 4 }}>
+                        {device?.make} {device?.model}
+                      </div>
+                      <div style={{ fontSize: 11, color: 'var(--muted)' }}>Last: {latest.tower}</div>
+
+                      {/* AI recovery analytics */}
+                      <div style={{ marginTop: 12 }}>
+                        <div
+                          style={{
+                             display: 'flex',
+                             justifyContent: 'space-between',
+                             fontSize: 10,
+                             fontWeight: 800,
+                             color: 'var(--muted)',
+                             marginBottom: 4,
                           }}
                         >
-                          Mark Recovered
-                        </button>
+                          <span>RECOVERY PROBABILITY (AI SCORE)</span>
+                          <span style={{ color: (devEvts.length * 15 + 40) > 80 ? 'var(--green)' : 'var(--amber)' }}>
+                            {Math.min(devEvts.length * 15 + 40, 98)}%
+                          </span>
+                        </div>
+                        <div style={{ height: 6, background: 'var(--bg-2)', borderRadius: 3, overflow: 'hidden' }}>
+                           <div
+                             style={{
+                               height: '100%',
+                               width: `${Math.min(devEvts.length * 15 + 40, 98)}%`,
+                               background: (devEvts.length * 15 + 40) > 80 ? 'var(--green)' : 'var(--amber)',
+                               borderRadius: 3,
+                               transition: 'width 1s ease',
+                             }}
+                           />
+                        </div>
+                      </div>
+
+                      <div
+                        style={{
+                          marginTop: 14,
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'center',
+                        }}
+                      >
+                        <span style={{ fontSize: 10, color: 'var(--red)', fontWeight: 800 }}>
+                          ● ACTIVE SIGNAL
+                        </span>
+                        <div style={{ display: 'flex', gap: 6 }}>
+                          <button
+                            className="btn btn-primary btn-sm"
+                            style={{ fontSize: 10, padding: '4px 10px' }}
+                            onClick={() =>
+                              showToast('Dispatch initiated.', 'Units notified of coordinates.')
+                            }
+                          >
+                            Dispatch
+                          </button>
+                          <button
+                            className="btn btn-green btn-sm"
+                            style={{ fontSize: 10, padding: '4px 10px' }}
+                            onClick={() => {
+                              dispatch({ type: 'RESOLVE_REPORT', payload: { reportId: report.id } });
+                              showToast(
+                                'Device marked as recovered',
+                                'Case has been resolved.',
+                                'success'
+                              );
+                            }}
+                          >
+                            Mark Recovered
+                          </button>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                );
-              })}
+                  );
+                })}
+              </div>
             </div>
           </div>
         )}

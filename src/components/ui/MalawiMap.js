@@ -210,7 +210,7 @@ export default function MalawiMap({ points = [], type = 'events', selectedId = n
   return (
     <div
       className="map-container card"
-      style={{ padding: 0, overflow: 'hidden', height: 620, position: 'relative', display: 'flex' }}
+      style={{ padding: 0, overflow: 'hidden', height: 800, position: 'relative', display: 'flex' }}
     >
       {/* ── Visual Map Area ── */}
       <div

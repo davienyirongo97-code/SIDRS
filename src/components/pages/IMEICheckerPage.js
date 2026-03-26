@@ -212,6 +212,7 @@ export default function IMEICheckerPage() {
 /* RESULT COMPONENT */
 
 function CheckerResult({ result, isOfficer }) {
+  const showToast = useToast();
   if (result.status === 'not_found') {
     return (
       <div className="card">
@@ -257,8 +258,40 @@ function CheckerResult({ result, isOfficer }) {
 
       <InfoField label="Location" value={r.location} />
 
-      <div style={{ marginTop: 10, display: 'flex', alignItems: 'center', gap: 6 }}>
+      <div style={{ marginTop: 10, display: 'flex', alignItems: 'center', gap: 6, color: 'var(--muted)', fontSize: 12 }}>
         <FiPhone size={14} /> Call Malawi Police: <b>199</b>
+      </div>
+
+      <div
+        style={{
+          marginTop: 24,
+          padding: 16,
+          background: 'var(--red-pale)',
+          borderRadius: 12,
+          border: '1px solid var(--red-2)',
+        }}
+      >
+        <div style={{ fontWeight: 800, fontSize: 13, color: 'var(--red)', marginBottom: 8 }}>
+          BOUNTY ELIGIBLE: FOUND STOLEN DEVICE?
+        </div>
+        <p style={{ fontSize: 11, color: 'var(--ink-2)', marginBottom: 16 }}>
+          If you are viewing this device in person (e.g., at a market), reporting its current
+          location helps the "Honey Trap" network pinpoint the thief. You may be eligible for an
+          airtime bounty.
+        </p>
+        <button
+          className="btn btn-red btn-sm"
+          style={{ width: '100%', fontWeight: 800 }}
+          onClick={() => {
+            showToast(
+              'Sighting Reported',
+              'Anonymous intelligence sent to Police. GPS coordinates captured.',
+              'success'
+            );
+          }}
+        >
+          Report Anonymous Sighting
+        </button>
       </div>
     </div>
   );

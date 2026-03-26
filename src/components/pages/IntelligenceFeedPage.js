@@ -275,8 +275,12 @@ export default function IntelligenceFeedPage() {
 
       {/* ════════════════ TELECOM TAB ════════════════ */}
       {activeTab === 'telecom' && (
-        <div style={{ display: 'grid', gridTemplateColumns: '380px 1fr', gap: 24 }}>
-          <div className="card" style={{ height: 620, overflowY: 'auto' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+          {/* Top: Full Width Map */}
+          <MalawiMap points={events} type="movement" />
+
+          {/* Bottom: Timeline */}
+          <div className="card" style={{ maxHeight: 500, overflowY: 'auto' }}>
             <div
               className="card-title"
               style={{ marginBottom: 16, display: 'flex', alignItems: 'center', gap: 6 }}
@@ -341,8 +345,6 @@ export default function IntelligenceFeedPage() {
                 })}
             </div>
           </div>
-
-          <MalawiMap points={events} type="movement" />
         </div>
       )}
 
@@ -520,19 +522,16 @@ export default function IntelligenceFeedPage() {
             <button className="btn btn-primary btn-sm">+ Add Node</button>
           </div>
 
-          <div
-            style={{ display: 'grid', gridTemplateColumns: 'minmax(300px, 1fr) 380px', gap: 24 }}
-          >
-            {/* National Overview Map */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+            {/* National Overview Map - Full Width */}
             <MalawiMap points={IOT_NODES} type="nodes" />
 
+            {/* Node List - Grid Layout */}
             <div
               style={{
-                display: 'flex',
-                flexDirection: 'column',
-                gap: 12,
-                maxHeight: 600,
-                overflowY: 'auto',
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))',
+                gap: 16,
               }}
             >
               {IOT_NODES.map((node) => {
@@ -541,15 +540,16 @@ export default function IntelligenceFeedPage() {
                   <div
                     key={node.id}
                     style={{
-                      padding: '14px 16px',
+                      padding: '16px',
                       borderRadius: 'var(--radius-2)',
                       border: `1px solid ${node.status === 'online' ? cfg.color + '40' : 'var(--muted-3)'}`,
                       background: 'var(--surface)',
                       opacity: node.status === 'offline' ? 0.6 : 1,
+                      boxShadow: 'var(--shadow)',
                     }}
                   >
                     <div
-                      style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 }}
+                      style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}
                     >
                       <div
                         style={{

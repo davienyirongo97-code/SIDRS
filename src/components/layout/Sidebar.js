@@ -37,6 +37,12 @@ const NAV_GROUPS = [
         label: 'IMEI Checker',
         roles: ['citizen', 'police', 'macra'],
       },
+      {
+        path: '/ussd',
+        icon: <FiRadio />,
+        label: 'USSD Simulator (*858#)',
+        roles: ['citizen', 'police', 'macra'],
+      },
     ],
   },
   {
