@@ -269,13 +269,24 @@ export default function MalawiMap({ points = [], type = 'events', selectedId = n
             layers.forEach((layer) => {
               if (layer.type === 'symbol' && layer.layout && layer.layout['text-field']) {
                 try {
+                  // Force maximum opacity and visibility
+                  map.setLayoutProperty(layer.id, 'visibility', 'visible');
+                  map.setPaintProperty(layer.id, 'text-opacity', 1);
+
+                  // Make labels white with a strong dark halo
                   map.setPaintProperty(layer.id, 'text-color', '#ffffff');
-                  map.setPaintProperty(layer.id, 'text-halo-color', 'rgba(0,0,0,0.9)');
+                  map.setPaintProperty(layer.id, 'text-halo-color', 'rgba(0,0,0,1)');
                   map.setPaintProperty(layer.id, 'text-halo-width', 2);
-                  // Increase base size slightly
-                  const currentSize = map.getLayoutProperty(layer.id, 'text-size') || 12;
-                  if (typeof currentSize === 'number') {
-                    map.setLayoutProperty(layer.id, 'text-size', currentSize + 1);
+
+                  // Reduce minzoom so street names appear earlier when zooming out
+                  if (layer.minzoom > 10) {
+                    map.setLayerZoomRange(layer.id, 10, layer.maxzoom || 24);
+                  } else if (layer.minzoom) {
+                    map.setLayerZoomRange(
+                      layer.id,
+                      Math.max(0, layer.minzoom - 2),
+                      layer.maxzoom || 24
+                    );
                   }
                 } catch (err) {
                   console.warn('Could not update map layer:', layer.id);

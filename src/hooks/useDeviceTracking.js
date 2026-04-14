@@ -7,8 +7,6 @@ export function useDeviceTracking() {
     connectSocket();
 
     const onLocationUpdate = (data) => {
-      // data corresponds to { deviceId, lat, lng, timestamp, accuracy }
-      console.log('Received location ping via WS:', data);
       // Use getState() so this effect never needs to re-run due to action reference changes
       useAppStore.getState().updateDeviceLocation(data);
     };

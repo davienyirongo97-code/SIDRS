@@ -5,14 +5,13 @@
  *
  * MULTI-IDENTIFIER MATCHING (IMEI Defence Layer):
  *   Searches across ALL identifiers simultaneously:
- *     - IMEI (primary — mobiles/tablets)
- *     - Serial number (immutable hardware ID — all devices)
- *     - MAC address (burned into WiFi chip — laptops/tablets)
+ *     - IMEI (primary — all phones)
+ *     - Serial number (hardware ID — all phones)
  *
  *   WHY THIS MATTERS:
- *   A thief who has reprogrammed the IMEI cannot change the serial
- *   number or MAC address without physical hardware replacement.
- *   Searching by serial or MAC still finds and identifies the device.
+ *   A thief who has attempted IMEI tampering cannot change the serial
+ *   number without physical hardware replacement.
+ *   Searching by serial still finds and identifies the phone.
  *
  *   MATCH CONFIDENCE PANEL:
  *   Shows which identifiers matched and which did not, so police
@@ -30,7 +29,7 @@
 
 import React, { useState } from 'react';
 import { useAppStore } from '../../store/useAppStore';
-import { formatNumber } from '../../utils/helpers';
+import { formatNumber, checkDuplicateDevice } from '../../utils/helpers';
 import Badge from './Badge';
 import {
   FiSearch,
@@ -154,8 +153,17 @@ export default function DeviceLookup() {
   const [mode, setMode] = useState('single'); // 'single' | 'multi'
 
   function handleSearch() {
-    // Multi-field mode: try each field, return first match
+    // Multi-field mode: cross-validate IMEI + serial if both provided
     if (mode === 'multi') {
+      // If both IMEI and serial are entered, check they belong to the same device
+      if (imeiVal.trim() && serialVal.trim()) {
+        const imeiDevice = devices.find((d) => d.imei === imeiVal.trim());
+        const serialDevice = devices.find((d) => d.serial === serialVal.trim());
+        if (imeiDevice && serialDevice && imeiDevice.id !== serialDevice.id) {
+          setResult({ status: 'mismatch', matchAnalysis: null });
+          return;
+        }
+      }
       const queries = [imeiVal, serialVal, macVal].filter(Boolean);
       for (const q of queries) {
         const r = multiIdentifierSearch(q, devices, reports);
@@ -381,6 +389,39 @@ export default function DeviceLookup() {
 
 /* ── LOOKUP RESULT COMPONENT ─────────────────────────────────── */
 function LookupResult({ result, events, transfers, users }) {
+  /* MISMATCH — IMEI and serial belong to different devices */
+  if (result.status === 'mismatch') {
+    return (
+      <div
+        style={{
+          padding: '20px 24px',
+          background: 'var(--red-pale)',
+          borderRadius: 'var(--radius-2)',
+          border: '2px solid var(--red-2)',
+        }}
+      >
+        <div
+          style={{
+            fontWeight: 900,
+            fontSize: 16,
+            color: 'var(--red)',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 8,
+            marginBottom: 10,
+          }}
+        >
+          <FiAlertOctagon /> IDENTIFIER MISMATCH — Possible IMEI Cloning
+        </div>
+        <div style={{ fontSize: 13, color: 'var(--red)', lineHeight: 1.7 }}>
+          The IMEI and serial number entered belong to <strong>two different devices</strong> in the
+          national registry. This is a strong indicator of IMEI tampering or cloning. Do not release
+          this device. Detain for further investigation.
+        </div>
+      </div>
+    );
+  }
+
   /* NOT FOUND */
   if (result.status === 'not_found') {
     return (

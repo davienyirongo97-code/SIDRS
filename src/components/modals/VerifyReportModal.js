@@ -89,7 +89,84 @@ export default function VerifyReportModal({ onClose, reportId }) {
               Device
             </div>
             <div style={{ fontWeight: 600, fontSize: 13 }}>
-              {device.make} {device.model} — {device.imei || device.serial}
+              {device.make} {device.model}
+            </div>
+            <div style={{ display: 'flex', gap: 16, marginTop: 8, flexWrap: 'wrap' }}>
+              {device.imei && (
+                <div>
+                  <div
+                    style={{
+                      fontSize: 10,
+                      color: 'var(--muted)',
+                      fontWeight: 700,
+                      textTransform: 'uppercase',
+                      letterSpacing: 0.5,
+                    }}
+                  >
+                    IMEI
+                  </div>
+                  <div
+                    style={{
+                      fontFamily: 'var(--font-mono)',
+                      fontSize: 12,
+                      color: 'var(--blue)',
+                      fontWeight: 700,
+                    }}
+                  >
+                    {device.imei}
+                  </div>
+                </div>
+              )}
+              {device.serial && (
+                <div>
+                  <div
+                    style={{
+                      fontSize: 10,
+                      color: 'var(--muted)',
+                      fontWeight: 700,
+                      textTransform: 'uppercase',
+                      letterSpacing: 0.5,
+                    }}
+                  >
+                    Serial
+                  </div>
+                  <div
+                    style={{
+                      fontFamily: 'var(--font-mono)',
+                      fontSize: 12,
+                      color: 'var(--blue)',
+                      fontWeight: 700,
+                    }}
+                  >
+                    {device.serial}
+                  </div>
+                </div>
+              )}
+              {device.mac && (
+                <div>
+                  <div
+                    style={{
+                      fontSize: 10,
+                      color: 'var(--muted)',
+                      fontWeight: 700,
+                      textTransform: 'uppercase',
+                      letterSpacing: 0.5,
+                    }}
+                  >
+                    MAC
+                  </div>
+                  <div
+                    style={{
+                      fontFamily: 'var(--font-mono)',
+                      fontSize: 12,
+                      color: 'var(--blue)',
+                      fontWeight: 700,
+                    }}
+                  >
+                    {device.mac}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         )}

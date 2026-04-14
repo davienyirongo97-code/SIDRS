@@ -5,15 +5,20 @@
 
 import React, { useState } from 'react';
 import { useAppStore, useCurrentUser, useToast } from '../../store/useAppStore';
-import { checkIdentifier } from '../../utils/helpers';
+import { checkIdentifier, checkDuplicateDevice } from '../../utils/helpers';
 import Badge from '../ui/Badge';
-import { FiSearch, FiCheckCircle, FiAlertCircle, FiHelpCircle, FiPhone } from 'react-icons/fi';
+import {
+  FiSearch,
+  FiCheckCircle,
+  FiAlertCircle,
+  FiHelpCircle,
+  FiPhone,
+  FiShield,
+} from 'react-icons/fi';
 
 const SAMPLES = [
   { id: '356789012345678', label: 'Clean phone' },
   { id: '490123456789012', label: 'Stolen phone' },
-  { id: 'LNV-X1C-2024-7721', label: 'Clean laptop' },
-  { id: 'DEL-INS-2024-5541', label: 'Recovered laptop' },
 ];
 
 export default function IMEICheckerPage() {
@@ -25,15 +30,34 @@ export default function IMEICheckerPage() {
   const isOfficer = currentUser?.role === 'police' || currentUser?.role === 'macra';
 
   const [query, setQuery] = useState('');
+  const [serial, setSerial] = useState('');
   const [result, setResult] = useState(null);
+  const [twoFactor, setTwoFactor] = useState(false);
 
   function doCheck(value) {
     const q = (value ?? query).trim();
     if (!q) return;
 
-    // Simple validation for IMEI (should be 15 digits)
+    // Standard IMEI length check
     if (/^\d+$/.test(q) && q.length !== 15) {
       showToast('Validation Error', 'A standard IMEI should be exactly 15 digits.', 'warn');
+    }
+
+    // Two-factor mode: both IMEI and serial must match the same device
+    if (twoFactor && serial.trim()) {
+      const dupeCheck = checkDuplicateDevice(q, serial.trim(), devices);
+      if (dupeCheck.conflict) {
+        // conflict means one of them is already registered — find the device and check status
+        setResult(checkIdentifier(q, devices, reports));
+        return;
+      }
+      // If no conflict and both provided, check if they belong to the same device
+      const imeiDevice = devices.find((d) => d.imei === q);
+      const serialDevice = devices.find((d) => d.serial === serial.trim());
+      if (imeiDevice && serialDevice && imeiDevice.id !== serialDevice.id) {
+        setResult({ status: 'mismatch' });
+        return;
+      }
     }
 
     setResult(checkIdentifier(q, devices, reports));
@@ -41,6 +65,7 @@ export default function IMEICheckerPage() {
 
   function handleSampleId(id) {
     setQuery(id);
+    setSerial('');
     doCheck(id);
   }
 
@@ -83,7 +108,24 @@ export default function IMEICheckerPage() {
             <FiSearch size={18} /> Check a Device Identifier
           </div>
 
-          <div style={{ display: 'flex', gap: 12, marginBottom: 24 }}>
+          {/* Two-factor toggle */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
+            <button
+              className={`btn btn-sm ${twoFactor ? 'btn-primary' : 'btn-surface'}`}
+              onClick={() => {
+                setTwoFactor(!twoFactor);
+                setResult(null);
+              }}
+              style={{ display: 'flex', alignItems: 'center', gap: 6 }}
+            >
+              <FiShield size={13} /> Two-Factor Check {twoFactor ? 'ON' : 'OFF'}
+            </button>
+            <span style={{ fontSize: 11, color: 'var(--muted)' }}>
+              {twoFactor ? 'IMEI + Serial must match the same device' : 'Single identifier lookup'}
+            </span>
+          </div>
+
+          <div style={{ display: 'flex', gap: 12, marginBottom: twoFactor ? 12 : 24 }}>
             <input
               className="field-input mono"
               style={{ flex: 1, padding: '14px 18px', fontSize: 16 }}
@@ -92,14 +134,36 @@ export default function IMEICheckerPage() {
               onChange={(e) => setQuery(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && doCheck()}
             />
-            <button
-              className="btn btn-primary"
-              style={{ padding: '0 32px' }}
-              onClick={() => doCheck()}
-            >
-              Verify
-            </button>
+            {!twoFactor && (
+              <button
+                className="btn btn-primary"
+                style={{ padding: '0 32px' }}
+                onClick={() => doCheck()}
+              >
+                Verify
+              </button>
+            )}
           </div>
+
+          {twoFactor && (
+            <div style={{ display: 'flex', gap: 12, marginBottom: 24 }}>
+              <input
+                className="field-input mono"
+                style={{ flex: 1, padding: '14px 18px', fontSize: 16 }}
+                placeholder="Enter Serial Number..."
+                value={serial}
+                onChange={(e) => setSerial(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && doCheck()}
+              />
+              <button
+                className="btn btn-primary"
+                style={{ padding: '0 32px' }}
+                onClick={() => doCheck()}
+              >
+                <FiShield size={14} /> Verify Both
+              </button>
+            </div>
+          )}
 
           <div
             style={{
@@ -220,6 +284,36 @@ function CheckerResult({ result, isOfficer }) {
           <FiHelpCircle /> Not Found
         </h3>
         <p>No record found in the SDIRS database.</p>
+      </div>
+    );
+  }
+
+  if (result.status === 'mismatch') {
+    return (
+      <div className="card" style={{ borderLeft: '4px solid var(--red)' }}>
+        <h3
+          style={{
+            color: 'var(--red)',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 6,
+            marginBottom: 12,
+          }}
+        >
+          <FiAlertCircle /> IMEI / Serial Mismatch
+        </h3>
+        <p style={{ fontSize: 13, color: 'var(--ink-2)', lineHeight: 1.7 }}>
+          The IMEI and serial number you entered belong to <strong>different devices</strong> in the
+          national registry. This is a strong indicator of{' '}
+          <strong style={{ color: 'var(--red)' }}>IMEI cloning or device tampering</strong>.
+        </p>
+        <div className="alert alert-red" style={{ marginTop: 14 }}>
+          <span className="alert-icon">⚠️</span>
+          <div>
+            Do not purchase this device. Report to the nearest police station or call{' '}
+            <strong>199</strong>.
+          </div>
+        </div>
       </div>
     );
   }

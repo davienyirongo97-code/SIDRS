@@ -892,7 +892,7 @@ tr:hover td {
 }
 
 .glass-card:hover {
-  transform: translateY(-5px) scale(1.02);
+  transform: translateY(-4px);
   background: rgba(255, 255, 255, 0.06);
   box-shadow:
     0 24px 48px rgba(0, 0, 0, 0.3),
@@ -930,8 +930,7 @@ tr:hover td {
 }
 
 .glowing-border:hover::before {
-  opacity: 1;
-  animation: spin 3s linear infinite;
+  opacity: 0.6;
 }
 
 .hero-mesh-bg {
@@ -943,136 +942,6 @@ tr:hover td {
     radial-gradient(at 0% 100%, rgba(192, 37, 44, 0.2) 0px, transparent 50%);
   background-size: cover;
   background-position: center;
-}
-
-/* ── 15. TOPBAR SEARCH & THEME TOGGLE ──────────────────────── */
-.topbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 16px 28px;
-  background: var(--surface);
-  border-bottom: 1px solid var(--muted-3);
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  backdrop-filter: blur(10px);
-}
-
-.dark-mode .topbar {
-  background: rgba(10, 22, 40, 0.8);
-}
-
-.topbar-left {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.topbar-title {
-  font-family: var(--font-display);
-  font-size: 20px;
-  font-weight: 800;
-  color: var(--ink);
-  margin: 0;
-}
-
-.topbar-subtitle {
-  font-size: 12px;
-  color: var(--muted);
-  margin: 2px 0 0 0;
-}
-
-.topbar-right {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-
-.topbar-search {
-  position: relative;
-  width: 280px;
-}
-
-.topbar-search .search-icon {
-  position: absolute;
-  left: 14px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: var(--muted);
-  pointer-events: none;
-}
-
-.topbar-search input {
-  width: 100%;
-  padding: 10px 14px 10px 40px;
-  border-radius: 12px;
-  border: 1px solid var(--muted-3);
-  background: var(--bg);
-  color: var(--ink);
-  font-size: 13px;
-  outline: none;
-  transition: all 0.2s;
-}
-
-.topbar-search input:focus {
-  border-color: var(--blue);
-  background: var(--surface);
-  box-shadow: 0 0 0 3px rgba(26, 92, 219, 0.1);
-}
-
-.icon-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  border-radius: 12px;
-  border: 1px solid var(--muted-3);
-  background: var(--surface);
-  color: var(--muted);
-  cursor: pointer;
-  transition: all 0.2s;
-  position: relative;
-  font-size: 18px;
-}
-
-.icon-btn:hover {
-  background: var(--bg-2);
-  color: var(--blue);
-  border-color: var(--blue-2);
-  transform: translateY(-1px);
-}
-
-.alert-dot {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  width: 8px;
-  height: 8px;
-  background: var(--red);
-  border-radius: 50%;
-  border: 2px solid var(--surface);
-  box-shadow: 0 0 6px rgba(192, 37, 44, 0.4);
-}
-
-.topbar-user {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding-left: 16px;
-  border-left: 1px solid var(--muted-3);
-}
-
-.user-name {
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--ink);
-}
-
-.user-role {
-  font-size: 11px;
-  color: var(--muted);
 }
 
 /* ── 16. MALAWI INTELLIGENCE MAP ────────────────────────────── */
@@ -1338,4 +1207,594 @@ tr:hover td {
   padding: 8px 20px;
   border-radius: 30px;
   margin-bottom: 28px;
+}
+
+/* ── 17. FOCUS-VISIBLE (keyboard navigation) ────────────────── */
+.btn:focus-visible,
+.icon-btn:focus-visible,
+.nav-item:focus-visible,
+.modal-close:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+button:focus-visible {
+  outline: 2px solid var(--blue-2);
+  outline-offset: 2px;
+}
+
+/* ── 18. UTILITY LABEL CLASSES (replace inline styles) ─────── */
+.label-blue {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--blue);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.label-red {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--red);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.label-green {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--green);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.label-amber {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--amber);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.label-muted {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.stat-value {
+  font-family: var(--font-display);
+  font-size: 42px;
+  font-weight: 800;
+  color: var(--ink);
+  margin: 10px 0 4px;
+}
+
+.hero-title {
+  font-family: var(--font-display);
+  font-size: 52px;
+  font-weight: 900;
+  color: var(--navy);
+  line-height: 1.05;
+  margin: 0 0 24px;
+  letter-spacing: -1.5px;
+}
+
+/* ── 19. HERO BANNER THEME-AWARE ────────────────────────────── */
+.hero-banner-light {
+  background: linear-gradient(135deg, #e0f2fe 0%, #ffffff 100%);
+  border: 1px solid #bfdbfe;
+  box-shadow: 0 10px 40px -10px rgba(30, 58, 138, 0.1);
+}
+
+[data-theme='dark'] .hero-banner-light {
+  background: linear-gradient(135deg, var(--navy) 0%, var(--navy-3) 60%, #1a2870 100%);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: 0 24px 64px rgba(6, 17, 43, 0.4);
+}
+
+[data-theme='dark'] .hero-banner-light .hero-title {
+  color: #fff;
+}
+
+[data-theme='dark'] .hero-banner-light .hero-subtitle {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+[data-theme='dark'] .hero-banner-light .hero-tag-inner {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme='dark'] .hero-banner-light .hero-tag-text {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+/* ── 20. HERO SUBTITLE ──────────────────────────────────────── */
+.hero-subtitle {
+  color: var(--ink-3);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   21. FULL RESPONSIVE OVERHAUL
+   Breakpoints:
+     Desktop   → >1200px (default)
+     Laptop    → 901–1200px
+     Tablet    → 641–900px
+     Mobile    → ≤640px
+     Small     → ≤480px
+     Tiny      → ≤400px
+   ══════════════════════════════════════════════════════════════ */
+
+/* ── 21a. LAPTOP (901–1200px) ───────────────────────────────── */
+@media (max-width: 1200px) and (min-width: 901px) {
+  /* Hero banner — slightly compact */
+  .hero-banner-new {
+    padding: 44px 36px;
+    gap: 28px;
+  }
+
+  .hero-title {
+    font-size: clamp(32px, 4vw, 52px);
+  }
+
+  .hero-visual-area {
+    min-width: unset;
+    height: 320px;
+  }
+
+  .floating-device.laptop {
+    width: 380px;
+  }
+
+  /* Topbar search narrower */
+  .topbar-search {
+    width: 220px;
+  }
+
+  /* Grid stat — 4 cols still but tighter */
+  .grid-stat {
+    gap: 12px;
+  }
+}
+
+/* ── 21b. TABLET (641–900px) ────────────────────────────────── */
+@media (max-width: 900px) and (min-width: 641px) {
+  /* Hero: stack vertically, hide visual area */
+  .hero-banner-new {
+    flex-direction: column;
+    padding: 32px 28px;
+    gap: 0;
+    border-radius: 20px;
+    margin-bottom: 24px;
+  }
+
+  .hero-visual-area {
+    display: none !important;
+  }
+
+  .hero-title {
+    font-size: clamp(26px, 5vw, 38px);
+    margin-bottom: 16px;
+  }
+
+  .hero-subtitle {
+    font-size: 15px !important;
+    margin-bottom: 28px !important;
+    max-width: 100% !important;
+  }
+
+  /* Topbar extra: hide user text, keep avatar */
+  .topbar-user > div:first-child {
+    display: none;
+  }
+  .topbar-user {
+    padding-left: 8px;
+    border-left: none;
+  }
+
+  /* Intelligence-first section — remove translateX offset */
+  .intelligence-panel-offset {
+    transform: none !important;
+  }
+
+  /* Map intel panel becomes full width on tablet */
+  .map-intel-panel {
+    width: 100%;
+    border-left: none;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    max-height: 320px;
+    overflow-y: auto;
+  }
+}
+
+/* ── 21c. MOBILE (≤640px) ───────────────────────────────────── */
+@media (max-width: 640px) {
+  /* ── Hero banner — full stack ── */
+  .hero-banner-new {
+    flex-direction: column;
+    padding: 24px 18px 28px;
+    gap: 0;
+    border-radius: 16px;
+    margin-bottom: 18px;
+  }
+
+  .hero-visual-area {
+    display: none !important;
+  }
+
+  .hero-title {
+    font-size: clamp(22px, 7vw, 32px) !important;
+    letter-spacing: -0.5px;
+    margin-bottom: 12px;
+    line-height: 1.15;
+  }
+
+  .hero-subtitle {
+    font-size: 14px !important;
+    margin-bottom: 20px !important;
+    max-width: 100% !important;
+    line-height: 1.6 !important;
+  }
+
+  /* Hero CTA buttons — stack on mobile */
+  .hero-banner-new div[style*='display: flex'][style*='gap: 16px'],
+  .hero-banner-new div[style*='flexWrap: wrap'] {
+    flex-direction: column !important;
+    width: 100%;
+  }
+
+  .hero-banner-new .btn-lg {
+    width: 100%;
+    justify-content: center;
+    padding: 14px 20px !important;
+  }
+
+  /* ── Topbar notifications dropdown — full width ── */
+  .notifications-dropdown {
+    width: calc(100vw - 28px) !important;
+    right: -10px !important;
+    left: auto;
+  }
+
+  /* ── Stat cards — compact on mobile ── */
+  .stat-value {
+    font-size: clamp(28px, 8vw, 42px);
+  }
+
+  .stat-num {
+    font-size: clamp(24px, 7vw, 36px);
+  }
+
+  /* ── Section headings — scale down ── */
+  .section-title[style*='fontSize: 28px'],
+  .section-title[style*='font-size: 28px'] {
+    font-size: clamp(16px, 5vw, 22px) !important;
+    letter-spacing: 0.5px !important;
+  }
+
+  /* ── Intelligence-first philosophy section ── */
+  .intelligence-panel-offset {
+    transform: none !important;
+  }
+
+  /* Grid 2 → always single column on mobile */
+  .grid-2 {
+    grid-template-columns: 1fr !important;
+    gap: 14px;
+  }
+
+  /* ── Page hero — reduced padding ── */
+  .page-hero {
+    padding: 20px 16px;
+    border-radius: 14px;
+  }
+
+  /* ── Topbar search: fully hidden ── */
+  .topbar-search {
+    display: none !important;
+  }
+
+  /* ── Cards — tighter padding ── */
+  .card {
+    padding: 14px;
+    border-radius: 12px;
+  }
+  .card-sm {
+    padding: 10px 12px;
+  }
+
+  /* ── Card title — readable size ── */
+  .card-title {
+    font-size: 14px;
+  }
+
+  /* ── Tables — horizontal scroll, bigger text than 11px ── */
+  table {
+    font-size: 12px;
+  }
+  th,
+  td {
+    padding: 9px 10px;
+    font-size: 12px;
+  }
+
+  /* ── Map intel panel — stacks below map ── */
+  .map-intel-panel {
+    width: 100%;
+    border-left: none;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    max-height: 260px;
+    overflow-y: auto;
+    padding: 16px;
+  }
+
+  /* ── Panel header text ── */
+  .panel-header {
+    font-size: 10px;
+    margin-bottom: 16px;
+  }
+
+  /* ── Form fields — prevent iOS zoom (already 16px base) ── */
+  .field-input {
+    font-size: 16px;
+    padding: 12px 14px;
+  }
+
+  .field-label {
+    font-size: 11px;
+  }
+
+  /* ── Buttons — minimum touch height ── */
+  .btn {
+    min-height: 44px;
+    font-size: 14px;
+  }
+
+  .btn-sm {
+    min-height: 36px;
+    font-size: 12px;
+    padding: 6px 12px;
+  }
+
+  /* ── Icon buttons — minimum 44px touch target ── */
+  .icon-btn {
+    width: 44px !important;
+    height: 44px !important;
+  }
+
+  /* ── Modal — sheet from bottom ── */
+  .modal-overlay {
+    padding: 0;
+    align-items: flex-end;
+  }
+  .modal-box {
+    border-radius: 20px 20px 0 0;
+    max-height: 92vh;
+    max-width: 100%;
+    width: 100%;
+  }
+  .modal-box.wide {
+    max-width: 100%;
+  }
+  .modal-footer {
+    flex-direction: column-reverse;
+    gap: 8px;
+  }
+  .modal-footer .btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  /* ── Toast — bottom of screen on mobile ── */
+  .toast {
+    left: 12px;
+    right: 12px;
+    max-width: none;
+    top: auto;
+    bottom: 20px;
+  }
+
+  /* ── Device rows — wrap for small cards ── */
+  .device-row {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  /* ── USSD code ── */
+  .ussd-code {
+    font-size: 20px;
+    letter-spacing: 2px;
+  }
+
+  /* ── Hide glass translate offset on mobile ── */
+  div[style*='translateX(-20px)'] {
+    transform: none !important;
+  }
+
+  /* ── Intelligence-first mesh section ── */
+  div.hero-mesh-bg {
+    padding: 24px 18px !important;
+    border-radius: 16px !important;
+  }
+
+  /* ── Label/badge font sizes — maintain legibility ── */
+  .label-blue,
+  .label-red,
+  .label-green,
+  .label-amber,
+  .label-muted {
+    font-size: 11px;
+  }
+
+  /* ── Badge pill ── */
+  .badge {
+    font-size: 10px;
+    padding: 3px 8px;
+  }
+
+  /* ── Timeline ── */
+  .timeline-title {
+    font-size: 13px;
+  }
+  .timeline-sub {
+    font-size: 11px;
+  }
+}
+
+/* ── 21d. SMALL MOBILE (≤480px) ────────────────────────────── */
+@media (max-width: 480px) {
+  .hero-title {
+    font-size: clamp(20px, 6.5vw, 28px) !important;
+  }
+
+  /* grid-4 → single column on tiny phones */
+  .grid-4 {
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .grid-stat {
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  /* Page hero */
+  .page-hero {
+    padding: 16px 14px;
+  }
+
+  /* USSD box */
+  .ussd-box {
+    padding: 16px;
+  }
+
+  /* Section spacing */
+  .card-header {
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+
+  /* Display font stats */
+  .stat-value {
+    font-size: 28px;
+  }
+
+  /* Notifications */
+  .notifications-dropdown {
+    width: calc(100vw - 20px) !important;
+  }
+
+  /* hero content padding */
+  .hero-content {
+    padding: 0 !important;
+  }
+}
+
+/* ── 21e. TINY PHONES (≤400px) ──────────────────────────────── */
+@media (max-width: 400px) {
+  .hero-title {
+    font-size: 20px !important;
+  }
+
+  .hero-banner-new {
+    padding: 18px 14px 22px;
+    border-radius: 12px;
+  }
+
+  .btn-lg {
+    padding: 12px 16px !important;
+    font-size: 13px;
+  }
+
+  .card {
+    padding: 12px;
+  }
+
+  .modal-header {
+    padding: 16px 16px;
+  }
+  .modal-body {
+    padding: 16px;
+  }
+
+  table {
+    font-size: 11px;
+  }
+  th,
+  td {
+    padding: 7px 8px;
+    font-size: 11px;
+  }
+
+  /* ultra compact stat */
+  .stat-value {
+    font-size: 24px;
+  }
+  .stat-num {
+    font-size: 22px;
+  }
+  .stat-label,
+  .stat-sub {
+    font-size: 11px;
+  }
+}
+
+/* ── 21f. LANDSCAPE PHONE ADJUSTMENT ───────────────────────── */
+@media (max-height: 500px) and (orientation: landscape) {
+  .page-content {
+    padding-top: 58px;
+  }
+
+  .hero-banner-new {
+    padding: 16px 20px;
+    margin-bottom: 14px;
+  }
+
+  .hero-visual-area {
+    display: none !important;
+  }
+
+  /* Modal can use full viewport height in landscape */
+  .modal-overlay {
+    align-items: center;
+  }
+  .modal-box {
+    border-radius: 16px;
+    max-height: 95vh;
+    max-width: 520px;
+  }
+}
+
+/* ── 21g. PRINT / HIGH-CONTRAST ────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Ensure text always has sufficient contrast */
+.card,
+.glass-card,
+.glass-panel,
+.stat-card {
+  /* Force text legibility */
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Prevent very small text that's hard to read on mobile */
+@media (max-width: 640px) {
+  small,
+  .timeline-sub,
+  .stat-sub,
+  .card-subtitle,
+  .toast-sub,
+  .field-hint,
+  .badge,
+  .nav-section {
+    font-size: max(10px, 0.7rem);
+  }
 }

@@ -10,3 +10,7 @@ node_modules/
 .cache/
 
 .env
+
+# Editor settings (personal, not part of the project)
+.vscode/
+.idea/

@@ -10,7 +10,7 @@ import { deviceIcon, primaryIdentifier } from '../../utils/helpers';
 import Badge from '../ui/Badge';
 import StatCard from '../ui/StatCard';
 import RegisterDeviceModal from '../modals/RegisterDeviceModal';
-import { FiSmartphone, FiMonitor, FiTablet, FiTv, FiClipboard } from 'react-icons/fi';
+import { FiSmartphone, FiClipboard } from 'react-icons/fi';
 
 export default function DeviceRegistryPage() {
   const devices = useAppStore((state) => state.devices);
@@ -36,29 +36,23 @@ export default function DeviceRegistryPage() {
   return (
     <div className="fade-up">
       {/* ── Stats ── */}
-      <div className="grid-4" style={{ marginBottom: 24 }}>
+      <div className="grid-3" style={{ marginBottom: 24 }}>
         <StatCard
           icon={<FiSmartphone />}
           value={devices.filter((d) => d.type === 'mobile').length}
-          label="Mobile Phones"
+          label="Registered Phones"
           color="var(--blue)"
         />
         <StatCard
-          icon={<FiMonitor />}
-          value={devices.filter((d) => d.type === 'laptop').length}
-          label="Laptops"
-          color="var(--purple)"
+          icon={<FiSmartphone />}
+          value={devices.filter((d) => d.status === 'stolen').length}
+          label="Stolen — Active Alert"
+          color="var(--red)"
         />
         <StatCard
-          icon={<FiTablet />}
-          value={devices.filter((d) => d.type === 'tablet').length}
-          label="Tablets"
-          color="var(--amber)"
-        />
-        <StatCard
-          icon={<FiTv />}
-          value={devices.filter((d) => d.type === 'desktop').length}
-          label="Desktops"
+          icon={<FiSmartphone />}
+          value={devices.filter((d) => d.status === 'recovered').length}
+          label="Recovered"
           color="var(--green)"
         />
       </div>
@@ -75,7 +69,7 @@ export default function DeviceRegistryPage() {
             </div>
           </div>
           <button className="btn btn-primary btn-sm" onClick={() => setShowModal(true)}>
-            + Register Device
+            + Register Phone
           </button>
         </div>
 
@@ -103,10 +97,7 @@ export default function DeviceRegistryPage() {
             onChange={(e) => setTypeFilter(e.target.value)}
           >
             <option value="all">All types</option>
-            <option value="mobile">Mobile</option>
-            <option value="laptop">Laptop</option>
-            <option value="tablet">Tablet</option>
-            <option value="desktop">Desktop</option>
+            <option value="mobile">Mobile Phone</option>
           </select>
           <select
             className="field-input field-select"
@@ -138,9 +129,9 @@ export default function DeviceRegistryPage() {
           <table>
             <thead>
               <tr>
-                <th>Device</th>
-                <th>Type</th>
-                <th>Primary ID</th>
+                <th>Phone</th>
+                <th>IMEI</th>
+                <th>Serial</th>
                 <th>Registered Owner</th>
                 <th>Date</th>
                 <th>Status</th>
@@ -168,12 +159,14 @@ export default function DeviceRegistryPage() {
                         <br />
                         <span style={{ fontSize: 11, color: 'var(--muted)' }}>{d.color}</span>
                       </td>
-                      <td style={{ textTransform: 'capitalize' }}>
-                        {deviceIcon(d.type)} {d.type}
+                      <td>
+                        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11 }}>
+                          {d.imei || '—'}
+                        </span>
                       </td>
                       <td>
                         <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11 }}>
-                          {primaryIdentifier(d)}
+                          {d.serial || '—'}
                         </span>
                       </td>
                       <td>

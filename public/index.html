@@ -3,7 +3,7 @@
   <head>
     <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, viewport-fit=cover" />
     <meta name="theme-color" content="#06112B" />
     <meta
       name="description"
@@ -23,6 +23,18 @@
       content="SDIRS — Stolen Device Identification and Recovery System. Malawi's national device registry and theft intelligence platform."
     />
     <title>SDIRS · Malawi</title>
+    <!-- Set theme before React loads to prevent flash of wrong theme -->
+    <script>
+      (function () {
+        try {
+          var s = localStorage.getItem('sidrs_state_v1');
+          var theme = s ? JSON.parse(s)?.state?.theme : 'dark';
+          document.documentElement.setAttribute('data-theme', theme || 'dark');
+        } catch (e) {
+          document.documentElement.setAttribute('data-theme', 'dark');
+        }
+      })();
+    </script>
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this application.</noscript>

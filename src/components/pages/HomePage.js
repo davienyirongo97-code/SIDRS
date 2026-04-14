@@ -59,15 +59,8 @@ export default function HomePage() {
 
   return (
     <div className="fade-up" style={{ paddingBottom: 60 }}>
-      {/* ── HERO BANNER (Malawi National Theme overhaul) ── */}
-      <div
-        className="hero-banner-new"
-        style={{
-          background: 'linear-gradient(135deg, #E0F2FE 0%, #FFFFFF 100%)',
-          border: '1px solid #BFDBFE',
-          boxShadow: '0 10px 40px -10px rgba(30,58,138,0.1)',
-        }}
-      >
+      {/* ── HERO BANNER (theme-aware) ── */}
+      <div className="hero-banner-new hero-banner-light">
         {/* Subtle decorative elements for National theme */}
         <div
           style={{
@@ -86,10 +79,8 @@ export default function HomePage() {
         <div className="hero-content" style={{ textAlign: 'left', alignItems: 'flex-start' }}>
           {/* National Platform Tag */}
           <div
-            className="hero-tag"
+            className="hero-tag hero-tag-inner"
             style={{
-              background: '#FFFFFF',
-              border: '1px solid #BFDBFE',
               boxShadow: '0 2px 8px rgba(30,58,138,0.05)',
             }}
           >
@@ -104,10 +95,10 @@ export default function HomePage() {
               }}
             />
             <span
+              className="hero-tag-text"
               style={{
                 fontSize: 11,
                 fontWeight: 800,
-                color: 'var(--navy)',
                 letterSpacing: 1.5,
                 textTransform: 'uppercase',
               }}
@@ -116,17 +107,7 @@ export default function HomePage() {
             </span>
           </div>
 
-          <h1
-            style={{
-              fontFamily: 'var(--font-display)',
-              fontSize: 52,
-              fontWeight: 900,
-              color: 'var(--navy)',
-              lineHeight: 1.05,
-              margin: '0 0 24px',
-              letterSpacing: -1.5,
-            }}
-          >
+          <h1 className="hero-title">
             Stolen Device Intelligence &amp;{' '}
             <span style={{ color: 'var(--blue)', borderBottom: '4px solid #DBEAFE' }}>
               Recovery System
@@ -134,17 +115,17 @@ export default function HomePage() {
           </h1>
 
           <p
+            className="hero-subtitle"
             style={{
               fontSize: 17,
-              color: 'var(--ink-3)',
               margin: '0 0 44px',
               lineHeight: 1.7,
               fontWeight: 500,
               maxWidth: 540,
             }}
           >
-            Protect your digital assets. Register phones &amp; laptops. Report theft instantly.
-            Track stolen devices in real-time via national network intelligence.
+            Protect your phone. Register your IMEI. Report theft instantly. Track stolen phones in
+            real-time via Airtel &amp; TNM network intelligence.
           </p>
 
           <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
@@ -298,29 +279,9 @@ export default function HomePage() {
           >
             <FiSmartphone size={90} />
           </div>
-          <div
-            style={{
-              fontSize: 12,
-              fontWeight: 700,
-              color: 'var(--blue)',
-              textTransform: 'uppercase',
-              letterSpacing: 1,
-            }}
-          >
-            Registered
-          </div>
-          <div
-            style={{
-              fontFamily: 'var(--font-display)',
-              fontSize: 42,
-              fontWeight: 800,
-              color: 'var(--ink)',
-              margin: '10px 0 4px',
-            }}
-          >
-            {devices.length}
-          </div>
-          <div style={{ fontSize: 12, color: 'var(--muted)' }}>National Registry</div>
+          <div className="label-blue">Registered</div>
+          <div className="stat-value">{devices.length}</div>
+          <div className="label-muted">National Registry</div>
         </div>
         <div
           className="glass-card"
@@ -337,29 +298,9 @@ export default function HomePage() {
           >
             <FiAlertCircle size={90} />
           </div>
-          <div
-            style={{
-              fontSize: 12,
-              fontWeight: 700,
-              color: 'var(--red)',
-              textTransform: 'uppercase',
-              letterSpacing: 1,
-            }}
-          >
-            Stolen
-          </div>
-          <div
-            style={{
-              fontFamily: 'var(--font-display)',
-              fontSize: 42,
-              fontWeight: 800,
-              color: 'var(--ink)',
-              margin: '10px 0 4px',
-            }}
-          >
-            {stolenCount}
-          </div>
-          <div style={{ fontSize: 12, color: 'var(--muted)' }}>Under Monitoring</div>
+          <div className="label-red">Stolen</div>
+          <div className="stat-value">{stolenCount}</div>
+          <div className="label-muted">Under Monitoring</div>
         </div>
         <div
           className="glass-card"
@@ -376,29 +317,9 @@ export default function HomePage() {
           >
             <FiRadio size={90} />
           </div>
-          <div
-            style={{
-              fontSize: 12,
-              fontWeight: 700,
-              color: 'var(--amber)',
-              textTransform: 'uppercase',
-              letterSpacing: 1,
-            }}
-          >
-            Events
-          </div>
-          <div
-            style={{
-              fontFamily: 'var(--font-display)',
-              fontSize: 42,
-              fontWeight: 800,
-              color: 'var(--ink)',
-              margin: '10px 0 4px',
-            }}
-          >
-            {events.length}
-          </div>
-          <div style={{ fontSize: 12, color: 'var(--muted)' }}>Telecom Detections</div>
+          <div className="label-amber">Events</div>
+          <div className="stat-value">{events.length}</div>
+          <div className="label-muted">Telecom Detections</div>
         </div>
         <div
           className="glass-card"
@@ -415,29 +336,9 @@ export default function HomePage() {
           >
             <FiCheckCircle size={90} />
           </div>
-          <div
-            style={{
-              fontSize: 12,
-              fontWeight: 700,
-              color: 'var(--green)',
-              textTransform: 'uppercase',
-              letterSpacing: 1,
-            }}
-          >
-            Recovered
-          </div>
-          <div
-            style={{
-              fontFamily: 'var(--font-display)',
-              fontSize: 42,
-              fontWeight: 800,
-              color: 'var(--ink)',
-              margin: '10px 0 4px',
-            }}
-          >
-            {recoveredCount}
-          </div>
-          <div style={{ fontSize: 12, color: 'var(--muted)' }}>Via SDIRS Intel</div>
+          <div className="label-green">Recovered</div>
+          <div className="stat-value">{recoveredCount}</div>
+          <div className="label-muted">Via SDIRS Intel</div>
         </div>
       </div>
 
@@ -561,10 +462,10 @@ export default function HomePage() {
                 <p
                   style={{
                     fontSize: 13,
-                    color: 'rgba(255,255,255,0.5)',
+                    color: 'rgba(255,255,255,0.82)',
                     lineHeight: 1.6,
                     margin: 0,
-                    fontWeight: 500,
+                    fontWeight: 400,
                   }}
                 >
                   {s.desc}
@@ -626,7 +527,7 @@ export default function HomePage() {
             <p
               style={{
                 fontSize: 15,
-                color: 'rgba(255,255,255,0.7)',
+                color: 'rgba(255,255,255,0.88)',
                 lineHeight: 1.8,
                 margin: 0,
                 maxWidth: 400,
@@ -660,7 +561,7 @@ export default function HomePage() {
                 </span>{' '}
                 Traditional: Block device
               </div>
-              <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.6)', lineHeight: 1.6 }}>
+              <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.82)', lineHeight: 1.6 }}>
                 Thief sees blocked phone → discards it → disappears → device never found →{' '}
                 <strong style={{ color: '#FF8888' }}>no arrest</strong>
               </div>
@@ -690,7 +591,7 @@ export default function HomePage() {
                 </span>{' '}
                 SDIRS: Monitor silently
               </div>
-              <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.6)', lineHeight: 1.6 }}>
+              <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.82)', lineHeight: 1.6 }}>
                 Thief uses phone freely → every call = location ping to police → officer dispatched
                 → <strong style={{ color: '#80E890' }}>recovered</strong>
               </div>

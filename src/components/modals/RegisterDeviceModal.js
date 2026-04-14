@@ -1,24 +1,23 @@
 /**
  * src/components/modals/RegisterDeviceModal.js
  * ─────────────────────────────────────────────
- * 3-step device registration modal with full owner profile.
+ * 3-step mobile phone registration modal.
+ * Phase 1: Mobile phones only (IMEI-based tracking via Airtel & TNM).
  *
  * STEP 1 — Owner Information
- *   Full name, phone, email, NRC/ID number, physical address,
- *   district, and an emergency reference contact.
+ *   Full name, phone, NRC/ID number, district, address,
+ *   and an emergency reference contact.
  *
- * STEP 2 — Device Details
- *   Type, make, model, colour, purchase date, place, estimated value.
+ * STEP 2 — Phone Details
+ *   Make, model, colour, purchase date, place, estimated value.
  *
- * STEP 3 — Device Identifiers
- *   IMEI 1 & 2 (phones/tablets), MAC address (laptops), serial number.
+ * STEP 3 — Phone Identifiers
+ *   IMEI 1 & 2 (required for network tracking), serial number.
  *
  * WHY OWNER PROFILE MATTERS:
- *   Police finding an unregistered-as-stolen device can enter the IMEI
- *   into SDIRS and immediately see who the registered owner is, their
- *   full address, phone number, and the emergency reference contact —
- *   so even if the owner's number is unreachable, there is always
- *   a backup person to call.
+ *   Police finding a device can enter the IMEI into SDIRS and
+ *   immediately see the registered owner's full contact details —
+ *   including an emergency reference contact if the owner is unreachable.
  *
  *   The public IMEI checker shows ONLY clean/stolen status.
  *   Full owner details are ONLY visible to police and MACRA.
@@ -26,14 +25,8 @@
 
 import React, { useState } from 'react';
 import Modal from '../ui/Modal';
-import { useAppDispatch, useToast, useCurrentUser } from '../../store/useAppStore';
-
-const DEVICE_TYPES = [
-  { value: 'mobile', label: '📱 Mobile Phone' },
-  { value: 'laptop', label: '💻 Laptop' },
-  { value: 'tablet', label: '📟 Tablet' },
-  { value: 'desktop', label: '🖥️ Desktop' },
-];
+import { useAppDispatch, useToast, useCurrentUser, useAppStore } from '../../store/useAppStore';
+import { checkDuplicateDevice } from '../../utils/helpers';
 
 const DISTRICTS = [
   'Lilongwe',
@@ -81,6 +74,7 @@ export default function RegisterDeviceModal({ onClose }) {
   const dispatch = useAppDispatch();
   const showToast = useToast();
   const currentUser = useCurrentUser();
+  const devices = useAppStore((state) => state.devices);
 
   const [step, setStep] = useState(1);
 
@@ -110,16 +104,12 @@ export default function RegisterDeviceModal({ onClose }) {
     // Step 3 — Identifiers
     imei: '',
     imei2: '',
-    mac: '',
     serial: '',
   });
 
   function update(field, value) {
     setForm((prev) => ({ ...prev, [field]: value }));
   }
-
-  const showImei = form.type === 'mobile' || form.type === 'tablet';
-  const showMac = form.type === 'laptop' || form.type === 'tablet' || form.type === 'desktop';
 
   function validateStep(s) {
     if (s === 1) {
@@ -163,12 +153,14 @@ export default function RegisterDeviceModal({ onClose }) {
       }
     }
     if (s === 3) {
-      if (showImei && !form.imei.trim() && !form.serial.trim()) {
-        showToast('Enter at least the IMEI or serial number.', '', 'warn');
+      if (!form.imei.trim()) {
+        showToast('IMEI required', 'Dial *#06# on your phone to find the IMEI.', 'warn');
         return false;
       }
-      if (showMac && !form.mac.trim() && !form.serial.trim()) {
-        showToast('Enter at least the MAC address or serial number.', '', 'warn');
+      // Two-factor duplicate check
+      const dupeCheck = checkDuplicateDevice(form.imei, form.serial, devices);
+      if (dupeCheck.conflict) {
+        showToast('Device already registered', dupeCheck.reason, 'error');
         return false;
       }
     }
@@ -185,16 +177,16 @@ export default function RegisterDeviceModal({ onClose }) {
   function handleSubmit() {
     if (!validateStep(3)) return;
 
-    dispatch({
+    const result = dispatch({
       type: 'REGISTER_DEVICE',
       payload: {
-        type: form.type,
+        type: 'mobile',
         make: form.make.trim(),
         model: form.model.trim(),
         color: form.color.trim(),
         imei: form.imei.trim() || null,
         imei2: form.imei2.trim() || null,
-        mac: form.mac.trim() || null,
+        mac: null,
         serial: form.serial.trim() || null,
         purchaseDate: form.purchaseDate || null,
         purchasePlace: form.purchasePlace.trim() || null,
@@ -218,6 +210,12 @@ export default function RegisterDeviceModal({ onClose }) {
       },
     });
 
+    // Store returns { error } if duplicate detected at store level
+    if (result?.error) {
+      showToast('Device already registered', result.error, 'error');
+      return;
+    }
+
     showToast(
       `${form.make} ${form.model} registered!`,
       'Device and owner profile saved in the national registry.',
@@ -227,7 +225,7 @@ export default function RegisterDeviceModal({ onClose }) {
   }
 
   return (
-    <Modal title="📋 Register Device in National Registry" onClose={onClose} wide>
+    <Modal title="📋 Register Phone in National Registry" onClose={onClose} wide>
       <div className="modal-body">
         {/* ── Step progress indicator ── */}
         <div style={{ display: 'flex', alignItems: 'center', marginBottom: 28 }}>
@@ -458,29 +456,14 @@ export default function RegisterDeviceModal({ onClose }) {
         ══════════════════════════════════════════════ */}
         {step === 2 && (
           <div>
-            <SectionTitle color="var(--blue)">📱 Device Details</SectionTitle>
-
-            <div className="field">
-              <label className="field-label">Device Type *</label>
-              <select
-                className="field-input field-select"
-                value={form.type}
-                onChange={(e) => update('type', e.target.value)}
-              >
-                {DEVICE_TYPES.map((t) => (
-                  <option key={t.value} value={t.value}>
-                    {t.label}
-                  </option>
-                ))}
-              </select>
-            </div>
+            <SectionTitle color="var(--blue)">📱 Phone Details</SectionTitle>
 
             <div className="grid-2">
               <div className="field">
                 <label className="field-label">Make / Brand *</label>
                 <input
                   className="field-input"
-                  placeholder="Samsung, Apple, Lenovo, HP..."
+                  placeholder="Samsung, Tecno, iPhone, Huawei, Infinix..."
                   value={form.make}
                   onChange={(e) => update('make', e.target.value)}
                 />
@@ -489,7 +472,7 @@ export default function RegisterDeviceModal({ onClose }) {
                 <label className="field-label">Model *</label>
                 <input
                   className="field-input"
-                  placeholder="Galaxy A54, ThinkPad X1, Envy 14..."
+                  placeholder="Galaxy A54, Spark 20, iPhone 14..."
                   value={form.model}
                   onChange={(e) => update('model', e.target.value)}
                 />
@@ -547,58 +530,35 @@ export default function RegisterDeviceModal({ onClose }) {
         ══════════════════════════════════════════════ */}
         {step === 3 && (
           <div>
-            <SectionTitle color="var(--blue)">🔢 Device Identifiers</SectionTitle>
+            <SectionTitle color="var(--blue)">🔢 Phone Identifiers</SectionTitle>
 
             <div className="alert alert-amber" style={{ marginBottom: 16 }}>
               <span className="alert-icon">💡</span>
               <div>
-                These numbers uniquely identify your device on any network. Enter as many as
-                possible — the more identifiers registered, the harder the device is to sell if
-                stolen.
+                The IMEI is the primary identifier used by Airtel & TNM to track your phone on the
+                national network if stolen. Dial <strong>*#06#</strong> to find it instantly.
               </div>
             </div>
 
-            {showImei && (
-              <>
-                <div className="field">
-                  <label className="field-label">IMEI Number — SIM Slot 1 *</label>
-                  <input
-                    className="field-input mono"
-                    placeholder="15-digit IMEI — dial *#06# to find it"
-                    value={form.imei}
-                    onChange={(e) => update('imei', e.target.value)}
-                  />
-                  <div className="field-hint">
-                    Dial *#06# — the IMEI appears on screen immediately.
-                  </div>
-                </div>
-                <div className="field">
-                  <label className="field-label">IMEI Number — SIM Slot 2 (dual-SIM phones)</label>
-                  <input
-                    className="field-input mono"
-                    placeholder="Second IMEI if your phone has 2 SIM slots"
-                    value={form.imei2}
-                    onChange={(e) => update('imei2', e.target.value)}
-                  />
-                </div>
-              </>
-            )}
-
-            {showMac && (
-              <div className="field">
-                <label className="field-label">WiFi MAC Address</label>
-                <input
-                  className="field-input mono"
-                  placeholder="e.g. A4:C3:F0:85:AC:12"
-                  value={form.mac}
-                  onChange={(e) => update('mac', e.target.value)}
-                />
-                <div className="field-hint">
-                  Settings → About → WiFi → MAC Address. Enables tracking on WiFi networks.
-                </div>
-              </div>
-            )}
-
+            <div className="field">
+              <label className="field-label">IMEI Number — SIM Slot 1 *</label>
+              <input
+                className="field-input mono"
+                placeholder="15-digit IMEI — dial *#06# to find it"
+                value={form.imei}
+                onChange={(e) => update('imei', e.target.value)}
+              />
+              <div className="field-hint">Dial *#06# — the IMEI appears on screen immediately.</div>
+            </div>
+            <div className="field">
+              <label className="field-label">IMEI Number — SIM Slot 2 (dual-SIM phones)</label>
+              <input
+                className="field-input mono"
+                placeholder="Second IMEI if your phone has 2 SIM slots"
+                value={form.imei2}
+                onChange={(e) => update('imei2', e.target.value)}
+              />
+            </div>
             <div className="field">
               <label className="field-label">Serial Number</label>
               <input

@@ -14,6 +14,9 @@
   flex-direction: column;
   z-index: 100;
   overflow: hidden;
+  /* Safe area for notched devices */
+  padding-left: env(safe-area-inset-left);
+  padding-bottom: env(safe-area-inset-bottom);
 }
 
 /* Decorative blue glow in top-left corner */
@@ -62,7 +65,7 @@
 }
 
 .brand-sub {
-  color: rgba(255, 255, 255, 0.35);
+  color: rgba(255, 255, 255, 0.45);
   font-size: 9px;
   font-weight: 600;
   letter-spacing: 2px;
@@ -75,6 +78,8 @@
   flex: 1;
   overflow-y: auto;
   padding-bottom: 8px;
+  /* Momentum-based scrolling on iOS */
+  -webkit-overflow-scrolling: touch;
 }
 
 .sidebar-nav::-webkit-scrollbar {
@@ -88,7 +93,7 @@
   padding: 16px 12px 6px;
   font-size: 10px;
   font-weight: 700;
-  color: rgba(255, 255, 255, 0.25);
+  color: rgba(255, 255, 255, 0.35);
   letter-spacing: 2px;
   text-transform: uppercase;
 }
@@ -98,20 +103,25 @@
   display: flex;
   align-items: center;
   gap: 11px;
+  /* Minimum 44px touch target (accessibility standard) */
+  min-height: 44px;
   padding: 10px 14px;
   border-radius: var(--radius-2);
   margin: 2px 8px;
   cursor: pointer;
   transition: all 0.18s;
-  color: rgba(255, 255, 255, 0.55);
+  color: rgba(255, 255, 255, 0.65);
   font-size: 13.5px;
   font-weight: 500;
   text-decoration: none;
+  white-space: nowrap;
+  /* Remove tap highlight on mobile */
+  -webkit-tap-highlight-color: transparent;
 }
 
 .nav-item:hover {
   background: rgba(255, 255, 255, 0.07);
-  color: rgba(255, 255, 255, 0.85);
+  color: rgba(255, 255, 255, 0.9);
 }
 
 .nav-item.active {
@@ -129,15 +139,19 @@
 
 .nav-label {
   flex: 1;
+  font-size: 13px;
+  letter-spacing: 0.1px;
 }
 
 .nav-badge {
   margin-left: auto;
   color: #fff;
   border-radius: 20px;
-  padding: 1px 7px;
+  padding: 2px 8px;
   font-size: 10px;
   font-weight: 800;
+  min-width: 20px;
+  text-align: center;
 }
 
 .nav-badge.badge-red {
@@ -189,7 +203,7 @@
 }
 
 .user-role {
-  color: rgba(255, 255, 255, 0.35);
+  color: rgba(255, 255, 255, 0.45);
   font-size: 10px;
   margin-top: 2px;
 }
@@ -197,15 +211,16 @@
 /* Demo user switcher dropdown */
 .user-switcher {
   width: 100%;
-  padding: 7px 10px;
+  padding: 8px 10px;
   border-radius: 8px;
   border: 1px solid rgba(255, 255, 255, 0.12);
   background: rgba(255, 255, 255, 0.07);
-  color: rgba(255, 255, 255, 0.8);
-  font-size: 12px;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 13px;
   font-family: var(--font-body);
   cursor: pointer;
   outline: none;
+  min-height: 40px;
 }
 
 .user-switcher option {
@@ -213,19 +228,30 @@
   color: #fff;
 }
 
-/* ── Responsive ── */
+/* ── Responsive: mobile sidebar slides in ── */
 @media (max-width: 900px) {
   .sidebar {
-    transform: translateX(-260px);
+    transform: translateX(-300px);
     transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1);
     z-index: 300;
-    width: 260px;
+    width: 280px;
     box-shadow: none;
   }
 
   .sidebar.open {
     transform: translateX(0);
     box-shadow: 8px 0 40px rgba(6, 17, 43, 0.4);
+  }
+
+  /* Bigger touch targets on mobile */
+  .nav-item {
+    min-height: 48px;
+    font-size: 14px;
+    padding: 12px 14px;
+  }
+
+  .nav-label {
+    font-size: 14px;
   }
 }
 
@@ -239,9 +265,10 @@
     display: block;
     position: fixed;
     inset: 0;
-    background: rgba(6, 17, 43, 0.55);
+    background: rgba(6, 17, 43, 0.6);
     z-index: 299;
-    backdrop-filter: blur(3px);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
     animation: fadeIn 0.2s ease;
   }
 }
@@ -257,23 +284,28 @@
     align-items: center;
     justify-content: center;
     position: fixed;
-    top: 14px;
-    left: 14px;
+    top: 8px;
+    left: 10px;
     z-index: 400;
-    width: 40px;
-    height: 40px;
-    border-radius: 10px;
+    /* 44×44px minimum accessible touch target */
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
     background: var(--navy);
-    border: 1px solid rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.18);
     color: #fff;
-    font-size: 18px;
+    font-size: 20px;
     cursor: pointer;
-    box-shadow: 0 4px 16px rgba(6, 17, 43, 0.3);
+    box-shadow: 0 4px 16px rgba(6, 17, 43, 0.4);
     transition: all 0.15s;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
   }
 
-  .hamburger-btn:hover {
+  .hamburger-btn:hover,
+  .hamburger-btn:active {
     background: var(--blue);
+    transform: scale(0.96);
   }
 }
 

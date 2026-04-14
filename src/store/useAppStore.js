@@ -10,7 +10,7 @@ import {
   INITIAL_TRANSFERS,
   INITIAL_REMINDERS,
 } from '../data/mockData';
-import { generateTransferPin } from '../utils/helpers';
+import { generateTransferPin, checkDuplicateDevice } from '../utils/helpers';
 
 // ─── HELPER: generate unique IDs ─────────────────────────────
 function makeId(prefix) {
@@ -43,22 +43,31 @@ export const useAppStore = create(
       modal: null,
       modalData: null,
       toast: null,
-      theme: 'light',
+      theme: 'dark',
 
       // ACTIONS
       setUser: (userId) => set({ currentUserId: userId }),
 
-      registerDevice: (deviceData) =>
-        set((state) => {
+      registerDevice: (deviceData) => {
+        const state = get();
+        // Two-factor duplicate check before registering
+        const check = checkDuplicateDevice(deviceData.imei, deviceData.serial, state.devices);
+        if (check.conflict) {
+          // Return the conflict reason so the caller can show it
+          return { error: check.reason };
+        }
+        set((s) => {
           const newDevice = {
             ...deviceData,
             id: makeId('D'),
-            ownerId: state.currentUserId,
+            ownerId: s.currentUserId,
             registeredDate: new Date().toISOString().slice(0, 10),
             status: 'registered',
           };
-          return { devices: [...state.devices, newDevice] };
-        }),
+          return { devices: [...s.devices, newDevice] };
+        });
+        return { error: null };
+      },
 
       submitReport: (reportData) =>
         set((state) => {
@@ -213,7 +222,8 @@ export const useAppStore = create(
       hideToast: () => set({ toast: null }),
     }),
     {
-      name: 'sidrs_state_v1', // use same key for persistence continuity
+      name: 'sidrs_state_v1',
+      version: 2, // bump version to clear old persisted state that had laptops/tablets
       partialize: (state) => {
         const { toast, modal, modalData, ...rest } = state;
         return rest; // don't persist these UI states

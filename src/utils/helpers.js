@@ -6,20 +6,15 @@
  */
 
 import React from 'react';
-import { FiSmartphone, FiMonitor, FiTablet, FiTv } from 'react-icons/fi';
+import { FiSmartphone } from 'react-icons/fi';
 
 /**
  * Returns a React Icon component for a given device type.
- * @param {string} type - 'mobile' | 'laptop' | 'tablet' | 'desktop'
+ * Phase 1: Mobile phones only.
+ * @param {string} type - 'mobile'
  */
 export function deviceIcon(type) {
-  const icons = {
-    mobile: <FiSmartphone size={20} />,
-    laptop: <FiMonitor size={20} />,
-    tablet: <FiTablet size={20} />,
-    desktop: <FiTv size={20} />,
-  };
-  return icons[type] || <FiSmartphone size={20} />;
+  return <FiSmartphone size={20} />;
 }
 
 /**
@@ -93,6 +88,43 @@ export function checkIdentifier(identifier, devices, reports) {
 
   if (report) return { status: 'stolen', device, report };
   return { status: 'clean', device };
+}
+
+/**
+ * Two-factor device duplicate check.
+ * Both IMEI and serial must be provided and must belong to the SAME
+ * registered device for a conflict to be flagged.
+ *
+ * Returns:
+ *   { conflict: false }                          — safe to register
+ *   { conflict: true, reason: string }           — already registered
+ *   { conflict: true, mismatch: true, reason }   — IMEI/serial belong to different devices
+ *
+ * @param {string} imei
+ * @param {string} serial
+ * @param {Array}  devices  — existing registered devices
+ */
+export function checkDuplicateDevice(imei, serial, devices) {
+  const imeiMatch = imei ? devices.find((d) => d.imei === imei.trim()) : null;
+  const serialMatch = serial ? devices.find((d) => d.serial === serial.trim()) : null;
+
+  // IMEI already registered
+  if (imeiMatch) {
+    return {
+      conflict: true,
+      reason: `This IMEI (${imei}) is already registered in the national registry under a ${imeiMatch.make} ${imeiMatch.model}.`,
+    };
+  }
+
+  // Serial already registered
+  if (serialMatch) {
+    return {
+      conflict: true,
+      reason: `This serial number (${serial}) is already registered in the national registry under a ${serialMatch.make} ${serialMatch.model}.`,
+    };
+  }
+
+  return { conflict: false };
 }
 
 /**

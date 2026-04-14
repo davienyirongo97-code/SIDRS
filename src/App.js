@@ -44,13 +44,9 @@ function App() {
   // Start WebSocket tracking globally
   useDeviceTracking();
 
-  // Apply theme class to document body
+  // Apply theme to document — uses data-theme attribute to match CSS selectors
   React.useEffect(() => {
-    if (theme === 'dark') {
-      document.body.classList.add('dark-theme');
-    } else {
-      document.body.classList.remove('dark-theme');
-    }
+    document.documentElement.setAttribute('data-theme', theme === 'light' ? 'light' : 'dark');
   }, [theme]);
 
   return (

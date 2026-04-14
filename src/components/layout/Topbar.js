@@ -13,6 +13,7 @@ import React, { useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useAppStore, useCurrentUser, useAppDispatch } from '../../store/useAppStore';
 import { FiBell, FiMoon, FiSun, FiSearch } from 'react-icons/fi';
+import './Topbar.css';
 
 const TITLES = {
   '/': { main: 'Dashboard', sub: 'National device security overview' },
@@ -47,10 +48,8 @@ export default function Topbar() {
   return (
     <header className="topbar">
       <div className="topbar-left">
-        <div>
-          <h1 className="topbar-title">{current.main}</h1>
-          <p className="topbar-subtitle">{current.sub}</p>
-        </div>
+        <h1 className="topbar-title">{current.main}</h1>
+        <p className="topbar-subtitle">{current.sub}</p>
       </div>
 
       <div className="topbar-right">
@@ -101,6 +100,8 @@ export default function Topbar() {
                   marginBottom: '12px',
                   display: 'flex',
                   justifyContent: 'space-between',
+                  fontSize: '13px',
+                  color: 'var(--ink)',
                 }}
               >
                 System Alerts
@@ -119,10 +120,17 @@ export default function Topbar() {
                         opacity: r.read ? 0.6 : 1,
                       }}
                     >
-                      <div style={{ fontSize: '12px', fontWeight: 700 }}>
+                      <div style={{ fontSize: '12px', fontWeight: 700, color: 'var(--ink)' }}>
                         Case Update: {r.caseNumber}
                       </div>
-                      <div style={{ fontSize: '11px', color: 'var(--muted)', marginTop: '4px' }}>
+                      <div
+                        style={{
+                          fontSize: '11px',
+                          color: 'var(--muted)',
+                          marginTop: '4px',
+                          lineHeight: 1.5,
+                        }}
+                      >
                         {r.message.split('\n')[0]}
                       </div>
                       <div style={{ fontSize: '10px', color: 'var(--blue)', marginTop: '4px' }}>

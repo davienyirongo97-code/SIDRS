@@ -8,7 +8,7 @@
  *
  * Sections:
  *   USERS        — system users (citizens, police, MACRA admin)
- *   DEVICES      — registered devices (phones, laptops, tablets)
+ *   DEVICES      — registered mobile phones (Phase 1: phones only)
  *   REPORTS      — theft reports filed by citizens
  *   EVENTS       — network detection events from Airtel & TNM
  *   TRANSFERS    — device ownership transfers
@@ -71,8 +71,8 @@ export const INITIAL_USERS = [
 ];
 
 // ─── DEVICES ─────────────────────────────────────────────────
+// Phase 1: Mobile phones only — tracked via IMEI on Airtel & TNM.
 // status: 'registered' | 'stolen' | 'recovered'
-// type:   'mobile' | 'laptop' | 'tablet' | 'desktop'
 export const INITIAL_DEVICES = [
   {
     id: 'D001',
@@ -101,45 +101,6 @@ export const INITIAL_DEVICES = [
     status: 'stolen', // Active theft alert on this device
   },
   {
-    id: 'D003',
-    type: 'laptop',
-    make: 'Lenovo',
-    model: 'ThinkPad X1 Carbon',
-    color: 'Black',
-    imei: null, // Laptops use serial + MAC
-    serial: 'LNV-X1C-2024-7721',
-    mac: 'A4:C3:F0:85:AC:12',
-    ownerId: 'U002',
-    registeredDate: '2025-10-05',
-    status: 'registered',
-  },
-  {
-    id: 'D004',
-    type: 'mobile',
-    make: 'Apple',
-    model: 'iPhone 13',
-    color: 'Midnight',
-    imei: '357893109876543',
-    serial: 'APL-IPH-2024-9901',
-    mac: null,
-    ownerId: 'U002',
-    registeredDate: '2026-01-10',
-    status: 'stolen',
-  },
-  {
-    id: 'D005',
-    type: 'laptop',
-    make: 'Dell',
-    model: 'Inspiron 15',
-    color: 'Silver',
-    imei: null,
-    serial: 'DEL-INS-2024-5541',
-    mac: 'B8:27:EB:F1:3A:44',
-    ownerId: 'U003',
-    registeredDate: '2025-09-20',
-    status: 'recovered', // Successfully recovered via SDIRS
-  },
-  {
     id: 'D006',
     type: 'mobile',
     make: 'Huawei',
@@ -148,35 +109,9 @@ export const INITIAL_DEVICES = [
     imei: '862345678901234',
     serial: 'HW-P30-2025-1120',
     mac: null,
-    ownerId: 'U003',
-    registeredDate: '2026-01-25',
-    status: 'registered',
-  },
-  {
-    id: 'D007',
-    type: 'laptop',
-    make: 'HP',
-    model: 'Envy 14',
-    color: 'Natural Silver',
-    imei: null,
-    serial: 'HP-ENY-2025-7723',
-    mac: 'DC:A6:32:45:BC:78',
-    ownerId: 'U001',
-    registeredDate: '2026-02-03',
-    status: 'stolen',
-  },
-  {
-    id: 'D008',
-    type: 'tablet',
-    make: 'Samsung',
-    model: 'Galaxy Tab A8',
-    color: 'Gray',
-    imei: '358765432198765',
-    serial: 'SAM-TAB-2025-4421',
-    mac: 'F0:9F:C2:11:22:33',
     ownerId: 'U002',
-    registeredDate: '2026-02-18',
-    status: 'registered',
+    registeredDate: '2026-01-25',
+    status: 'stolen',
   },
 ];
 
@@ -202,7 +137,7 @@ export const INITIAL_REPORTS = [
   },
   {
     id: 'RPT-2026-00031',
-    deviceId: 'D004',
+    deviceId: 'D006',
     reportedBy: 'U002',
     date: '2026-02-28',
     location: 'Chancellor College Library, Zomba',
@@ -213,33 +148,6 @@ export const INITIAL_REPORTS = [
     verifiedAt: '2026-03-01',
     dispatched: true,
     caseNumber: 'MPS-ZBA-2026-00087',
-  },
-  {
-    id: 'RPT-2026-00045',
-    deviceId: 'D007',
-    reportedBy: 'U001',
-    date: '2026-03-05',
-    location: 'Shoprite, City Mall Lilongwe',
-    description:
-      'Laptop bag taken from shopping trolley while I was distracted choosing items from a shelf.',
-    policeStation: 'Area 3 Police Station, Lilongwe',
-    status: 'pending', // Not yet police-verified
-    verifiedAt: null,
-    dispatched: false,
-    caseNumber: null,
-  },
-  {
-    id: 'RPT-2025-00198',
-    deviceId: 'D005',
-    reportedBy: 'U003',
-    date: '2025-12-10',
-    location: 'Chichiri Mall, Blantyre',
-    description: 'Laptop taken from parked car. Window was smashed.',
-    policeStation: 'Limbe Police Station, Blantyre',
-    status: 'resolved',
-    verifiedAt: '2025-12-11',
-    dispatched: true,
-    caseNumber: 'MPS-BLT-2025-00441',
   },
 ];
 
@@ -324,18 +232,7 @@ export const INITIAL_EVENTS = [
 
 // ─── TRANSFERS ───────────────────────────────────────────────
 // status: 'pending' | 'completed' | 'expired'
-export const INITIAL_TRANSFERS = [
-  {
-    id: 'TRF-2026-0301-00021',
-    deviceId: 'D005',
-    sellerId: 'U003',
-    buyerId: 'U001',
-    pin: 'TRF-9KX2-M4PW',
-    status: 'completed',
-    createdAt: '2026-03-01 10:18',
-    priceMWK: 180000,
-  },
-];
+export const INITIAL_TRANSFERS = [];
 
 // ─── CITIZEN POLICE REMINDERS ─────────────────────────────────
 // Pre-loaded demo reminders so the police dashboard shows the
