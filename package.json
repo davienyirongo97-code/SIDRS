@@ -23,6 +23,8 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "mock-server": "node mock-server.js",
+    "backend": "cd backend && npm run dev",
+    "backend:migrate": "cd backend && npm run db:migrate",
     "cypress:open": "cypress open",
     "cypress:run": "cypress run"
   },
