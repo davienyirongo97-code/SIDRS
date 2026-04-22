@@ -12,9 +12,9 @@
  *   Red   → danger / stolen / alert
  *
  * TYPOGRAPHY:
- *   --font-display: Syne      → headings, numbers, brand
- *   --font-body:    DM Sans   → all body text, UI labels
- *   --font-mono:    DM Mono   → IMEI codes, identifiers, case numbers
+ *   --font-display: Syne   → headings, numbers, brand
+ *   --font-body:    Inter  → all body text, UI labels (sharper on dark bg)
+ *   --font-mono:    DM Mono → IMEI codes, identifiers, case numbers
  */
 
 /* ── DESIGN TOKENS ─────────────────────────────────────────── */
@@ -46,8 +46,18 @@
 
   /* Typography */
   --font-display: 'Syne', system-ui, sans-serif;
-  --font-body: 'DM Sans', system-ui, sans-serif;
-  --font-mono: 'DM Mono', monospace;
+  --font-body: 'Inter', system-ui, sans-serif;
+  --font-mono: 'DM Mono', 'Fira Mono', monospace;
+
+  /* Font sizes — consistent scale */
+  --text-xs: 11px;
+  --text-sm: 12px;
+  --text-base: 13.5px;
+  --text-md: 15px;
+  --text-lg: 17px;
+  --text-xl: 20px;
+  --text-2xl: 24px;
+  --text-3xl: 32px;
 
   /* Layout */
   --radius: 16px;
@@ -107,25 +117,24 @@
 
 /* ── BASE ──────────────────────────────────────────────────── */
 html {
-  /* Fluid base: scales from 14px at 320px to 16px at 1280px */
   font-size: clamp(14px, 1.5vw, 16px);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  /* Prevent text from scaling when orientation changes on iOS */
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
+  text-rendering: optimizeLegibility;
 }
 
 body {
   font-family: var(--font-body);
+  font-size: var(--text-base);
+  letter-spacing: -0.01em;
   background: radial-gradient(ellipse at top center, #1e2d3d 0%, #151f2e 80%);
   background-attachment: fixed;
   color: var(--ink);
   min-height: 100vh;
-  min-height: 100dvh; /* Dynamic viewport height for mobile browsers */
+  min-height: 100dvh;
   overflow-x: hidden;
-  /* Ensure minimum font size for legibility */
-  font-size: max(14px, 0.875rem);
   line-height: 1.6;
 }
 

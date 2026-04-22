@@ -222,8 +222,8 @@ export const useAppStore = create(
       hideToast: () => set({ toast: null }),
     }),
     {
-      name: 'sidrs_state_v1',
-      version: 2, // bump version to clear old persisted state that had laptops/tablets
+      name: 'sidrs_state_v3',
+      version: 3,
       partialize: (state) => {
         const { toast, modal, modalData, ...rest } = state;
         return rest; // don't persist these UI states

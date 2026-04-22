@@ -51,7 +51,7 @@ export default function ReportTheftPage() {
   }
 
   return (
-    <div className="fade-up" style={{ maxWidth: 600, margin: '0 auto' }}>
+    <div className="fade-up" style={{ maxWidth: 600, margin: '0 auto', padding: '0 4px' }}>
       <div className="alert alert-red" style={{ marginBottom: 24 }}>
         <span className="alert-icon">
           <FiAlertCircle />
@@ -63,7 +63,39 @@ export default function ReportTheftPage() {
         </div>
       </div>
 
-      <div className="card">
+      <div className="card" style={{ position: 'relative' }}>
+        {/* ── X close button ── */}
+        <button
+          onClick={() => navigate(-1)}
+          style={{
+            position: 'absolute',
+            top: 16,
+            right: 16,
+            width: 32,
+            height: 32,
+            borderRadius: '50%',
+            border: 'none',
+            background: 'var(--bg)',
+            color: 'var(--muted)',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontSize: 18,
+            transition: 'all 0.15s',
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.background = 'var(--muted-3)';
+            e.currentTarget.style.color = 'var(--ink)';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.background = 'var(--bg)';
+            e.currentTarget.style.color = 'var(--muted)';
+          }}
+          aria-label="Close"
+        >
+          ✕
+        </button>
         <div
           className="card-title"
           style={{ marginBottom: 20, display: 'flex', alignItems: 'center', gap: 8 }}

@@ -69,7 +69,7 @@ export default function MacraAdminPage() {
             marginBottom: 8,
           }}
         >
-          MACRA Administration
+          Administration Dashboard
         </div>
         <div
           style={{

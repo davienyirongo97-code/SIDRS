@@ -23,7 +23,7 @@ const TITLES = {
   '/transfer': { main: 'Ownership Transfer', sub: 'Securely reassign device titles' },
   '/police': { main: 'Police Console', sub: 'Active recovery operations & field checks' },
   '/intelligence': { main: 'Intelligence Feed', sub: 'Real-time crime signal analytics' },
-  '/admin': { main: 'MACRA Admin', sub: 'National registry health & compliance' },
+  '/admin': { main: 'Admin Panel', sub: 'National registry health & compliance' },
   '/registry': { main: 'National Registry', sub: 'Database of all compliant hardware' },
   '/chain': { main: 'Ownership Chain', sub: 'Immutable blockchain ledger of titles' },
   '/threats': { main: 'Threat Intel', sub: 'Anomaly detection & market hotspots' },
@@ -163,7 +163,8 @@ export default function Topbar() {
               className="user-role"
               style={{ color: 'var(--blue)', fontWeight: 700, fontSize: '10px' }}
             >
-              {user.roleLabel || user.role.toUpperCase()}
+              {{ citizen: 'CITIZEN', police: 'POLICE', macra: 'ADMIN' }[user.role] ||
+                user.role.toUpperCase()}
             </div>
           </div>
           <div

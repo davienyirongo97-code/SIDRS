@@ -445,7 +445,7 @@ function LookupResult({ result, events, transfers, users }) {
           <br />
           The device may be unregistered or the identifier may be incorrect.
           <br />
-          Advise the device holder to register at the nearest MACRA office or via the SDIRS app.
+          Advise the device holder to register at the nearest SDIRS office or via the SDIRS app.
         </div>
       </div>
     );
@@ -877,8 +877,8 @@ function LookupResult({ result, events, transfers, users }) {
             <Badge status={r.status} />
             {r.dispatched && (
               <span style={{ marginLeft: 8, fontSize: 11, color: 'var(--green)', fontWeight: 700 }}>
-                <FiRadio size={11} style={{ marginRight: 4 }} /> Network alert active on Airtel
-                &amp; TNM
+                <FiRadio size={11} style={{ marginRight: 4 }} /> Network alert active on national
+                networks
               </span>
             )}
           </div>

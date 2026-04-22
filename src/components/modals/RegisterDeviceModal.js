@@ -626,7 +626,7 @@ export default function RegisterDeviceModal({ onClose }) {
               <div>
                 Owner details are <strong>confidential</strong>. The public IMEI checker shows only
                 clean/stolen status. Full owner profile is visible only to verified{' '}
-                <strong>police officers</strong> and <strong>MACRA administrators</strong>.
+                <strong>police officers</strong> and <strong>system administrators</strong>.
               </div>
             </div>
           </div>

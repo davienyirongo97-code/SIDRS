@@ -103,7 +103,7 @@ export default function HomePage() {
                 textTransform: 'uppercase',
               }}
             >
-              National Device Security Platform · MACRA
+              National Device Security Platform · Malawi
             </span>
           </div>
 
@@ -125,7 +125,7 @@ export default function HomePage() {
             }}
           >
             Protect your phone. Register your IMEI. Report theft instantly. Track stolen phones in
-            real-time via Airtel &amp; TNM network intelligence.
+            real-time via national network intelligence.
           </p>
 
           <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
@@ -161,11 +161,11 @@ export default function HomePage() {
               alignItems: 'center',
               justifyContent: 'center',
               gap: 10,
-              background: 'rgba(15, 23, 42, 0.75)',
-              border: '1px solid rgba(59, 130, 246, 0.4)',
-              padding: '6px 16px',
+              background: 'rgba(15, 23, 42, 0.92)',
+              border: '1px solid rgba(59, 130, 246, 0.6)',
+              padding: '8px 16px',
               borderRadius: 8,
-              boxShadow: '0 4px 15px rgba(0, 0, 0, 0.5)',
+              boxShadow: '0 4px 20px rgba(0,0,0,0.5), 0 0 12px rgba(59,130,246,0.2)',
               backdropFilter: 'blur(12px)',
             }}
           >
@@ -200,18 +200,17 @@ export default function HomePage() {
             src="/laptop-hero.png"
             alt="Laptop Tracking"
             className="floating-device laptop"
-            style={{ filter: 'drop-shadow(0 20px 40px rgba(30,58,138,0.15))' }}
+            style={{ filter: 'drop-shadow(0 24px 48px rgba(37,99,235,0.5)) brightness(1.08)' }}
           />
           <img
             src="/phone-hero.png"
             alt="Phone Security"
             className="floating-device phone"
-            style={{ filter: 'drop-shadow(0 20px 40px rgba(30,58,138,0.2))' }}
+            style={{ filter: 'drop-shadow(0 24px 48px rgba(37,99,235,0.6)) brightness(1.1)' }}
           />
 
-          {/* USSD floating badge integrated into visual area */}
+          {/* USSD floating badge */}
           <div
-            className="glass-panel"
             style={{
               position: 'absolute',
               bottom: '-80px',
@@ -222,7 +221,10 @@ export default function HomePage() {
               alignItems: 'center',
               gap: 14,
               zIndex: 10,
-              border: '1px solid var(--amber-2)',
+              background: 'rgba(30, 40, 70, 0.92)',
+              border: '1.5px solid var(--amber-2)',
+              boxShadow: '0 8px 32px rgba(0,0,0,0.4), 0 0 20px rgba(245,158,11,0.2)',
+              backdropFilter: 'blur(12px)',
             }}
           >
             <div
@@ -273,8 +275,8 @@ export default function HomePage() {
               position: 'absolute',
               right: -10,
               top: -10,
-              opacity: 0.05,
-              color: 'var(--ink)',
+              opacity: 0.08,
+              color: '#60a5fa',
             }}
           >
             <FiSmartphone size={90} />
@@ -292,8 +294,8 @@ export default function HomePage() {
               position: 'absolute',
               right: -10,
               top: -10,
-              opacity: 0.05,
-              color: 'var(--ink)',
+              opacity: 0.08,
+              color: '#f87171',
             }}
           >
             <FiAlertCircle size={90} />
@@ -311,8 +313,8 @@ export default function HomePage() {
               position: 'absolute',
               right: -10,
               top: -10,
-              opacity: 0.05,
-              color: 'var(--ink)',
+              opacity: 0.08,
+              color: '#fbbf24',
             }}
           >
             <FiRadio size={90} />
@@ -330,8 +332,8 @@ export default function HomePage() {
               position: 'absolute',
               right: -10,
               top: -10,
-              opacity: 0.05,
-              color: 'var(--ink)',
+              opacity: 0.08,
+              color: '#4ade80',
             }}
           >
             <FiCheckCircle size={90} />

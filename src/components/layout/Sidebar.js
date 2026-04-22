@@ -85,7 +85,7 @@ const NAV_GROUPS = [
   {
     label: 'Administration',
     items: [
-      { path: '/admin', icon: <FiGrid />, label: 'MACRA Admin', roles: ['macra'] },
+      { path: '/admin', icon: <FiGrid />, label: 'Admin Panel', roles: ['macra'] },
       { path: '/registry', icon: <FiList />, label: 'Device Registry', roles: ['macra', 'police'] },
       { path: '/chain', icon: <FiLink />, label: 'Ownership Chain', roles: ['macra', 'police'] },
     ],
@@ -142,7 +142,7 @@ export default function Sidebar() {
           <div className="brand-badge">SD</div>
           <div>
             <div className="brand-text">SDIRS</div>
-            <div className="brand-sub">Malawi · MACRA</div>
+            <div className="brand-sub">Republic of Malawi</div>
           </div>
         </div>
 
@@ -202,7 +202,7 @@ export default function Sidebar() {
           >
             {users.map((u) => (
               <option key={u.id} value={u.id}>
-                {u.name.split(' ')[0]} ({u.role})
+                {u.name.split(' ')[0]} ({u.role === 'macra' ? 'admin' : u.role})
               </option>
             ))}
           </select>

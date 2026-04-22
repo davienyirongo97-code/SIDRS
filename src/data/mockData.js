@@ -60,12 +60,12 @@ export const INITIAL_USERS = [
   },
   {
     id: 'MACRA',
-    name: 'MACRA Admin',
+    name: 'Admin',
     phone: '+265 1 784 000',
-    email: 'admin@macra.mw',
+    email: 'admin@sdirs.mw',
     location: 'Lilongwe HQ',
     role: 'macra',
-    avatarText: 'MA',
+    avatarText: 'AD',
     avatarColor: '#0A1628',
   },
 ];
