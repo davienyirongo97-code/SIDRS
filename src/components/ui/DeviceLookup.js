@@ -29,7 +29,7 @@
 
 import React, { useState } from 'react';
 import { useAppStore } from '../../store/useAppStore';
-import { formatNumber, checkDuplicateDevice } from '../../utils/helpers';
+import { formatNumber } from '../../utils/helpers';
 import Badge from './Badge';
 import {
   FiSearch,
