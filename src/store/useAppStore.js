@@ -62,12 +62,33 @@ export const useAppStore = create(
             id: makeId('D'),
             ownerId: s.currentUserId,
             registeredDate: new Date().toISOString().slice(0, 10),
-            status: 'registered',
+            status: 'pending_verification',
           };
           return { devices: [...s.devices, newDevice] };
         });
         return { error: null };
       },
+
+      approveRegistration: (deviceId, adminId) =>
+        set((state) => {
+          const updatedDevices = state.devices.map((d) =>
+            d.id === deviceId
+              ? {
+                  ...d,
+                  status: 'registered',
+                  verifiedByAdminId: adminId,
+                  verifiedAt: new Date().toISOString(),
+                }
+              : d
+          );
+          return { devices: updatedDevices };
+        }),
+
+      rejectRegistration: (deviceId) =>
+        set((state) => {
+          const updatedDevices = state.devices.filter((d) => d.id !== deviceId);
+          return { devices: updatedDevices };
+        }),
 
       submitReport: (reportData) =>
         set((state) => {
@@ -89,17 +110,51 @@ export const useAppStore = create(
           };
         }),
 
-      verifyReport: (reportId) =>
+      verifyReport: (reportId, officerDetails = {}) =>
         set((state) => {
-          const caseNum = `MPS-LLW-2026-${String(Math.floor(Math.random() * 9000) + 1000)}`;
+          // Generate a unique case number scoped to the station prefix
+          const stationCode = (officerDetails.station || 'LLW')
+            .toUpperCase()
+            .replace(/[^A-Z]/g, '')
+            .slice(0, 3);
+          const caseNum = `MPS-${stationCode}-2026-${String(Math.floor(Math.random() * 9000) + 1000)}`;
+
+          // Build a deterministic digital-signature fingerprint:
+          // SHA-like hash of badgeNumber + sigPin + reportId + timestamp
+          const sigInput = `${officerDetails.badgeNumber}|${officerDetails.sigPin}|${reportId}|${Date.now()}`;
+          let sigHash = 0x811c9dc5;
+          for (let i = 0; i < sigInput.length; i++) {
+            sigHash ^= sigInput.charCodeAt(i);
+            sigHash = (sigHash * 0x01000193) >>> 0;
+          }
+          const digitalSignature =
+            'SIG-' +
+            sigHash.toString(16).padStart(8, '0').toUpperCase() +
+            ((sigHash * 0x9e3779b9) >>> 0).toString(16).padStart(8, '0').toUpperCase();
+
+          const verifiedAt = new Date().toISOString().slice(0, 10);
+          const verifiedTime = new Date().toLocaleTimeString('en-GB', {
+            hour: '2-digit',
+            minute: '2-digit',
+          });
+
           const updatedReports = state.reports.map((r) =>
             r.id === reportId
               ? {
                   ...r,
                   status: 'active',
-                  verifiedAt: new Date().toISOString().slice(0, 10),
+                  verifiedAt,
                   dispatched: true,
                   caseNumber: caseNum,
+                  // Officer accountability block
+                  verifiedBy: {
+                    officerId: state.currentUserId,
+                    badgeNumber: officerDetails.badgeNumber || 'N/A',
+                    rank: officerDetails.rank || 'N/A',
+                    station: officerDetails.station || 'N/A',
+                    digitalSignature,
+                    signedAt: `${verifiedAt} ${verifiedTime}`,
+                  },
                 }
               : r
           );
@@ -222,8 +277,8 @@ export const useAppStore = create(
       hideToast: () => set({ toast: null }),
     }),
     {
-      name: 'sidrs_state_v3',
-      version: 3,
+      name: 'sidrs_state_v5',
+      version: 5,
       partialize: (state) => {
         const { toast, modal, modalData, ...rest } = state;
         return rest; // don't persist these UI states
@@ -299,10 +354,14 @@ export function useAppDispatch() {
         return s.setUser(payload);
       case 'REGISTER_DEVICE':
         return s.registerDevice(payload);
+      case 'APPROVE_REGISTRATION':
+        return s.approveRegistration(payload.deviceId, payload.adminId);
+      case 'REJECT_REGISTRATION':
+        return s.rejectRegistration(payload.deviceId);
       case 'SUBMIT_REPORT':
         return s.submitReport(payload);
       case 'VERIFY_REPORT':
-        return s.verifyReport(payload.reportId);
+        return s.verifyReport(payload.reportId, payload.officerDetails);
       case 'RESOLVE_REPORT':
         return s.resolveReport(payload.reportId);
       case 'ADD_TRANSFER':

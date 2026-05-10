@@ -9,14 +9,14 @@
   top: 0;
   bottom: 0;
   width: 240px;
-  background: #1a2744;
+  background: linear-gradient(180deg, #1a2744 0%, #13203a 40%, #0f1a30 100%);
   display: flex;
   flex-direction: column;
   z-index: 100;
   overflow: hidden;
   padding-left: env(safe-area-inset-left);
   padding-bottom: env(safe-area-inset-bottom);
-  border-right: 1px solid rgba(255, 255, 255, 0.08);
+  border-right: 1px solid rgba(59, 130, 246, 0.08);
 }
 
 /* Decorative blue glow in top-left corner */
@@ -43,7 +43,7 @@
 .brand-badge {
   width: 38px;
   height: 38px;
-  background: linear-gradient(135deg, var(--amber), var(--amber-2));
+  background: linear-gradient(135deg, #d97706, #f59e0b, #fbbf24);
   border-radius: 10px;
   display: flex;
   align-items: center;
@@ -54,6 +54,15 @@
   color: #fff;
   letter-spacing: -0.5px;
   flex-shrink: 0;
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+.brand-badge:hover {
+  transform: scale(1.08) rotate(-3deg);
+  box-shadow: 0 6px 20px rgba(245, 158, 11, 0.5);
 }
 
 .brand-text {
@@ -123,10 +132,12 @@
 }
 
 .nav-item.active {
-  background: linear-gradient(135deg, rgba(37, 99, 235, 0.6), rgba(37, 99, 235, 0.35));
+  background: linear-gradient(135deg, rgba(37, 99, 235, 0.5), rgba(37, 99, 235, 0.25));
   color: #fff;
   font-weight: 700;
-  box-shadow: 0 2px 12px rgba(37, 99, 235, 0.3);
+  box-shadow: 0 2px 16px rgba(37, 99, 235, 0.25);
+  border-left: 3px solid #60a5fa;
+  padding-left: 11px;
 }
 
 .nav-icon {

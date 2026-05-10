@@ -48,11 +48,13 @@ export function getStatusConfig(status) {
     stolen: { className: 'badge-red', label: 'Stolen' },
     recovered: { className: 'badge-blue', label: 'Recovered' },
     active: { className: 'badge-red', label: 'Active Alert' },
-    pending: { className: 'badge-amber', label: 'Pending' },
+    pending_verification: { className: 'badge-amber', label: 'Pending Verification' },
+    not_verified: { className: 'badge-amber', label: 'Not Verified' },
     resolved: { className: 'badge-green', label: 'Resolved' },
     completed: { className: 'badge-green', label: 'Completed' },
     clean: { className: 'badge-green', label: 'Clean' },
-    not_found: { className: 'badge-gray', label: 'Not Found' },
+    not_found: { className: 'badge-gray', label: 'Not Registered' },
+    not_registered: { className: 'badge-gray', label: 'Not Registered' },
   };
   return config[status] || { className: 'badge-gray', label: status };
 }
@@ -75,11 +77,11 @@ export function findDevice(deviceId, devices) {
  */
 export function checkIdentifier(identifier, devices, reports) {
   const q = identifier.trim();
-  if (!q) return { status: 'not_found' };
+  if (!q) return { status: 'not_registered' };
 
   const device = devices.find((d) => d.imei === q || d.serial === q || d.mac === q);
 
-  if (!device) return { status: 'not_found' };
+  if (!device) return { status: 'not_registered' };
 
   // Check for any active/pending theft report on this device
   const report = reports.find(
@@ -87,6 +89,11 @@ export function checkIdentifier(identifier, devices, reports) {
   );
 
   if (report) return { status: 'stolen', device, report };
+
+  if (device.status === 'pending_verification') {
+    return { status: 'not_verified', device };
+  }
+
   return { status: 'clean', device };
 }
 

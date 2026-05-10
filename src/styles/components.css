@@ -30,14 +30,32 @@
   position: relative;
   overflow: hidden;
   transition:
-    transform 0.2s,
-    box-shadow 0.2s;
+    transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1),
+    box-shadow 0.25s ease,
+    border-color 0.25s ease;
+}
+
+/* Shimmer sweep on hover */
+.card::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -75%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.03), transparent);
+  pointer-events: none;
+  transition: none;
 }
 
 .card:hover {
-  transform: translateY(-2px);
+  transform: translateY(-3px);
   box-shadow: var(--shadow-2);
-  border-color: var(--blue-3);
+  border-color: rgba(59, 130, 246, 0.3);
+}
+
+.card:hover::after {
+  animation: shimmer 0.8s ease forwards;
 }
 
 .card-sm {
@@ -106,27 +124,41 @@
 
 /* Variants */
 .btn-primary {
-  background: var(--blue);
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
   color: #fff;
-  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+  box-shadow:
+    0 4px 14px rgba(37, 99, 235, 0.3),
+    0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.btn-primary:hover:not(:disabled) {
+  box-shadow:
+    0 6px 20px rgba(37, 99, 235, 0.45),
+    0 2px 6px rgba(0, 0, 0, 0.2);
 }
 
 .btn-danger {
-  background: var(--red);
+  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
   color: #fff;
-  box-shadow: 0 4px 12px rgba(185, 28, 28, 0.2);
+  box-shadow:
+    0 4px 14px rgba(185, 28, 28, 0.3),
+    0 1px 3px rgba(0, 0, 0, 0.2);
 }
 
 .btn-amber {
-  background: var(--amber);
+  background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
   color: #fff;
-  box-shadow: 0 4px 12px rgba(180, 83, 9, 0.2);
+  box-shadow:
+    0 4px 14px rgba(180, 83, 9, 0.3),
+    0 1px 3px rgba(0, 0, 0, 0.2);
 }
 
 .btn-green {
-  background: var(--green);
+  background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
   color: #fff;
-  box-shadow: 0 4px 12px rgba(21, 128, 61, 0.2);
+  box-shadow:
+    0 4px 14px rgba(21, 128, 61, 0.3),
+    0 1px 3px rgba(0, 0, 0, 0.2);
 }
 
 .btn-dark {
@@ -318,26 +350,28 @@ td {
   border-bottom: 1px solid var(--muted-3);
   vertical-align: middle;
   color: var(--ink-2);
+  transition: background 0.15s ease;
 }
 
 tr:last-child td {
   border-bottom: none;
 }
 tr:hover td {
-  background: var(--bg);
+  background: rgba(37, 99, 235, 0.04);
 }
 
 /* ── 6. MODAL ───────────────────────────────────────────────── */
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(6, 17, 43, 0.6);
+  background: rgba(6, 17, 43, 0.65);
   z-index: 500;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 20px;
-  backdrop-filter: blur(6px);
+  backdrop-filter: blur(10px) saturate(1.2);
+  -webkit-backdrop-filter: blur(10px) saturate(1.2);
 }
 
 .modal-box {
@@ -347,8 +381,11 @@ tr:hover td {
   max-width: 520px;
   max-height: 90vh;
   overflow: auto;
-  box-shadow: var(--shadow-3);
-  animation: modalIn 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+  box-shadow:
+    0 32px 96px rgba(0, 0, 0, 0.5),
+    0 0 1px rgba(59, 130, 246, 0.2);
+  animation: modalIn 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .modal-box.wide {
@@ -412,26 +449,41 @@ tr:hover td {
   top: 20px;
   right: 20px;
   z-index: 1000;
-  background: var(--surface);
+  background: rgba(30, 45, 61, 0.92);
+  backdrop-filter: blur(16px) saturate(1.5);
+  -webkit-backdrop-filter: blur(16px) saturate(1.5);
   border-radius: var(--radius);
-  box-shadow: var(--shadow-3);
-  padding: 14px 20px;
-  max-width: 360px;
+  box-shadow:
+    0 20px 60px rgba(0, 0, 0, 0.4),
+    0 0 1px rgba(255, 255, 255, 0.1);
+  padding: 16px 20px;
+  max-width: 380px;
   display: flex;
   align-items: flex-start;
   gap: 12px;
-  animation: toastIn 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  animation: toastIn 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+  border-left: 4px solid var(--green-2);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-left: 4px solid var(--green-2);
 }
 
 .toast.error {
   border-left-color: var(--red-2);
+  box-shadow:
+    0 20px 60px rgba(0, 0, 0, 0.4),
+    0 0 20px rgba(239, 68, 68, 0.1);
 }
 .toast.warn {
   border-left-color: var(--amber-2);
+  box-shadow:
+    0 20px 60px rgba(0, 0, 0, 0.4),
+    0 0 20px rgba(245, 158, 11, 0.1);
 }
 .toast.info {
   border-left-color: var(--blue-2);
+  box-shadow:
+    0 20px 60px rgba(0, 0, 0, 0.4),
+    0 0 20px rgba(59, 130, 246, 0.1);
 }
 
 .toast-icon {
@@ -460,6 +512,14 @@ tr:hover td {
   padding: 20px;
   position: relative;
   overflow: hidden;
+  transition:
+    transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1),
+    box-shadow 0.25s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-2);
 }
 
 .stat-num {
@@ -468,6 +528,7 @@ tr:hover td {
   font-weight: 800;
   line-height: 1;
   margin: 8px 0 4px;
+  animation: countUp 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 .stat-label {
@@ -488,6 +549,14 @@ tr:hover td {
   font-size: 70px;
   opacity: 0.05;
   line-height: 1;
+  transition:
+    opacity 0.3s ease,
+    transform 0.3s ease;
+}
+
+.stat-card:hover .stat-bg-icon {
+  opacity: 0.08;
+  transform: scale(1.1) rotate(-5deg);
 }
 
 /* ── 9. LIVE INDICATOR ──────────────────────────────────────── */
@@ -514,13 +583,45 @@ tr:hover td {
   display: inline-flex;
   align-items: center;
   gap: 7px;
-  padding: 4px 12px;
-  background: var(--green-pale);
+  padding: 5px 14px;
+  background: rgba(34, 197, 94, 0.12);
+  border: 1px solid rgba(34, 197, 94, 0.25);
   border-radius: 20px;
   font-size: 11px;
   font-weight: 800;
-  color: var(--green);
-  letter-spacing: 0.3px;
+  color: var(--green-2);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  position: relative;
+  overflow: hidden;
+}
+
+.live-badge::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 12px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--green-2);
+  transform: translateY(-50%);
+  animation: glowBreathe 2s ease-in-out infinite;
+  box-shadow:
+    0 0 6px var(--green-2),
+    0 0 12px var(--green-2);
+}
+
+/* Scan line inside live badge */
+.live-badge::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(34, 197, 94, 0.4), transparent);
+  animation: scanLine 3s ease-in-out infinite;
 }
 
 /* ── 10. MISC ───────────────────────────────────────────────── */
@@ -874,6 +975,16 @@ tr:hover td {
   -webkit-backdrop-filter: blur(16px);
   border: 1px solid rgba(255, 255, 255, 0.1);
   box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+  transition:
+    border-color 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+.glass-panel:hover {
+  border-color: rgba(255, 255, 255, 0.18);
+  box-shadow:
+    0 12px 40px 0 rgba(0, 0, 0, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
 }
 
 .glass-card {
@@ -885,19 +996,40 @@ tr:hover td {
   border-left: 1px solid rgba(255, 255, 255, 0.18);
   border-radius: 20px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+  position: relative;
+  overflow: hidden;
   transition:
     transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1),
     box-shadow 0.3s ease,
-    background 0.3s ease;
+    background 0.3s ease,
+    border-color 0.3s ease;
+}
+
+/* Shimmer sweep on glass-card */
+.glass-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.04), transparent);
+  pointer-events: none;
+  z-index: 1;
 }
 
 .glass-card:hover {
-  transform: translateY(-4px);
-  background: rgba(255, 255, 255, 0.06);
+  transform: translateY(-5px);
+  background: rgba(255, 255, 255, 0.09);
   box-shadow:
-    0 24px 48px rgba(0, 0, 0, 0.3),
-    0 0 20px rgba(255, 255, 255, 0.05) inset;
-  border-color: rgba(255, 255, 255, 0.2);
+    0 24px 48px rgba(0, 0, 0, 0.35),
+    0 0 1px rgba(255, 255, 255, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.22);
+}
+
+.glass-card:hover::before {
+  animation: shimmer 1s ease forwards;
 }
 
 .neon-text-blue {

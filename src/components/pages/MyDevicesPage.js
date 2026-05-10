@@ -61,6 +61,8 @@ export default function MyDevicesPage() {
   const events = useAppStore((state) => state.events);
 
   const [modal, setModal] = useState(null);
+  // setter reserved for device-row click UX (phase 2)
+  // eslint-disable-next-line no-unused-vars
   const [selectedDevice, setSelectedDevice] = useState(null);
 
   // Which report is expanded in the intelligence map
@@ -74,18 +76,35 @@ export default function MyDevicesPage() {
       {/* ── User banner ── */}
       <div
         style={{
-          background: 'linear-gradient(135deg, var(--navy), var(--navy-3))',
-          borderRadius: 'var(--radius)',
-          padding: '24px 28px',
+          background: 'linear-gradient(135deg, #172554 0%, #1e3a8a 55%, #1a2870 100%)',
+          borderRadius: '20px',
+          padding: '28px 32px',
           marginBottom: 24,
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
           flexWrap: 'wrap',
           gap: 16,
+          position: 'relative',
+          overflow: 'hidden',
+          border: '1px solid rgba(59, 130, 246, 0.15)',
+          boxShadow: '0 12px 40px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.05)',
         }}
       >
-        <div>
+        {/* Scan line */}
+        <div
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            height: '1px',
+            background: 'linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.4), transparent)',
+            animation: 'scanLine 5s ease-in-out infinite',
+            pointerEvents: 'none',
+          }}
+        />
+        <div style={{ position: 'relative', zIndex: 1 }}>
           <div
             style={{
               fontSize: 10,
@@ -112,7 +131,7 @@ export default function MyDevicesPage() {
             <FiMapPin size={12} /> {user?.location} · {user?.phone}
           </div>
         </div>
-        <div style={{ textAlign: 'right' }}>
+        <div style={{ textAlign: 'right', position: 'relative', zIndex: 1 }}>
           <div
             style={{
               width: 58,
@@ -126,6 +145,7 @@ export default function MyDevicesPage() {
               fontWeight: 900,
               color: '#fff',
               fontFamily: 'var(--font-display)',
+              boxShadow: `0 0 20px ${user?.avatarColor || 'rgba(37,99,235,0.5)'}66`,
             }}
           >
             {user?.avatarText}

@@ -7,7 +7,7 @@
  */
 
 import React from 'react';
-import { useAppStore } from '../../store/useAppStore';
+import { useAppStore, useAppDispatch, useToast } from '../../store/useAppStore';
 import { CHART_DATA } from '../../data/mockData';
 import StatCard from '../ui/StatCard';
 import Badge from '../ui/Badge';
@@ -22,6 +22,8 @@ import {
   FiMap,
   FiClipboard,
   FiGrid,
+  FiUserCheck,
+  FiXCircle,
 } from 'react-icons/fi';
 
 // District breakdown mock data
@@ -42,6 +44,10 @@ export default function MacraAdminPage() {
   const citizens = users.filter((u) => u.role === 'citizen').length;
   const recovered = devices.filter((d) => d.status === 'recovered').length;
   const active = reports.filter((r) => r.status === 'active').length;
+  const pendingRegistrations = devices.filter((d) => d.status === 'pending_verification');
+
+  const dispatch = useAppDispatch();
+  const showToast = useToast();
 
   const maxBar = Math.max(
     ...CHART_DATA.map((d) => Math.max(d.registrations, d.stolen, d.recovered)),
@@ -53,64 +59,106 @@ export default function MacraAdminPage() {
       {/* ── Admin banner ── */}
       <div
         style={{
-          background: 'linear-gradient(135deg, var(--navy), #1a3a7b)',
-          borderRadius: 'var(--radius)',
-          padding: '24px 28px',
+          background: 'linear-gradient(135deg, #172554 0%, #1e3a8a 50%, #1a2870 100%)',
+          borderRadius: '20px',
+          padding: '28px 32px',
           marginBottom: 24,
+          position: 'relative',
+          overflow: 'hidden',
+          border: '1px solid rgba(59, 130, 246, 0.15)',
+          boxShadow: '0 12px 40px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.05)',
         }}
       >
+        {/* Scan line */}
         <div
           style={{
-            fontSize: 10,
-            fontWeight: 800,
-            color: 'rgba(255,255,255,0.35)',
-            letterSpacing: 2,
-            textTransform: 'uppercase',
-            marginBottom: 8,
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            height: '1px',
+            background:
+              'linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.5), rgba(245, 158, 11, 0.3), transparent)',
+            animation: 'scanLine 5s ease-in-out infinite',
+            pointerEvents: 'none',
           }}
-        >
-          Administration Dashboard
-        </div>
+        />
+        {/* Ambient glow */}
         <div
           style={{
-            fontFamily: 'var(--font-display)',
-            fontSize: 24,
-            fontWeight: 800,
-            color: '#fff',
-            marginBottom: 14,
-            display: 'flex',
-            alignItems: 'center',
-            gap: 8,
+            position: 'absolute',
+            top: '-40%',
+            right: '-5%',
+            width: '35%',
+            height: '180%',
+            background: 'radial-gradient(circle, rgba(245, 158, 11, 0.06) 0%, transparent 60%)',
+            pointerEvents: 'none',
           }}
-        >
-          <FiGrid size={22} /> SDIRS National Command Centre
-        </div>
-        <div style={{ display: 'flex', gap: 28, flexWrap: 'wrap' }}>
-          {[
-            [devices.length, 'Devices', 'var(--blue-3)'],
-            [reports.length, 'Reports', 'var(--red-2)'],
-            [events.length, 'Net Events', 'var(--amber-2)'],
-            [citizens, 'Citizens', '#80E890'],
-          ].map(([n, l, c]) => (
-            <div key={l}>
-              <span
-                style={{
-                  fontFamily: 'var(--font-display)',
-                  fontSize: 26,
-                  fontWeight: 800,
-                  color: c,
-                }}
-              >
-                {n}
-              </span>
-              <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', marginTop: 2 }}>{l}</div>
-            </div>
-          ))}
+        />
+        <div style={{ position: 'relative', zIndex: 1 }}>
+          <div
+            style={{
+              fontSize: 10,
+              fontWeight: 800,
+              color: 'rgba(255,255,255,0.35)',
+              letterSpacing: 2,
+              textTransform: 'uppercase',
+              marginBottom: 8,
+            }}
+          >
+            Administration Dashboard
+          </div>
+          <div
+            style={{
+              fontFamily: 'var(--font-display)',
+              fontSize: 24,
+              fontWeight: 800,
+              color: '#fff',
+              marginBottom: 14,
+              display: 'flex',
+              alignItems: 'center',
+              gap: 8,
+            }}
+          >
+            <FiGrid size={22} /> SDIRS National Command Centre
+          </div>
+          <div style={{ display: 'flex', gap: 28, flexWrap: 'wrap' }}>
+            {[
+              [devices.length, 'Devices', '#93c5fd'],
+              [reports.length, 'Reports', '#f87171'],
+              [events.length, 'Net Events', '#fbbf24'],
+              [citizens, 'Citizens', '#4ade80'],
+            ].map(([n, l, c]) => (
+              <div key={l}>
+                <span
+                  style={{
+                    fontFamily: 'var(--font-display)',
+                    fontSize: 28,
+                    fontWeight: 800,
+                    color: c,
+                    textShadow: `0 0 20px ${c}44`,
+                  }}
+                >
+                  {n}
+                </span>
+                <div
+                  style={{
+                    fontSize: 11,
+                    color: 'rgba(255,255,255,0.45)',
+                    marginTop: 2,
+                    fontWeight: 600,
+                  }}
+                >
+                  {l}
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 
       {/* ── Stats ── */}
-      <div className="grid-stat">
+      <div className="grid-stat stagger-reveal">
         <StatCard
           icon={<FiSmartphone />}
           value={devices.length}
@@ -140,6 +188,187 @@ export default function MacraAdminPage() {
           color="var(--amber)"
         />
       </div>
+
+      {/* ── Pending Registrations ── */}
+      {pendingRegistrations.length > 0 && (
+        <div
+          className="card"
+          style={{ marginBottom: 20, borderColor: 'var(--amber)', borderWidth: 2 }}
+        >
+          <div className="card-header">
+            <div
+              className="card-title"
+              style={{ display: 'flex', alignItems: 'center', gap: 6, color: 'var(--amber)' }}
+            >
+              <FiUserCheck size={16} /> Pending Device Registrations ({pendingRegistrations.length})
+            </div>
+          </div>
+          <div>
+            {pendingRegistrations.map((device) => {
+              const owner = users.find((u) => u.id === device.ownerId);
+              return (
+                <div
+                  key={device.id}
+                  style={{
+                    padding: '16px',
+                    borderBottom: '1px solid var(--muted-3)',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: 12,
+                    background: 'var(--bg)',
+                    borderRadius: 'var(--radius-2)',
+                    marginBottom: 10,
+                  }}
+                >
+                  <div
+                    style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'flex-start',
+                    }}
+                  >
+                    <div>
+                      <div style={{ fontWeight: 700, fontSize: 16, color: 'var(--ink)' }}>
+                        {deviceIcon(device.type)} {device.make} {device.model}
+                      </div>
+                      <div style={{ fontSize: 12, color: 'var(--muted)', marginTop: 4 }}>
+                        Requested by:{' '}
+                        <strong style={{ color: 'var(--ink-2)' }}>{owner?.name}</strong> (
+                        {owner?.phone})
+                      </div>
+                      <div
+                        style={{
+                          fontSize: 11,
+                          fontFamily: 'var(--font-mono)',
+                          color: 'var(--blue)',
+                          marginTop: 4,
+                        }}
+                      >
+                        IMEI: {device.imei}
+                      </div>
+                    </div>
+                    <div style={{ display: 'flex', gap: 8 }}>
+                      <button
+                        className="btn btn-ghost-red btn-sm"
+                        onClick={() => {
+                          dispatch({
+                            type: 'REJECT_REGISTRATION',
+                            payload: { deviceId: device.id },
+                          });
+                          showToast(
+                            'Registration Rejected',
+                            'The citizen has been notified.',
+                            'warn'
+                          );
+                        }}
+                      >
+                        <FiXCircle size={14} /> Reject
+                      </button>
+                      <button
+                        className="btn btn-primary btn-sm"
+                        onClick={() => {
+                          dispatch({
+                            type: 'APPROVE_REGISTRATION',
+                            payload: { deviceId: device.id, adminId: 'MACRA' },
+                          });
+                          showToast(
+                            'Registration Approved',
+                            'Device is now active in the national registry.',
+                            'success'
+                          );
+                        }}
+                      >
+                        <FiCheckCircle size={14} /> Approve & Activate
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* ID Review Section */}
+                  <div
+                    style={{
+                      display: 'grid',
+                      gridTemplateColumns: '1fr 1fr',
+                      gap: 12,
+                      marginTop: 8,
+                    }}
+                  >
+                    <div
+                      style={{
+                        border: '1px solid var(--muted-3)',
+                        borderRadius: 8,
+                        padding: 10,
+                        textAlign: 'center',
+                        background: 'var(--surface)',
+                      }}
+                    >
+                      <div
+                        style={{
+                          fontSize: 10,
+                          fontWeight: 700,
+                          color: 'var(--muted)',
+                          textTransform: 'uppercase',
+                          marginBottom: 6,
+                        }}
+                      >
+                        National ID (Front)
+                      </div>
+                      <div style={{ fontSize: 24, padding: '10px 0' }}>🖼️</div>
+                      <button
+                        style={{
+                          background: 'none',
+                          border: 'none',
+                          fontSize: 11,
+                          color: 'var(--blue)',
+                          cursor: 'pointer',
+                          padding: 0,
+                        }}
+                        onClick={(e) => e.preventDefault()}
+                      >
+                        View Document
+                      </button>
+                    </div>
+                    <div
+                      style={{
+                        border: '1px solid var(--muted-3)',
+                        borderRadius: 8,
+                        padding: 10,
+                        textAlign: 'center',
+                        background: 'var(--surface)',
+                      }}
+                    >
+                      <div
+                        style={{
+                          fontSize: 10,
+                          fontWeight: 700,
+                          color: 'var(--muted)',
+                          textTransform: 'uppercase',
+                          marginBottom: 6,
+                        }}
+                      >
+                        National ID (Back)
+                      </div>
+                      <div style={{ fontSize: 24, padding: '10px 0' }}>🖼️</div>
+                      <button
+                        style={{
+                          background: 'none',
+                          border: 'none',
+                          fontSize: 11,
+                          color: 'var(--blue)',
+                          cursor: 'pointer',
+                          padding: 0,
+                        }}
+                        onClick={(e) => e.preventDefault()}
+                      >
+                        View Document
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       {/* ── Device Owner Lookup ── search by IMEI / serial / MAC ── */}
       <DeviceLookup />

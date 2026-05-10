@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { FiPhone, FiDelete, FiX, FiCheck } from 'react-icons/fi';
-import { useToast } from '../../store/useAppStore';
 
 const MENUS = {
   home: {
@@ -69,7 +68,6 @@ const MENUS = {
 };
 
 export default function USSDSimulatorPage() {
-  const showToast = useToast();
   const [currentMenu, setCurrentMenu] = useState('home');
   const [inputValue, setInputValue] = useState('');
   const [activeScreen, setActiveScreen] = useState(false);
@@ -100,49 +98,78 @@ export default function USSDSimulatorPage() {
         </p>
       </div>
 
-      <div style={{ display: 'flex', gap: 40, alignItems: 'center', justifyContent: 'center', flexWrap: 'wrap' }}>
-        
+      <div
+        style={{
+          display: 'flex',
+          gap: 40,
+          alignItems: 'center',
+          justifyContent: 'center',
+          flexWrap: 'wrap',
+        }}
+      >
         {/* --- RETRO PHONE MOCK --- */}
-        <div style={{
-          width: 320,
-          height: 600,
-          background: '#1a1a1a',
-          borderRadius: 40,
-          padding: 20,
-          boxShadow: '0 30px 60px rgba(0,0,0,0.5)',
-          border: '4px solid #333',
-          position: 'relative'
-        }}>
+        <div
+          style={{
+            width: 320,
+            height: 600,
+            background: '#1a1a1a',
+            borderRadius: 40,
+            padding: 20,
+            boxShadow: '0 30px 60px rgba(0,0,0,0.5)',
+            border: '4px solid #333',
+            position: 'relative',
+          }}
+        >
           {/* Speaker */}
-          <div style={{ width: 60, height: 6, background: '#333', borderRadius: 3, margin: '10px auto 25px' }} />
+          <div
+            style={{
+              width: 60,
+              height: 6,
+              background: '#333',
+              borderRadius: 3,
+              margin: '10px auto 25px',
+            }}
+          />
 
           {/* SCREEN AREA */}
-          <div style={{
-            background: '#8bb18b', // Retro Casio Green
-            width: '100%',
-            height: 280,
-            borderRadius: 4,
-            border: '8px solid #000',
-            padding: 16,
-            fontFamily: 'monospace',
-            color: '#002200',
-            position: 'relative',
-            overflow: 'hidden'
-          }}>
+          <div
+            style={{
+              background: '#8bb18b', // Retro Casio Green
+              width: '100%',
+              height: 280,
+              borderRadius: 4,
+              border: '8px solid #000',
+              padding: 16,
+              fontFamily: 'monospace',
+              color: '#002200',
+              position: 'relative',
+              overflow: 'hidden',
+            }}
+          >
             {!activeScreen ? (
-              <div style={{ height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
-                <div style={{ fontSize: 40, marginBottom: 16 }}><FiPhone /></div>
+              <div
+                style={{
+                  height: '100%',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}
+              >
+                <div style={{ fontSize: 40, marginBottom: 16 }}>
+                  <FiPhone />
+                </div>
                 <div style={{ fontWeight: 800, letterSpacing: 2 }}>DIAL *858#</div>
-                <button 
+                <button
                   onClick={() => setActiveScreen(true)}
-                  style={{ 
-                    marginTop: 20, 
-                    background: '#0a330a', 
-                    color: '#8bb18b', 
-                    border: 'none', 
-                    padding: '8px 16px', 
+                  style={{
+                    marginTop: 20,
+                    background: '#0a330a',
+                    color: '#8bb18b',
+                    border: 'none',
+                    padding: '8px 16px',
                     fontWeight: 800,
-                    borderRadius: 4
+                    borderRadius: 4,
                   }}
                 >
                   CALL
@@ -150,19 +177,24 @@ export default function USSDSimulatorPage() {
               </div>
             ) : (
               <div style={{ height: '100%' }}>
-                <div style={{ borderBottom: '1px solid #779977', paddingBottom: 8, marginBottom: 12, fontWeight: 800 }}>
+                <div
+                  style={{
+                    borderBottom: '1px solid #779977',
+                    paddingBottom: 8,
+                    marginBottom: 12,
+                    fontWeight: 800,
+                  }}
+                >
                   {menu.title}
                 </div>
-                
+
                 {menu.text && (
-                  <div style={{ fontSize: 12, lineHeight: 1.4, marginBottom: 10 }}>
-                    {menu.text}
-                  </div>
+                  <div style={{ fontSize: 12, lineHeight: 1.4, marginBottom: 10 }}>{menu.text}</div>
                 )}
 
                 {menu.options && (
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-                    {menu.options.map(o => (
+                    {menu.options.map((o) => (
                       <div key={o.key} style={{ fontSize: 13 }}>
                         {o.key}. {o.label}
                       </div>
@@ -172,36 +204,64 @@ export default function USSDSimulatorPage() {
 
                 {menu.input && (
                   <div style={{ marginTop: 20 }}>
-                    <div style={{ border: '1px solid #779977', height: 28, background: 'rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', padding: '0 8px', color: '#000' }}>
+                    <div
+                      style={{
+                        border: '1px solid #779977',
+                        height: 28,
+                        background: 'rgba(255,255,255,0.1)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        padding: '0 8px',
+                        color: '#000',
+                      }}
+                    >
                       {inputValue}_
                     </div>
                   </div>
                 )}
 
-                <div style={{ position: 'absolute', bottom: 12, left: 16, right: 16, display: 'flex', justifyContent: 'space-between', fontSize: 10, fontWeight: 800 }}>
-                   <span>{menu.options ? 'SELECT' : ''}</span>
-                   <span>EXIT</span>
+                <div
+                  style={{
+                    position: 'absolute',
+                    bottom: 12,
+                    left: 16,
+                    right: 16,
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    fontSize: 10,
+                    fontWeight: 800,
+                  }}
+                >
+                  <span>{menu.options ? 'SELECT' : ''}</span>
+                  <span>EXIT</span>
                 </div>
               </div>
             )}
           </div>
 
           {/* KEYPAD AREA */}
-          <div style={{ marginTop: 30, display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 15 }}>
-            {['1', '2', '3', '4', '5', '6', '7', '8', '9', '*', '0', '#'].map(k => (
+          <div
+            style={{
+              marginTop: 30,
+              display: 'grid',
+              gridTemplateColumns: 'repeat(3, 1fr)',
+              gap: 15,
+            }}
+          >
+            {['1', '2', '3', '4', '5', '6', '7', '8', '9', '*', '0', '#'].map((k) => (
               <button
                 key={k}
                 onClick={() => {
-                   if (!activeScreen && k === '*') {
-                      // Maybe dial *858# logic
-                   }
-                   if (activeScreen) {
-                      if (menu.input) {
-                        setInputValue(prev => prev + k);
-                      } else {
-                        handleOption(k);
-                      }
-                   }
+                  if (!activeScreen && k === '*') {
+                    // Maybe dial *858# logic
+                  }
+                  if (activeScreen) {
+                    if (menu.input) {
+                      setInputValue((prev) => prev + k);
+                    } else {
+                      handleOption(k);
+                    }
+                  }
                 }}
                 style={{
                   height: 48,
@@ -212,7 +272,7 @@ export default function USSDSimulatorPage() {
                   fontSize: 18,
                   fontWeight: 700,
                   boxShadow: '0 4px 0 #111',
-                  cursor: 'pointer'
+                  cursor: 'pointer',
                 }}
               >
                 {k}
@@ -222,65 +282,107 @@ export default function USSDSimulatorPage() {
 
           {/* Action Buttons */}
           <div style={{ marginTop: 25, display: 'flex', justifyContent: 'space-around' }}>
-             <button 
-                onClick={() => {
-                  if (activeScreen) {
-                    if (menu.options) handleOption('1');
-                    if (menu.input) handleInput();
-                  }
-                }}
-                style={{ width: 50, height: 35, borderRadius: 10, background: '#0a330a', border: '1px solid #222', color: '#8bb18b', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-             >
-                <FiCheck />
-             </button>
-             <button 
-               onClick={() => {
-                 setInputValue(prev => prev.slice(0, -1));
-               }}
-               style={{ width: 50, height: 35, borderRadius: 10, background: '#333', border: '1px solid #222', color: '#ccc', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-             >
-                <FiDelete />
-             </button>
-             <button 
-                onClick={() => {
-                   setActiveScreen(false);
-                   setCurrentMenu('home');
-                }}
-                style={{ width: 50, height: 35, borderRadius: 10, background: '#330a0a', border: '1px solid #222', color: '#b18b8b', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-             >
-                <FiX />
-             </button>
+            <button
+              onClick={() => {
+                if (activeScreen) {
+                  if (menu.options) handleOption('1');
+                  if (menu.input) handleInput();
+                }
+              }}
+              style={{
+                width: 50,
+                height: 35,
+                borderRadius: 10,
+                background: '#0a330a',
+                border: '1px solid #222',
+                color: '#8bb18b',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <FiCheck />
+            </button>
+            <button
+              onClick={() => {
+                setInputValue((prev) => prev.slice(0, -1));
+              }}
+              style={{
+                width: 50,
+                height: 35,
+                borderRadius: 10,
+                background: '#333',
+                border: '1px solid #222',
+                color: '#ccc',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <FiDelete />
+            </button>
+            <button
+              onClick={() => {
+                setActiveScreen(false);
+                setCurrentMenu('home');
+              }}
+              style={{
+                width: 50,
+                height: 35,
+                borderRadius: 10,
+                background: '#330a0a',
+                border: '1px solid #222',
+                color: '#b18b8b',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <FiX />
+            </button>
           </div>
-
         </div>
 
         {/* Info Area */}
         <div style={{ flex: 1, minWidth: 300 }}>
-           <div className="card" style={{ padding: 24 }}>
-             <h3 style={{ marginBottom: 16, display: 'flex', alignItems: 'center', gap: 10 }}>
-               <FiPhone /> Why this matters
-             </h3>
-             <ul style={{ fontSize: 14, color: 'var(--muted)', lineHeight: '1.6', display: 'flex', flexDirection: 'column', gap: 12 }}>
-               <li>
-                 <strong>Accessibility:</strong> In Malawi, over 70% of device ownership tracking happens on feature phones via USSD.
-               </li>
-               <li>
-                 <strong>Offline Resilience:</strong> This channel works even without mobile data/internet, ensuring theft reporting is always available.
-               </li>
-               <li>
-                 <strong>Instant Registration:</strong> Citizens can register their device's IMEI to their national ID in minutes without an app.
-               </li>
-               <li>
-                 <strong>Low Latency:</strong> Direct integration with the MACRA/SDIRS gateway for immediate tower tracking initiation.
-               </li>
-             </ul>
+          <div className="card" style={{ padding: 24 }}>
+            <h3 style={{ marginBottom: 16, display: 'flex', alignItems: 'center', gap: 10 }}>
+              <FiPhone /> Why this matters
+            </h3>
+            <ul
+              style={{
+                fontSize: 14,
+                color: 'var(--muted)',
+                lineHeight: '1.6',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 12,
+              }}
+            >
+              <li>
+                <strong>Accessibility:</strong> In Malawi, over 70% of device ownership tracking
+                happens on feature phones via USSD.
+              </li>
+              <li>
+                <strong>Offline Resilience:</strong> This channel works even without mobile
+                data/internet, ensuring theft reporting is always available.
+              </li>
+              <li>
+                <strong>Instant Registration:</strong> Citizens can register their device's IMEI to
+                their national ID in minutes without an app.
+              </li>
+              <li>
+                <strong>Low Latency:</strong> Direct integration with the MACRA/SDIRS gateway for
+                immediate tower tracking initiation.
+              </li>
+            </ul>
 
-             <div className="alert alert-blue" style={{ marginTop: 24 }}>
-                <strong>Simulation Hack:</strong> Click the "DIAL" button on the casio screen to begin the session. Use the keypad to navigate menus.
-             </div>
-           </div>
+            <div className="alert alert-blue" style={{ marginTop: 24 }}>
+              <strong>Simulation Hack:</strong> Click the "DIAL" button on the casio screen to begin
+              the session. Use the keypad to navigate menus.
+            </div>
+          </div>
         </div>
-
       </div>
     </div>
   );

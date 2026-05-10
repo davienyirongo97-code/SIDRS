@@ -61,16 +61,46 @@ export default function PoliceDashboardPage() {
       {/* ── Police banner ── */}
       <div
         style={{
-          background: 'linear-gradient(135deg, #1a0508, #2d0f0f, var(--navy))',
-          borderRadius: 'var(--radius)',
-          padding: '24px 28px',
+          background: 'linear-gradient(135deg, #1a0508 0%, #2d0f0f 40%, #1e3a8a 100%)',
+          borderRadius: '20px',
+          padding: '28px 32px',
           marginBottom: 24,
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
+          position: 'relative',
+          overflow: 'hidden',
+          border: '1px solid rgba(239, 68, 68, 0.15)',
+          boxShadow: '0 12px 40px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.05)',
         }}
       >
-        <div>
+        {/* Scan line overlay */}
+        <div
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            height: '1px',
+            background:
+              'linear-gradient(90deg, transparent, rgba(239, 68, 68, 0.4), rgba(59, 130, 246, 0.3), transparent)',
+            animation: 'scanLine 4s ease-in-out infinite',
+            pointerEvents: 'none',
+          }}
+        />
+        {/* Ambient glow */}
+        <div
+          style={{
+            position: 'absolute',
+            top: '-50%',
+            right: '-10%',
+            width: '40%',
+            height: '200%',
+            background: 'radial-gradient(circle, rgba(37, 99, 235, 0.08) 0%, transparent 60%)',
+            pointerEvents: 'none',
+          }}
+        />
+        <div style={{ position: 'relative', zIndex: 1 }}>
           <div
             style={{
               fontSize: 10,
@@ -96,32 +126,42 @@ export default function PoliceDashboardPage() {
           >
             <FiUsers size={22} /> SDIRS Intelligence Dashboard
           </div>
-          <div style={{ display: 'flex', gap: 28, marginTop: 12, flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', gap: 28, marginTop: 14, flexWrap: 'wrap' }}>
             {[
-              [pending.length, 'Pending', 'var(--amber-2)'],
-              [active.length, 'Active Alerts', 'var(--red-2)'],
-              [events.length, 'Intel Events', 'var(--blue-3)'],
-              [resolved.length, 'Resolved', '#80E890'],
+              [pending.length, 'Pending', '#fbbf24'],
+              [active.length, 'Active Alerts', '#f87171'],
+              [events.length, 'Intel Events', '#93c5fd'],
+              [resolved.length, 'Resolved', '#4ade80'],
             ].map(([n, label, color]) => (
               <div key={label}>
                 <span
                   style={{
                     fontFamily: 'var(--font-display)',
-                    fontSize: 24,
+                    fontSize: 28,
                     fontWeight: 800,
                     color,
+                    textShadow: `0 0 20px ${color}44`,
                   }}
                 >
                   {n}
                 </span>
-                <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', marginTop: 2 }}>
+                <div
+                  style={{
+                    fontSize: 11,
+                    color: 'rgba(255,255,255,0.45)',
+                    marginTop: 2,
+                    fontWeight: 600,
+                  }}
+                >
                   {label}
                 </div>
               </div>
             ))}
           </div>
         </div>
-        <div className="live-badge">Network Monitoring LIVE</div>
+        <div className="live-badge" style={{ position: 'relative', zIndex: 1 }}>
+          Network Monitoring LIVE
+        </div>
       </div>
 
       {/* ── Device Owner Lookup ── */}
@@ -303,6 +343,38 @@ export default function PoliceDashboardPage() {
                       {report.caseNumber}
                     </div>
                   )}
+
+                  {/* Officer accountability badge — shown once verified */}
+                  {report.verifiedBy && (
+                    <div
+                      style={{
+                        marginTop: 8,
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: 8,
+                        padding: '5px 10px',
+                        borderRadius: 8,
+                        background:
+                          'linear-gradient(135deg, rgba(30,27,75,0.6), rgba(45,32,96,0.6))',
+                        border: '1px solid rgba(139, 92, 246, 0.25)',
+                        fontSize: 11,
+                      }}
+                    >
+                      <FiCheckCircle size={12} style={{ color: '#a78bfa', flexShrink: 0 }} />
+                      <span style={{ color: '#a78bfa', fontWeight: 700 }}>
+                        {report.verifiedBy.rank} · {report.verifiedBy.badgeNumber}
+                      </span>
+                      <span
+                        style={{
+                          color: 'rgba(255,255,255,0.3)',
+                          fontFamily: 'var(--font-mono)',
+                          fontSize: 10,
+                        }}
+                      >
+                        {report.verifiedBy.digitalSignature.slice(0, 14)}…
+                      </span>
+                    </div>
+                  )}
                 </div>
               );
             })
@@ -321,13 +393,15 @@ export default function PoliceDashboardPage() {
           {/* Network status bar */}
           <div
             style={{
-              padding: '10px 14px',
-              background: 'var(--navy)',
-              borderRadius: 10,
+              padding: '12px 16px',
+              background: 'linear-gradient(135deg, #172554, #1e3a8a)',
+              borderRadius: 12,
               marginBottom: 16,
               display: 'flex',
               justifyContent: 'space-between',
               alignItems: 'center',
+              border: '1px solid rgba(59, 130, 246, 0.15)',
+              boxShadow: '0 4px 16px rgba(0, 0, 0, 0.2)',
             }}
           >
             <span style={{ color: 'rgba(255,255,255,0.7)', fontSize: 12, fontWeight: 600 }}>
@@ -475,35 +549,50 @@ export default function PoliceDashboardPage() {
                       <div style={{ fontWeight: 700, fontSize: 13, marginBottom: 4 }}>
                         {device?.make} {device?.model}
                       </div>
-                      <div style={{ fontSize: 11, color: 'var(--muted)' }}>Last: {latest.tower}</div>
+                      <div style={{ fontSize: 11, color: 'var(--muted)' }}>
+                        Last: {latest.tower}
+                      </div>
 
                       {/* AI recovery analytics */}
                       <div style={{ marginTop: 12 }}>
                         <div
                           style={{
-                             display: 'flex',
-                             justifyContent: 'space-between',
-                             fontSize: 10,
-                             fontWeight: 800,
-                             color: 'var(--muted)',
-                             marginBottom: 4,
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            fontSize: 10,
+                            fontWeight: 800,
+                            color: 'var(--muted)',
+                            marginBottom: 4,
                           }}
                         >
                           <span>RECOVERY PROBABILITY (AI SCORE)</span>
-                          <span style={{ color: (devEvts.length * 15 + 40) > 80 ? 'var(--green)' : 'var(--amber)' }}>
+                          <span
+                            style={{
+                              color:
+                                devEvts.length * 15 + 40 > 80 ? 'var(--green)' : 'var(--amber)',
+                            }}
+                          >
                             {Math.min(devEvts.length * 15 + 40, 98)}%
                           </span>
                         </div>
-                        <div style={{ height: 6, background: 'var(--bg-2)', borderRadius: 3, overflow: 'hidden' }}>
-                           <div
-                             style={{
-                               height: '100%',
-                               width: `${Math.min(devEvts.length * 15 + 40, 98)}%`,
-                               background: (devEvts.length * 15 + 40) > 80 ? 'var(--green)' : 'var(--amber)',
-                               borderRadius: 3,
-                               transition: 'width 1s ease',
-                             }}
-                           />
+                        <div
+                          style={{
+                            height: 6,
+                            background: 'var(--bg-2)',
+                            borderRadius: 3,
+                            overflow: 'hidden',
+                          }}
+                        >
+                          <div
+                            style={{
+                              height: '100%',
+                              width: `${Math.min(devEvts.length * 15 + 40, 98)}%`,
+                              background:
+                                devEvts.length * 15 + 40 > 80 ? 'var(--green)' : 'var(--amber)',
+                              borderRadius: 3,
+                              transition: 'width 1s ease',
+                            }}
+                          />
                         </div>
                       </div>
 
@@ -532,7 +621,10 @@ export default function PoliceDashboardPage() {
                             className="btn btn-green btn-sm"
                             style={{ fontSize: 10, padding: '4px 10px' }}
                             onClick={() => {
-                              dispatch({ type: 'RESOLVE_REPORT', payload: { reportId: report.id } });
+                              dispatch({
+                                type: 'RESOLVE_REPORT',
+                                payload: { reportId: report.id },
+                              });
                               showToast(
                                 'Device marked as recovered',
                                 'Case has been resolved.',

@@ -136,12 +136,20 @@ function buildChain(devices, reports, transfers, events) {
       allRawBlocks.push({
         type: 'THEFT_VERIFIED',
         timestamp: (r.verifiedAt || r.date) + ' 10:00',
-        actor: 'Malawi Police Service',
+        actor: r.verifiedBy
+          ? `${r.verifiedBy.rank} · Badge ${r.verifiedBy.badgeNumber}`
+          : 'Malawi Police Service',
         deviceId: r.deviceId,
         payload: {
           caseNumber: r.caseNumber,
           dispatched: r.dispatched,
           network: 'Airtel + TNM EIR Alert Dispatched',
+          // Officer accountability — always recorded
+          officerBadge: r.verifiedBy?.badgeNumber || 'Legacy record',
+          officerRank: r.verifiedBy?.rank || '—',
+          officerStation: r.verifiedBy?.station || '—',
+          digitalSignature: r.verifiedBy?.digitalSignature || '—',
+          signedAt: r.verifiedBy?.signedAt || r.verifiedAt || '—',
         },
       });
     }
@@ -696,6 +704,140 @@ export default function OwnershipChainPage() {
                         </div>
                       </div>
                     )}
+
+                    {/* ── Officer Accountability Card (THEFT_VERIFIED blocks only) ── */}
+                    {block.type === 'THEFT_VERIFIED' &&
+                      block.payload.digitalSignature &&
+                      block.payload.digitalSignature !== '—' && (
+                        <div
+                          style={{
+                            marginTop: 14,
+                            borderRadius: 12,
+                            border: '1px solid rgba(139, 92, 246, 0.35)',
+                            background: 'linear-gradient(135deg, #1e1b4b, #2d2060)',
+                            overflow: 'hidden',
+                          }}
+                        >
+                          {/* Header */}
+                          <div
+                            style={{
+                              padding: '10px 14px',
+                              background: 'rgba(139, 92, 246, 0.15)',
+                              borderBottom: '1px solid rgba(139, 92, 246, 0.2)',
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: 8,
+                            }}
+                          >
+                            <FiLock size={13} style={{ color: '#a78bfa' }} />
+                            <span
+                              style={{
+                                fontSize: 11,
+                                fontWeight: 800,
+                                color: '#a78bfa',
+                                letterSpacing: 1,
+                                textTransform: 'uppercase',
+                              }}
+                            >
+                              Officer Accountability Signature
+                            </span>
+                            <span
+                              style={{
+                                marginLeft: 'auto',
+                                fontSize: 10,
+                                fontWeight: 800,
+                                padding: '2px 8px',
+                                borderRadius: 20,
+                                background: 'rgba(74, 222, 128, 0.15)',
+                                color: '#4ade80',
+                                border: '1px solid rgba(74, 222, 128, 0.3)',
+                              }}
+                            >
+                              ✓ VERIFIED
+                            </span>
+                          </div>
+
+                          {/* Officer details grid */}
+                          <div
+                            style={{
+                              padding: '14px',
+                              display: 'grid',
+                              gridTemplateColumns: '1fr 1fr',
+                              gap: '10px 20px',
+                            }}
+                          >
+                            {[
+                              ['Badge / Service No.', block.payload.officerBadge],
+                              ['Rank', block.payload.officerRank],
+                              ['Verifying Station', block.payload.officerStation],
+                              ['Signed At', block.payload.signedAt],
+                            ].map(([label, value]) => (
+                              <div key={label}>
+                                <div
+                                  style={{
+                                    fontSize: 9,
+                                    fontWeight: 800,
+                                    color: 'rgba(255,255,255,0.35)',
+                                    textTransform: 'uppercase',
+                                    letterSpacing: 1,
+                                    marginBottom: 3,
+                                  }}
+                                >
+                                  {label}
+                                </div>
+                                <div style={{ fontSize: 12, fontWeight: 700, color: '#e2e8f0' }}>
+                                  {value || '—'}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+
+                          {/* Digital signature fingerprint */}
+                          <div
+                            style={{
+                              margin: '0 14px 14px',
+                              padding: '10px 12px',
+                              background: 'rgba(0,0,0,0.3)',
+                              borderRadius: 8,
+                              border: '1px solid rgba(139, 92, 246, 0.2)',
+                            }}
+                          >
+                            <div
+                              style={{
+                                fontSize: 9,
+                                fontWeight: 800,
+                                color: 'rgba(255,255,255,0.35)',
+                                textTransform: 'uppercase',
+                                letterSpacing: 1,
+                                marginBottom: 5,
+                              }}
+                            >
+                              Digital Signature Fingerprint
+                            </div>
+                            <div
+                              style={{
+                                fontFamily: 'var(--font-mono)',
+                                fontSize: 13,
+                                fontWeight: 700,
+                                color: '#a78bfa',
+                                letterSpacing: 1,
+                                wordBreak: 'break-all',
+                              }}
+                            >
+                              {block.payload.digitalSignature}
+                            </div>
+                            <div
+                              style={{
+                                fontSize: 10,
+                                color: 'rgba(255,255,255,0.35)',
+                                marginTop: 5,
+                              }}
+                            >
+                              FNV-1a hash of Badge · PIN · Report ID · Timestamp — immutable
+                            </div>
+                          </div>
+                        </div>
+                      )}
                   </div>
                 )}
               </div>

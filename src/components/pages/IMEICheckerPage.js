@@ -277,13 +277,30 @@ export default function IMEICheckerPage() {
 
 function CheckerResult({ result, isOfficer }) {
   const showToast = useToast();
-  if (result.status === 'not_found') {
+  if (result.status === 'not_registered' || result.status === 'not_found') {
     return (
       <div className="card">
         <h3>
-          <FiHelpCircle /> Not Found
+          <FiHelpCircle /> Not Registered
         </h3>
-        <p>No record found in the SDIRS database.</p>
+        <p>No record found in the SDIRS database. This device is not registered with MACRA.</p>
+      </div>
+    );
+  }
+
+  if (result.status === 'not_verified') {
+    const d = result.device;
+    return (
+      <div className="card" style={{ borderLeft: '4px solid var(--amber)' }}>
+        <h3 style={{ color: 'var(--amber)', display: 'flex', alignItems: 'center', gap: 6 }}>
+          <FiAlertCircle /> Not Verified
+        </h3>
+        <InfoField label="Device" value={`${d.make} ${d.model}`} />
+        <InfoField label="Type" value={d.type} />
+        <InfoField label="Status" badge="pending_verification" />
+        <p style={{ marginTop: 12, fontSize: 13, color: 'var(--ink-2)' }}>
+          This device has been submitted for registration but has not yet been verified by MACRA.
+        </p>
       </div>
     );
   }
@@ -352,7 +369,16 @@ function CheckerResult({ result, isOfficer }) {
 
       <InfoField label="Location" value={r.location} />
 
-      <div style={{ marginTop: 10, display: 'flex', alignItems: 'center', gap: 6, color: 'var(--muted)', fontSize: 12 }}>
+      <div
+        style={{
+          marginTop: 10,
+          display: 'flex',
+          alignItems: 'center',
+          gap: 6,
+          color: 'var(--muted)',
+          fontSize: 12,
+        }}
+      >
         <FiPhone size={14} /> Call Malawi Police: <b>199</b>
       </div>
 

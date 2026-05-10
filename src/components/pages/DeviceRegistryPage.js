@@ -6,7 +6,6 @@
 
 import React, { useState } from 'react';
 import { useAppStore } from '../../store/useAppStore';
-import { deviceIcon, primaryIdentifier } from '../../utils/helpers';
 import Badge from '../ui/Badge';
 import StatCard from '../ui/StatCard';
 import RegisterDeviceModal from '../modals/RegisterDeviceModal';

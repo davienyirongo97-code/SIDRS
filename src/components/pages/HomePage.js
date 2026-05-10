@@ -265,7 +265,7 @@ export default function HomePage() {
       </div>
 
       {/* ── STAT CARDS ── */}
-      <div className="grid-stat fade-up-1" style={{ marginBottom: 40 }}>
+      <div className="grid-stat fade-up-1 stagger-reveal" style={{ marginBottom: 40 }}>
         <div
           className="glass-card"
           style={{ padding: 24, position: 'relative', overflow: 'hidden' }}

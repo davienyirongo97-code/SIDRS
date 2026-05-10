@@ -85,6 +85,8 @@ export default function RegisterDeviceModal({ onClose }) {
     ownerEmail: currentUser?.email || '',
     ownerIdType: 'nrc',
     ownerIdNumber: '',
+    idFront: null,
+    idBack: null,
     ownerDistrict: '',
     ownerVillageArea: '',
     ownerResidence: '',
@@ -123,6 +125,10 @@ export default function RegisterDeviceModal({ onClose }) {
       }
       if (!form.ownerIdNumber.trim()) {
         showToast('Enter your NRC / ID number.', '', 'warn');
+        return false;
+      }
+      if (!form.idFront || !form.idBack) {
+        showToast('Upload both Front and Back photos of your ID.', '', 'warn');
         return false;
       }
       if (!form.ownerDistrict) {
@@ -197,6 +203,8 @@ export default function RegisterDeviceModal({ onClose }) {
           email: form.ownerEmail.trim(),
           idType: form.ownerIdType,
           idNumber: form.ownerIdNumber.trim(),
+          idFront: form.idFront,
+          idBack: form.idBack,
           district: form.ownerDistrict,
           villageArea: form.ownerVillageArea.trim(),
           residence: form.ownerResidence.trim(),
@@ -217,8 +225,8 @@ export default function RegisterDeviceModal({ onClose }) {
     }
 
     showToast(
-      `${form.make} ${form.model} registered!`,
-      'Device and owner profile saved in the national registry.',
+      `${form.make} ${form.model} submitted!`,
+      'Registration is pending verification by MACRA Administration.',
       'success'
     );
     onClose();
@@ -346,6 +354,79 @@ export default function RegisterDeviceModal({ onClose }) {
                   value={form.ownerIdNumber}
                   onChange={(e) => update('ownerIdNumber', e.target.value)}
                 />
+              </div>
+            </div>
+
+            <div className="grid-2">
+              <div className="field">
+                <label className="field-label">Upload ID Front *</label>
+                <label
+                  style={{
+                    border: '2px dashed var(--muted-3)',
+                    borderRadius: 'var(--radius)',
+                    padding: 20,
+                    textAlign: 'center',
+                    cursor: 'pointer',
+                    background: form.idFront ? 'var(--blue-pale)' : 'var(--bg)',
+                    display: 'block',
+                  }}
+                >
+                  <input
+                    type="file"
+                    accept="image/*"
+                    style={{ display: 'none' }}
+                    onChange={(e) => {
+                      if (e.target.files && e.target.files[0]) {
+                        update('idFront', e.target.files[0].name);
+                      }
+                    }}
+                  />
+                  <span style={{ fontSize: 24, display: 'block', marginBottom: 8 }}>🖼️</span>
+                  <span
+                    style={{
+                      fontSize: 12,
+                      fontWeight: 700,
+                      color: form.idFront ? 'var(--blue)' : 'var(--muted)',
+                    }}
+                  >
+                    {form.idFront ? `✓ ${form.idFront}` : 'Click to browse...'}
+                  </span>
+                </label>
+              </div>
+              <div className="field">
+                <label className="field-label">Upload ID Back *</label>
+                <label
+                  style={{
+                    border: '2px dashed var(--muted-3)',
+                    borderRadius: 'var(--radius)',
+                    padding: 20,
+                    textAlign: 'center',
+                    cursor: 'pointer',
+                    background: form.idBack ? 'var(--blue-pale)' : 'var(--bg)',
+                    display: 'block',
+                  }}
+                >
+                  <input
+                    type="file"
+                    accept="image/*"
+                    style={{ display: 'none' }}
+                    onChange={(e) => {
+                      if (e.target.files && e.target.files[0]) {
+                        update('idBack', e.target.files[0].name);
+                      }
+                    }}
+                  />
+                  <span style={{ fontSize: 24, display: 'block', marginBottom: 8 }}>🖼️</span>
+                  <span
+                    style={{
+                      fontSize: 12,
+                      fontWeight: 700,
+                      color: form.idBack ? 'var(--blue)' : 'var(--muted)',
+                    }}
+                  >
+                    {form.idBack ? `✓ ${form.idBack}` : 'Click to browse...'}
+                  </span>
+                </label>
               </div>
             </div>
 

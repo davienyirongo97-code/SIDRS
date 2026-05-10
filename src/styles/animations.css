@@ -215,3 +215,113 @@
   transform-origin: center;
   animation: radarPulse 1.5s ease-out infinite;
 }
+
+/* ── PREMIUM MICRO-ANIMATIONS ──────────────────────────────── */
+
+/* Shimmer sweep — runs across glass cards on hover */
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%) skewX(-15deg);
+  }
+  100% {
+    transform: translateX(200%) skewX(-15deg);
+  }
+}
+
+/* Scan line — horizontal sweep for intel dashboards */
+@keyframes scanLine {
+  0% {
+    top: -2px;
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+  100% {
+    top: 100%;
+    opacity: 0;
+  }
+}
+
+/* Glow breathing — for live status indicators */
+@keyframes glowBreathe {
+  0%,
+  100% {
+    box-shadow:
+      0 0 8px currentColor,
+      0 0 16px currentColor;
+    opacity: 1;
+  }
+  50% {
+    box-shadow:
+      0 0 16px currentColor,
+      0 0 32px currentColor,
+      0 0 48px currentColor;
+    opacity: 0.85;
+  }
+}
+
+/* Border gradient rotation */
+@keyframes borderRotate {
+  0% {
+    --angle: 0deg;
+  }
+  100% {
+    --angle: 360deg;
+  }
+}
+
+/* Counter animation for stat numbers */
+@keyframes countUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Subtle text glow for headings */
+@keyframes textGlow {
+  0%,
+  100% {
+    text-shadow: 0 0 10px rgba(37, 99, 235, 0.3);
+  }
+  50% {
+    text-shadow:
+      0 0 20px rgba(37, 99, 235, 0.6),
+      0 0 40px rgba(37, 99, 235, 0.2);
+  }
+}
+
+/* Staggered reveal for grid children */
+.stagger-reveal > *:nth-child(1) {
+  animation: fadeUp 0.4s 0s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.stagger-reveal > *:nth-child(2) {
+  animation: fadeUp 0.4s 0.08s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.stagger-reveal > *:nth-child(3) {
+  animation: fadeUp 0.4s 0.16s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.stagger-reveal > *:nth-child(4) {
+  animation: fadeUp 0.4s 0.24s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.stagger-reveal > *:nth-child(5) {
+  animation: fadeUp 0.4s 0.32s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.stagger-reveal > *:nth-child(6) {
+  animation: fadeUp 0.4s 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Glow breathe utility */
+.glow-breathe {
+  animation: glowBreathe 3s ease-in-out infinite;
+}
+
+/* Text glow utility */
+.text-glow {
+  animation: textGlow 4s ease-in-out infinite;
+}
